@@ -14,5 +14,59 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/org.codehaus.mojo/jaxb2-maven-plugin -->
+	<dependency>
+    	<groupId>org.codehaus.mojo</groupId>
+    	<artifactId>jaxb2-maven-plugin</artifactId>
+    	<version>3.1.0</version>
+	</dependency>
+	
+	<!-- Dependencies for JAXB marshalling/unmarshalling operations -->
+    <dependency>
+		<groupId>jakarta.xml.bind</groupId>
+		<artifactId>jakarta.xml.bind-api</artifactId>
+        <version>4.0.0</version>
+ 	</dependency>
+    <dependency>
+        <groupId>com.sun.xml.bind</groupId>
+        <artifactId>jaxb-impl</artifactId>
+        <version>4.0.3</version>
+        <scope>runtime</scope>
+    </dependency>
+
+
   </dependencies>
+  
+  
+  <!-- Code to generae Java code starting from XSD schema -->
+  <build>
+	  <plugins>
+		  <!-- Plugin required to build java classes from XSD using XJC -->
+		  <plugin>
+			  <groupId>org.codehaus.mojo</groupId>
+			  <artifactId>jaxb2-maven-plugin</artifactId>
+              <version>3.1.0</version>
+			  <executions>
+				  <execution>
+					  <goals>
+						  <goal>xjc</goal>
+					  </goals>
+				  </execution>
+			  </executions>
+			  <configuration>
+                <!-- The package of your generated sources -->
+                <packageName>eu.fluidos.jaxb</packageName>
+                <!-- The path of the XSD -->
+                <sources>
+					<source>${basedir}/xsd/mspl.xsd</source>
+				</sources>
+				<!-- The directory where the java classes will be generated -->
+				<outputDirectory>${basedir}/gen-src</outputDirectory>
+        		<clearOutputDir>false</clearOutputDir>
+        		<!-- <forceRegenerate>true</forceRegenerate> -->
+			  </configuration>
+		  </plugin>
+	  </plugins>
+  </build>
 </project>

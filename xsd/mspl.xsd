@@ -2358,7 +2358,7 @@ __status__ = "Development"
 	</simpleType>
 	
 	<!-- To express the condition for each "ConfigurationRule" -->
-	<complexType name="KubernetesNetworkFilterCondition">
+	<complexType name="KubernetesNetworkFilteringCondition">
 		<complexContent>
 			<extension base="ITResource:ConfigurationCondition">
 				<sequence>
