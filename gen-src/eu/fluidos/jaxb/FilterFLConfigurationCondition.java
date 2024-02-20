@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -66,7 +66,7 @@ public class FilterFLConfigurationCondition
     protected ObfuscationInfo obfuscationInfo;
 
     /**
-     * Recupera il valore della propriet√† instanceThreshold.
+     * Recupera il valore della propriet‡ instanceThreshold.
      * 
      * @return
      *     possible object is
@@ -78,7 +78,7 @@ public class FilterFLConfigurationCondition
     }
 
     /**
-     * Imposta il valore della propriet√† instanceThreshold.
+     * Imposta il valore della propriet‡ instanceThreshold.
      * 
      * @param value
      *     allowed object is
@@ -90,7 +90,7 @@ public class FilterFLConfigurationCondition
     }
 
     /**
-     * Recupera il valore della propriet√† aggregatorParameters.
+     * Recupera il valore della propriet‡ aggregatorParameters.
      * 
      * @return
      *     possible object is
@@ -102,7 +102,7 @@ public class FilterFLConfigurationCondition
     }
 
     /**
-     * Imposta il valore della propriet√† aggregatorParameters.
+     * Imposta il valore della propriet‡ aggregatorParameters.
      * 
      * @param value
      *     allowed object is
@@ -114,7 +114,7 @@ public class FilterFLConfigurationCondition
     }
 
     /**
-     * Recupera il valore della propriet√† localConnectionParameters.
+     * Recupera il valore della propriet‡ localConnectionParameters.
      * 
      * @return
      *     possible object is
@@ -126,7 +126,7 @@ public class FilterFLConfigurationCondition
     }
 
     /**
-     * Imposta il valore della propriet√† localConnectionParameters.
+     * Imposta il valore della propriet‡ localConnectionParameters.
      * 
      * @param value
      *     allowed object is
@@ -138,7 +138,7 @@ public class FilterFLConfigurationCondition
     }
 
     /**
-     * Recupera il valore della propriet√† integrationFabricParameters.
+     * Recupera il valore della propriet‡ integrationFabricParameters.
      * 
      * @return
      *     possible object is
@@ -150,7 +150,7 @@ public class FilterFLConfigurationCondition
     }
 
     /**
-     * Imposta il valore della propriet√† integrationFabricParameters.
+     * Imposta il valore della propriet‡ integrationFabricParameters.
      * 
      * @param value
      *     allowed object is
@@ -162,7 +162,7 @@ public class FilterFLConfigurationCondition
     }
 
     /**
-     * Recupera il valore della propriet√† learningModelInfo.
+     * Recupera il valore della propriet‡ learningModelInfo.
      * 
      * @return
      *     possible object is
@@ -174,7 +174,7 @@ public class FilterFLConfigurationCondition
     }
 
     /**
-     * Imposta il valore della propriet√† learningModelInfo.
+     * Imposta il valore della propriet‡ learningModelInfo.
      * 
      * @param value
      *     allowed object is
@@ -186,7 +186,7 @@ public class FilterFLConfigurationCondition
     }
 
     /**
-     * Recupera il valore della propriet√† learningParameters.
+     * Recupera il valore della propriet‡ learningParameters.
      * 
      * @return
      *     possible object is
@@ -198,7 +198,7 @@ public class FilterFLConfigurationCondition
     }
 
     /**
-     * Imposta il valore della propriet√† learningParameters.
+     * Imposta il valore della propriet‡ learningParameters.
      * 
      * @param value
      *     allowed object is
@@ -210,7 +210,7 @@ public class FilterFLConfigurationCondition
     }
 
     /**
-     * Recupera il valore della propriet√† obfuscationInfo.
+     * Recupera il valore della propriet‡ obfuscationInfo.
      * 
      * @return
      *     possible object is
@@ -222,7 +222,7 @@ public class FilterFLConfigurationCondition
     }
 
     /**
-     * Imposta il valore della propriet√† obfuscationInfo.
+     * Imposta il valore della propriet‡ obfuscationInfo.
      * 
      * @param value
      *     allowed object is

@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -66,7 +66,7 @@ public class TLSVPNTechnologyParameter
     protected String tlsMode;
 
     /**
-     * Recupera il valore della propriet√† peerPort.
+     * Recupera il valore della propriet‡ peerPort.
      * 
      * @return
      *     possible object is
@@ -78,7 +78,7 @@ public class TLSVPNTechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† peerPort.
+     * Imposta il valore della propriet‡ peerPort.
      * 
      * @param value
      *     allowed object is
@@ -90,7 +90,7 @@ public class TLSVPNTechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† l4Protocol.
+     * Recupera il valore della propriet‡ l4Protocol.
      * 
      * @return
      *     possible object is
@@ -102,7 +102,7 @@ public class TLSVPNTechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† l4Protocol.
+     * Imposta il valore della propriet‡ l4Protocol.
      * 
      * @param value
      *     allowed object is
@@ -114,7 +114,7 @@ public class TLSVPNTechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† localEndpoint.
+     * Recupera il valore della propriet‡ localEndpoint.
      * 
      * @return
      *     possible object is
@@ -126,7 +126,7 @@ public class TLSVPNTechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† localEndpoint.
+     * Imposta il valore della propriet‡ localEndpoint.
      * 
      * @param value
      *     allowed object is
@@ -138,7 +138,7 @@ public class TLSVPNTechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† remoteEndpoint.
+     * Recupera il valore della propriet‡ remoteEndpoint.
      * 
      * @return
      *     possible object is
@@ -150,7 +150,7 @@ public class TLSVPNTechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† remoteEndpoint.
+     * Imposta il valore della propriet‡ remoteEndpoint.
      * 
      * @param value
      *     allowed object is
@@ -162,7 +162,7 @@ public class TLSVPNTechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† virtualIPSource.
+     * Recupera il valore della propriet‡ virtualIPSource.
      * 
      * @return
      *     possible object is
@@ -174,7 +174,7 @@ public class TLSVPNTechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† virtualIPSource.
+     * Imposta il valore della propriet‡ virtualIPSource.
      * 
      * @param value
      *     allowed object is
@@ -186,7 +186,7 @@ public class TLSVPNTechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† virtualIPDestination.
+     * Recupera il valore della propriet‡ virtualIPDestination.
      * 
      * @return
      *     possible object is
@@ -198,7 +198,7 @@ public class TLSVPNTechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† virtualIPDestination.
+     * Imposta il valore della propriet‡ virtualIPDestination.
      * 
      * @param value
      *     allowed object is
@@ -210,7 +210,7 @@ public class TLSVPNTechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† device.
+     * Recupera il valore della propriet‡ device.
      * 
      * @return
      *     possible object is
@@ -222,7 +222,7 @@ public class TLSVPNTechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† device.
+     * Imposta il valore della propriet‡ device.
      * 
      * @param value
      *     allowed object is
@@ -234,7 +234,7 @@ public class TLSVPNTechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† tlsMode.
+     * Recupera il valore della propriet‡ tlsMode.
      * 
      * @return
      *     possible object is
@@ -246,7 +246,7 @@ public class TLSVPNTechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† tlsMode.
+     * Imposta il valore della propriet‡ tlsMode.
      * 
      * @param value
      *     allowed object is

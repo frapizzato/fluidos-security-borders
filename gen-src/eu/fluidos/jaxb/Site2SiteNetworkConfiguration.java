@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -52,7 +52,7 @@ public class Site2SiteNetworkConfiguration
     protected String remoteNetworkNetmask;
 
     /**
-     * Recupera il valore della propriet√† localNetwork.
+     * Recupera il valore della propriet‡ localNetwork.
      * 
      * @return
      *     possible object is
@@ -64,7 +64,7 @@ public class Site2SiteNetworkConfiguration
     }
 
     /**
-     * Imposta il valore della propriet√† localNetwork.
+     * Imposta il valore della propriet‡ localNetwork.
      * 
      * @param value
      *     allowed object is
@@ -76,7 +76,7 @@ public class Site2SiteNetworkConfiguration
     }
 
     /**
-     * Recupera il valore della propriet√† remoteNetwork.
+     * Recupera il valore della propriet‡ remoteNetwork.
      * 
      * @return
      *     possible object is
@@ -88,7 +88,7 @@ public class Site2SiteNetworkConfiguration
     }
 
     /**
-     * Imposta il valore della propriet√† remoteNetwork.
+     * Imposta il valore della propriet‡ remoteNetwork.
      * 
      * @param value
      *     allowed object is
@@ -100,7 +100,7 @@ public class Site2SiteNetworkConfiguration
     }
 
     /**
-     * Recupera il valore della propriet√† localNetworkNetmask.
+     * Recupera il valore della propriet‡ localNetworkNetmask.
      * 
      * @return
      *     possible object is
@@ -112,7 +112,7 @@ public class Site2SiteNetworkConfiguration
     }
 
     /**
-     * Imposta il valore della propriet√† localNetworkNetmask.
+     * Imposta il valore della propriet‡ localNetworkNetmask.
      * 
      * @param value
      *     allowed object is
@@ -124,7 +124,7 @@ public class Site2SiteNetworkConfiguration
     }
 
     /**
-     * Recupera il valore della propriet√† remoteNetworkNetmask.
+     * Recupera il valore della propriet‡ remoteNetworkNetmask.
      * 
      * @return
      *     possible object is
@@ -136,7 +136,7 @@ public class Site2SiteNetworkConfiguration
     }
 
     /**
-     * Imposta il valore della propriet√† remoteNetworkNetmask.
+     * Imposta il valore della propriet‡ remoteNetworkNetmask.
      * 
      * @param value
      *     allowed object is

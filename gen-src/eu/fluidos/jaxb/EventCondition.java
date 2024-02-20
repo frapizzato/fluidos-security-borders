@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -48,7 +48,7 @@ public class EventCondition {
     protected BigInteger threshold;
 
     /**
-     * Recupera il valore della propriet√† events.
+     * Recupera il valore della propriet‡ events.
      * 
      * @return
      *     possible object is
@@ -60,7 +60,7 @@ public class EventCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† events.
+     * Imposta il valore della propriet‡ events.
      * 
      * @param value
      *     allowed object is
@@ -72,7 +72,7 @@ public class EventCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† interval.
+     * Recupera il valore della propriet‡ interval.
      * 
      * @return
      *     possible object is
@@ -84,7 +84,7 @@ public class EventCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† interval.
+     * Imposta il valore della propriet‡ interval.
      * 
      * @param value
      *     allowed object is
@@ -96,7 +96,7 @@ public class EventCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† threshold.
+     * Recupera il valore della propriet‡ threshold.
      * 
      * @return
      *     possible object is
@@ -108,7 +108,7 @@ public class EventCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† threshold.
+     * Imposta il valore della propriet‡ threshold.
      * 
      * @param value
      *     allowed object is

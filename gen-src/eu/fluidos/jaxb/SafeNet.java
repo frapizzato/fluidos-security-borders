@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -106,7 +106,7 @@ public class SafeNet {
     protected Integer safeSurfgambling;
 
     /**
-     * Recupera il valore della propriet√† safeSurfprofanity.
+     * Recupera il valore della propriet‡ safeSurfprofanity.
      * 
      * @return
      *     possible object is
@@ -118,7 +118,7 @@ public class SafeNet {
     }
 
     /**
-     * Imposta il valore della propriet√† safeSurfprofanity.
+     * Imposta il valore della propriet‡ safeSurfprofanity.
      * 
      * @param value
      *     allowed object is
@@ -130,7 +130,7 @@ public class SafeNet {
     }
 
     /**
-     * Recupera il valore della propriet√† safeSurfheterosexualthemes.
+     * Recupera il valore della propriet‡ safeSurfheterosexualthemes.
      * 
      * @return
      *     possible object is
@@ -142,7 +142,7 @@ public class SafeNet {
     }
 
     /**
-     * Imposta il valore della propriet√† safeSurfheterosexualthemes.
+     * Imposta il valore della propriet‡ safeSurfheterosexualthemes.
      * 
      * @param value
      *     allowed object is
@@ -154,7 +154,7 @@ public class SafeNet {
     }
 
     /**
-     * Recupera il valore della propriet√† safeSurfhomosexualthemes.
+     * Recupera il valore della propriet‡ safeSurfhomosexualthemes.
      * 
      * @return
      *     possible object is
@@ -166,7 +166,7 @@ public class SafeNet {
     }
 
     /**
-     * Imposta il valore della propriet√† safeSurfhomosexualthemes.
+     * Imposta il valore della propriet‡ safeSurfhomosexualthemes.
      * 
      * @param value
      *     allowed object is
@@ -178,7 +178,7 @@ public class SafeNet {
     }
 
     /**
-     * Recupera il valore della propriet√† safeSurfviolence.
+     * Recupera il valore della propriet‡ safeSurfviolence.
      * 
      * @return
      *     possible object is
@@ -190,7 +190,7 @@ public class SafeNet {
     }
 
     /**
-     * Imposta il valore della propriet√† safeSurfviolence.
+     * Imposta il valore della propriet‡ safeSurfviolence.
      * 
      * @param value
      *     allowed object is
@@ -202,7 +202,7 @@ public class SafeNet {
     }
 
     /**
-     * Recupera il valore della propriet√† safeSurfdruguse.
+     * Recupera il valore della propriet‡ safeSurfdruguse.
      * 
      * @return
      *     possible object is
@@ -214,7 +214,7 @@ public class SafeNet {
     }
 
     /**
-     * Imposta il valore della propriet√† safeSurfdruguse.
+     * Imposta il valore della propriet‡ safeSurfdruguse.
      * 
      * @param value
      *     allowed object is
@@ -226,7 +226,7 @@ public class SafeNet {
     }
 
     /**
-     * Recupera il valore della propriet√† safeSurfotheradultthemes.
+     * Recupera il valore della propriet‡ safeSurfotheradultthemes.
      * 
      * @return
      *     possible object is
@@ -238,7 +238,7 @@ public class SafeNet {
     }
 
     /**
-     * Imposta il valore della propriet√† safeSurfotheradultthemes.
+     * Imposta il valore della propriet‡ safeSurfotheradultthemes.
      * 
      * @param value
      *     allowed object is
@@ -250,7 +250,7 @@ public class SafeNet {
     }
 
     /**
-     * Recupera il valore della propriet√† safeSurfgambling.
+     * Recupera il valore della propriet‡ safeSurfgambling.
      * 
      * @return
      *     possible object is
@@ -262,7 +262,7 @@ public class SafeNet {
     }
 
     /**
-     * Imposta il valore della propriet√† safeSurfgambling.
+     * Imposta il valore della propriet‡ safeSurfgambling.
      * 
      * @param value
      *     allowed object is

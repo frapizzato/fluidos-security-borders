@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -59,7 +59,7 @@ public class IPsecTechnologyParameter
     protected String remoteEndpoint;
 
     /**
-     * Recupera il valore della propriet√† iPsecProtocol.
+     * Recupera il valore della propriet‡ iPsecProtocol.
      * 
      * @return
      *     possible object is
@@ -71,7 +71,7 @@ public class IPsecTechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† iPsecProtocol.
+     * Imposta il valore della propriet‡ iPsecProtocol.
      * 
      * @param value
      *     allowed object is
@@ -83,7 +83,7 @@ public class IPsecTechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† isTunnel.
+     * Recupera il valore della propriet‡ isTunnel.
      * 
      * @return
      *     possible object is
@@ -95,7 +95,7 @@ public class IPsecTechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† isTunnel.
+     * Imposta il valore della propriet‡ isTunnel.
      * 
      * @param value
      *     allowed object is
@@ -107,7 +107,7 @@ public class IPsecTechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† localEndpoint.
+     * Recupera il valore della propriet‡ localEndpoint.
      * 
      * @return
      *     possible object is
@@ -119,7 +119,7 @@ public class IPsecTechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† localEndpoint.
+     * Imposta il valore della propriet‡ localEndpoint.
      * 
      * @param value
      *     allowed object is
@@ -131,7 +131,7 @@ public class IPsecTechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† remoteEndpoint.
+     * Recupera il valore della propriet‡ remoteEndpoint.
      * 
      * @return
      *     possible object is
@@ -143,7 +143,7 @@ public class IPsecTechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† remoteEndpoint.
+     * Imposta il valore della propriet‡ remoteEndpoint.
      * 
      * @param value
      *     allowed object is

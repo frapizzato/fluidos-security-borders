@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -54,7 +54,7 @@ public class NEST {
     protected Integer threeGpp5GQos;
 
     /**
-     * Recupera il valore della propriet√† availability.
+     * Recupera il valore della propriet‡ availability.
      * 
      * @return
      *     possible object is
@@ -66,7 +66,7 @@ public class NEST {
     }
 
     /**
-     * Imposta il valore della propriet√† availability.
+     * Imposta il valore della propriet‡ availability.
      * 
      * @param value
      *     allowed object is
@@ -78,7 +78,7 @@ public class NEST {
     }
 
     /**
-     * Recupera il valore della propriet√† mmtelSupport.
+     * Recupera il valore della propriet‡ mmtelSupport.
      * 
      * @return
      *     possible object is
@@ -90,7 +90,7 @@ public class NEST {
     }
 
     /**
-     * Imposta il valore della propriet√† mmtelSupport.
+     * Imposta il valore della propriet‡ mmtelSupport.
      * 
      * @param value
      *     allowed object is
@@ -102,7 +102,7 @@ public class NEST {
     }
 
     /**
-     * Recupera il valore della propriet√† sessionAndServiceContinuitySupport.
+     * Recupera il valore della propriet‡ sessionAndServiceContinuitySupport.
      * 
      * @return
      *     possible object is
@@ -114,7 +114,7 @@ public class NEST {
     }
 
     /**
-     * Imposta il valore della propriet√† sessionAndServiceContinuitySupport.
+     * Imposta il valore della propriet‡ sessionAndServiceContinuitySupport.
      * 
      * @param value
      *     allowed object is
@@ -126,7 +126,7 @@ public class NEST {
     }
 
     /**
-     * Recupera il valore della propriet√† threeGpp5GQos.
+     * Recupera il valore della propriet‡ threeGpp5GQos.
      * 
      * @return
      *     possible object is
@@ -138,7 +138,7 @@ public class NEST {
     }
 
     /**
-     * Imposta il valore della propriet√† threeGpp5GQos.
+     * Imposta il valore della propriet‡ threeGpp5GQos.
      * 
      * @param value
      *     allowed object is

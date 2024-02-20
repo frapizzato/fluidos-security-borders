@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -99,7 +99,7 @@ public class PacketFilterCondition {
     protected PacketFilterCondition innerPacket;
 
     /**
-     * Recupera il valore della propriet√† sourceMAC.
+     * Recupera il valore della propriet‡ sourceMAC.
      * 
      * @return
      *     possible object is
@@ -111,7 +111,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† sourceMAC.
+     * Imposta il valore della propriet‡ sourceMAC.
      * 
      * @param value
      *     allowed object is
@@ -123,7 +123,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† destinationMAC.
+     * Recupera il valore della propriet‡ destinationMAC.
      * 
      * @return
      *     possible object is
@@ -135,7 +135,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† destinationMAC.
+     * Imposta il valore della propriet‡ destinationMAC.
      * 
      * @param value
      *     allowed object is
@@ -147,7 +147,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† sourceAddress.
+     * Recupera il valore della propriet‡ sourceAddress.
      * 
      * @return
      *     possible object is
@@ -159,7 +159,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† sourceAddress.
+     * Imposta il valore della propriet‡ sourceAddress.
      * 
      * @param value
      *     allowed object is
@@ -171,7 +171,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† destinationAddress.
+     * Recupera il valore della propriet‡ destinationAddress.
      * 
      * @return
      *     possible object is
@@ -183,7 +183,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† destinationAddress.
+     * Imposta il valore della propriet‡ destinationAddress.
      * 
      * @param value
      *     allowed object is
@@ -195,7 +195,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† sourcePort.
+     * Recupera il valore della propriet‡ sourcePort.
      * 
      * @return
      *     possible object is
@@ -207,7 +207,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† sourcePort.
+     * Imposta il valore della propriet‡ sourcePort.
      * 
      * @param value
      *     allowed object is
@@ -219,7 +219,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† destinationPort.
+     * Recupera il valore della propriet‡ destinationPort.
      * 
      * @return
      *     possible object is
@@ -231,7 +231,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† destinationPort.
+     * Imposta il valore della propriet‡ destinationPort.
      * 
      * @param value
      *     allowed object is
@@ -243,7 +243,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† direction.
+     * Recupera il valore della propriet‡ direction.
      * 
      * @return
      *     possible object is
@@ -255,7 +255,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† direction.
+     * Imposta il valore della propriet‡ direction.
      * 
      * @param value
      *     allowed object is
@@ -267,7 +267,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† size.
+     * Recupera il valore della propriet‡ size.
      * 
      * @return
      *     possible object is
@@ -279,7 +279,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† size.
+     * Imposta il valore della propriet‡ size.
      * 
      * @param value
      *     allowed object is
@@ -291,7 +291,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† interface.
+     * Recupera il valore della propriet‡ interface.
      * 
      * @return
      *     possible object is
@@ -303,7 +303,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† interface.
+     * Imposta il valore della propriet‡ interface.
      * 
      * @param value
      *     allowed object is
@@ -315,7 +315,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† protocolType.
+     * Recupera il valore della propriet‡ protocolType.
      * 
      * @return
      *     possible object is
@@ -327,7 +327,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† protocolType.
+     * Imposta il valore della propriet‡ protocolType.
      * 
      * @param value
      *     allowed object is
@@ -339,7 +339,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† encapsulationType.
+     * Recupera il valore della propriet‡ encapsulationType.
      * 
      * @return
      *     possible object is
@@ -351,7 +351,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† encapsulationType.
+     * Imposta il valore della propriet‡ encapsulationType.
      * 
      * @param value
      *     allowed object is
@@ -363,7 +363,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† encapsulationID.
+     * Recupera il valore della propriet‡ encapsulationID.
      * 
      * @return
      *     possible object is
@@ -375,7 +375,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† encapsulationID.
+     * Imposta il valore della propriet‡ encapsulationID.
      * 
      * @param value
      *     allowed object is
@@ -416,7 +416,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† bidirectional.
+     * Recupera il valore della propriet‡ bidirectional.
      * 
      * @return
      *     possible object is
@@ -428,7 +428,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† bidirectional.
+     * Imposta il valore della propriet‡ bidirectional.
      * 
      * @param value
      *     allowed object is
@@ -440,7 +440,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† encapsulation.
+     * Recupera il valore della propriet‡ encapsulation.
      * 
      * @return
      *     possible object is
@@ -452,7 +452,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† encapsulation.
+     * Imposta il valore della propriet‡ encapsulation.
      * 
      * @param value
      *     allowed object is
@@ -464,7 +464,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† innerPacket.
+     * Recupera il valore della propriet‡ innerPacket.
      * 
      * @return
      *     possible object is
@@ -476,7 +476,7 @@ public class PacketFilterCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† innerPacket.
+     * Imposta il valore della propriet‡ innerPacket.
      * 
      * @param value
      *     allowed object is

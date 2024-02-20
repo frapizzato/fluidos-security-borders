@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -83,7 +83,7 @@ public class IKETechnologyParameter
     protected Boolean mobike;
 
     /**
-     * Recupera il valore della propriet√† phase2PfsGroup.
+     * Recupera il valore della propriet‡ phase2PfsGroup.
      * 
      * @return
      *     possible object is
@@ -95,7 +95,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† phase2PfsGroup.
+     * Imposta il valore della propriet‡ phase2PfsGroup.
      * 
      * @param value
      *     allowed object is
@@ -107,7 +107,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† exchangeMode.
+     * Recupera il valore della propriet‡ exchangeMode.
      * 
      * @return
      *     possible object is
@@ -119,7 +119,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† exchangeMode.
+     * Imposta il valore della propriet‡ exchangeMode.
      * 
      * @param value
      *     allowed object is
@@ -131,7 +131,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† phase1DhGroup.
+     * Recupera il valore della propriet‡ phase1DhGroup.
      * 
      * @return
      *     possible object is
@@ -143,7 +143,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† phase1DhGroup.
+     * Imposta il valore della propriet‡ phase1DhGroup.
      * 
      * @param value
      *     allowed object is
@@ -155,7 +155,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† phase2CompressionAlgorithm.
+     * Recupera il valore della propriet‡ phase2CompressionAlgorithm.
      * 
      * @return
      *     possible object is
@@ -167,7 +167,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† phase2CompressionAlgorithm.
+     * Imposta il valore della propriet‡ phase2CompressionAlgorithm.
      * 
      * @param value
      *     allowed object is
@@ -179,7 +179,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† hashAlgorithm.
+     * Recupera il valore della propriet‡ hashAlgorithm.
      * 
      * @return
      *     possible object is
@@ -191,7 +191,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† hashAlgorithm.
+     * Imposta il valore della propriet‡ hashAlgorithm.
      * 
      * @param value
      *     allowed object is
@@ -203,7 +203,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† esn.
+     * Recupera il valore della propriet‡ esn.
      * 
      * @return
      *     possible object is
@@ -215,7 +215,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† esn.
+     * Imposta il valore della propriet‡ esn.
      * 
      * @param value
      *     allowed object is
@@ -227,7 +227,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† encryptionAlgorithm.
+     * Recupera il valore della propriet‡ encryptionAlgorithm.
      * 
      * @return
      *     possible object is
@@ -239,7 +239,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† encryptionAlgorithm.
+     * Imposta il valore della propriet‡ encryptionAlgorithm.
      * 
      * @param value
      *     allowed object is
@@ -251,7 +251,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† lifetime.
+     * Recupera il valore della propriet‡ lifetime.
      * 
      * @return
      *     possible object is
@@ -263,7 +263,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† lifetime.
+     * Imposta il valore della propriet‡ lifetime.
      * 
      * @param value
      *     allowed object is
@@ -275,7 +275,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† rekeyMargin.
+     * Recupera il valore della propriet‡ rekeyMargin.
      * 
      * @return
      *     possible object is
@@ -287,7 +287,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† rekeyMargin.
+     * Imposta il valore della propriet‡ rekeyMargin.
      * 
      * @param value
      *     allowed object is
@@ -299,7 +299,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† keyringTries.
+     * Recupera il valore della propriet‡ keyringTries.
      * 
      * @return
      *     possible object is
@@ -311,7 +311,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† keyringTries.
+     * Imposta il valore della propriet‡ keyringTries.
      * 
      * @param value
      *     allowed object is
@@ -323,7 +323,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† mobike.
+     * Recupera il valore della propriet‡ mobike.
      * 
      * @return
      *     possible object is
@@ -335,7 +335,7 @@ public class IKETechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† mobike.
+     * Imposta il valore della propriet‡ mobike.
      * 
      * @param value
      *     allowed object is

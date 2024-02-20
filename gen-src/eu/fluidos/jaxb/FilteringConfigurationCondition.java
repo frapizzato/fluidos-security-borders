@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -79,7 +79,7 @@ public class FilteringConfigurationCondition
     protected NetworkSlicingConditionParameters networkSlicingConditionParameters;
 
     /**
-     * Recupera il valore della propriet√† packetFilterCondition.
+     * Recupera il valore della propriet‡ packetFilterCondition.
      * 
      * @return
      *     possible object is
@@ -91,7 +91,7 @@ public class FilteringConfigurationCondition
     }
 
     /**
-     * Imposta il valore della propriet√† packetFilterCondition.
+     * Imposta il valore della propriet‡ packetFilterCondition.
      * 
      * @param value
      *     allowed object is
@@ -103,7 +103,7 @@ public class FilteringConfigurationCondition
     }
 
     /**
-     * Recupera il valore della propriet√† icmpCondition.
+     * Recupera il valore della propriet‡ icmpCondition.
      * 
      * @return
      *     possible object is
@@ -115,7 +115,7 @@ public class FilteringConfigurationCondition
     }
 
     /**
-     * Imposta il valore della propriet√† icmpCondition.
+     * Imposta il valore della propriet‡ icmpCondition.
      * 
      * @param value
      *     allowed object is
@@ -127,7 +127,7 @@ public class FilteringConfigurationCondition
     }
 
     /**
-     * Recupera il valore della propriet√† statefulCondition.
+     * Recupera il valore della propriet‡ statefulCondition.
      * 
      * @return
      *     possible object is
@@ -139,7 +139,7 @@ public class FilteringConfigurationCondition
     }
 
     /**
-     * Imposta il valore della propriet√† statefulCondition.
+     * Imposta il valore della propriet‡ statefulCondition.
      * 
      * @param value
      *     allowed object is
@@ -151,7 +151,7 @@ public class FilteringConfigurationCondition
     }
 
     /**
-     * Recupera il valore della propriet√† timeCondition.
+     * Recupera il valore della propriet‡ timeCondition.
      * 
      * @return
      *     possible object is
@@ -163,7 +163,7 @@ public class FilteringConfigurationCondition
     }
 
     /**
-     * Imposta il valore della propriet√† timeCondition.
+     * Imposta il valore della propriet‡ timeCondition.
      * 
      * @param value
      *     allowed object is
@@ -175,7 +175,7 @@ public class FilteringConfigurationCondition
     }
 
     /**
-     * Recupera il valore della propriet√† applicationLayerCondition.
+     * Recupera il valore della propriet‡ applicationLayerCondition.
      * 
      * @return
      *     possible object is
@@ -187,7 +187,7 @@ public class FilteringConfigurationCondition
     }
 
     /**
-     * Imposta il valore della propriet√† applicationLayerCondition.
+     * Imposta il valore della propriet‡ applicationLayerCondition.
      * 
      * @param value
      *     allowed object is
@@ -199,7 +199,7 @@ public class FilteringConfigurationCondition
     }
 
     /**
-     * Recupera il valore della propriet√† aggregatorParameters.
+     * Recupera il valore della propriet‡ aggregatorParameters.
      * 
      * @return
      *     possible object is
@@ -211,7 +211,7 @@ public class FilteringConfigurationCondition
     }
 
     /**
-     * Imposta il valore della propriet√† aggregatorParameters.
+     * Imposta il valore della propriet‡ aggregatorParameters.
      * 
      * @param value
      *     allowed object is
@@ -223,7 +223,7 @@ public class FilteringConfigurationCondition
     }
 
     /**
-     * Recupera il valore della propriet√† localConnectionParameters.
+     * Recupera il valore della propriet‡ localConnectionParameters.
      * 
      * @return
      *     possible object is
@@ -235,7 +235,7 @@ public class FilteringConfigurationCondition
     }
 
     /**
-     * Imposta il valore della propriet√† localConnectionParameters.
+     * Imposta il valore della propriet‡ localConnectionParameters.
      * 
      * @param value
      *     allowed object is
@@ -247,7 +247,7 @@ public class FilteringConfigurationCondition
     }
 
     /**
-     * Recupera il valore della propriet√† qosCondition.
+     * Recupera il valore della propriet‡ qosCondition.
      * 
      * @return
      *     possible object is
@@ -259,7 +259,7 @@ public class FilteringConfigurationCondition
     }
 
     /**
-     * Imposta il valore della propriet√† qosCondition.
+     * Imposta il valore della propriet‡ qosCondition.
      * 
      * @param value
      *     allowed object is
@@ -271,7 +271,7 @@ public class FilteringConfigurationCondition
     }
 
     /**
-     * Recupera il valore della propriet√† networkSlicingConditionParameters.
+     * Recupera il valore della propriet‡ networkSlicingConditionParameters.
      * 
      * @return
      *     possible object is
@@ -283,7 +283,7 @@ public class FilteringConfigurationCondition
     }
 
     /**
-     * Imposta il valore della propriet√† networkSlicingConditionParameters.
+     * Imposta il valore della propriet‡ networkSlicingConditionParameters.
      * 
      * @param value
      *     allowed object is

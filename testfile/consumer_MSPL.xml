@@ -3,6 +3,53 @@
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="omspl_5b0fd7359a5e40fe92399710c1152ed9"  
  xsi:schemaLocation="http://modeliosoft/xsddesigner/a22bd60b-ee3d-425c-8618-beb6a854051a/ITResource.xsd ../xsd/mspl.xsd">
   <ITResource>
+    <configuration xsi:type="InterVClusterConfiguration">
+      <capability>
+        <Name>KubernetesNetworkFiltering</Name>
+      </capability>
+      <configurationRule>
+        <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+          <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
+        </configurationRuleAction>
+        <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+          <isCNF>false</isCNF>
+          <source xsi:type="PodNamespaceSelector">
+          	<isHostCluster>false</isHostCluster>
+          	<pod>
+          		<key>app</key>
+          		<value>order_placement</value>
+          	</pod>
+          	<namespace>
+          		<key>name</key>
+          		<value>fluidos</value>
+          	</namespace>
+          </source>
+          <sourcePort>*</sourcePort>
+          <destination xsi:type="PodNamespaceSelector">
+          	<isHostCluster>true</isHostCluster>
+          	<pod>
+          		<key>app</key>
+          		<value>product_catalogue</value>
+          	</pod>
+          	<namespace>
+          		<key>name</key>
+          		<value>default</value>
+          	</namespace>
+          </destination>
+          <destinationPort>*</destinationPort>
+          <protocolType>ALL</protocolType>
+        </configurationCondition>
+        <externalData xsi:type="Priority">
+          <value>60000</value>
+        </externalData>
+        <Name>RequestIntent1</Name>
+        <isCNF>false</isCNF>
+      </configurationRule>
+    </configuration>
+  </ITResource>
+  
+  <!-- Now define Private Intents -->
+  <ITResource>
     <configuration xsi:type="IntraVClusterConfiguration">
       <capability>
         <Name>KubernetesNetworkFiltering</Name>
@@ -17,29 +64,27 @@
           	<isHostCluster>false</isHostCluster>
           	<pod>
           		<key>app</key>
-          		<value>front-end</value>
+          		<value>order_placement</value>
           	</pod>
           	<namespace>
-          		<!-- lo seleziono così il namespace default???? -->
           		<key>name</key>
-          		<value>default</value>
+          		<value>fluidos</value>
           	</namespace>
           </source>
-          <sourcePort>80</sourcePort>
+          <sourcePort>*</sourcePort>
           <destination xsi:type="PodNamespaceSelector">
           	<isHostCluster>false</isHostCluster>
           	<pod>
           		<key>app</key>
-          		<value>front-end</value>
+          		<value>bank_payment</value>
           	</pod>
           	<namespace>
-          		<!-- lo seleziono così il namespace default???? -->
           		<key>name</key>
-          		<value>default</value>
+          		<value>fluidos</value>
           	</namespace>
           </destination>
           <destinationPort>*</destinationPort>
-          <protocolType>TCP</protocolType>
+          <protocolType>ALL</protocolType>
         </configurationCondition>
         <externalData xsi:type="Priority">
           <value>60000</value>
@@ -47,7 +92,7 @@
         <Name>PrivateIntent1</Name>
         <isCNF>false</isCNF>
       </configurationRule>
-            <configurationRule>
+      <configurationRule>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
           <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
         </configurationRuleAction>
@@ -57,28 +102,26 @@
           	<isHostCluster>false</isHostCluster>
           	<pod>
           		<key>app</key>
-          		<value>front-end</value>
+          		<value>online_store</value>
           	</pod>
           	<namespace>
-          		<!-- lo seleziono così il namespace default???? -->
           		<key>name</key>
           		<value>default</value>
           	</namespace>
           </source>
-          <sourcePort>80</sourcePort>
+          <sourcePort>*</sourcePort>
           <destination xsi:type="PodNamespaceSelector">
           	<isHostCluster>false</isHostCluster>
           	<pod>
           		<key>app</key>
-          		<value>front-end</value>
+          		<value>help_desk</value>
           	</pod>
           	<namespace>
-          		<!-- lo seleziono così il namespace default???? -->
-          		<key>name</key>
+              <key>name</key>
           		<value>default</value>
           	</namespace>
           </destination>
-          <destinationPort>*</destinationPort>
+          <destinationPort>110</destinationPort>
           <protocolType>TCP</protocolType>
         </configurationCondition>
         <externalData xsi:type="Priority">
@@ -90,178 +133,12 @@
     </configuration>
   </ITResource>
   
-  <!-- Now define Request Intents -->
-    <ITResource>
-    <configuration xsi:type="InterVClusterConfiguration">
-      <capability>
-        <Name>KubernetesNetworkFiltering</Name>
-      </capability>
-      <configurationRule>
-        <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
-          <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
-        </configurationRuleAction>
-        <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
-          <isCNF>false</isCNF>
-          <source xsi:type="PodNamespaceSelector">
-          	<isHostCluster>false</isHostCluster>
-          	<pod>
-          		<key>app</key>
-          		<value>front-end</value>
-          	</pod>
-          	<namespace>
-          		<!-- lo seleziono così il namespace default???? -->
-          		<key>name</key>
-          		<value>default</value>
-          	</namespace>
-          </source>
-          <sourcePort>80</sourcePort>
-          <destination xsi:type="PodNamespaceSelector">
-          	<isHostCluster>false</isHostCluster>
-          	<pod>
-          		<key>app</key>
-          		<value>front-end</value>
-          	</pod>
-          	<namespace>
-          		<!-- lo seleziono così il namespace default???? -->
-          		<key>name</key>
-          		<value>default</value>
-          	</namespace>
-          </destination>
-          <destinationPort>*</destinationPort>
-          <protocolType>TCP</protocolType>
-        </configurationCondition>
-        <externalData xsi:type="Priority">
-          <value>60000</value>
-        </externalData>
-        <Name>RequestIntent1</Name>
-        <isCNF>false</isCNF>
-      </configurationRule>
-            <configurationRule>
-        <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
-          <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
-        </configurationRuleAction>
-        <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
-          <isCNF>false</isCNF>
-          <source xsi:type="PodNamespaceSelector">
-          	<isHostCluster>false</isHostCluster>
-          	<pod>
-          		<key>app</key>
-          		<value>front-end</value>
-          	</pod>
-          	<namespace>
-          		<!-- lo seleziono così il namespace default???? -->
-          		<key>name</key>
-          		<value>default</value>
-          	</namespace>
-          </source>
-          <sourcePort>80</sourcePort>
-          <destination xsi:type="PodNamespaceSelector">
-          	<isHostCluster>false</isHostCluster>
-          	<pod>
-          		<key>app</key>
-          		<value>front-end</value>
-          	</pod>
-          	<namespace>
-          		<!-- lo seleziono così il namespace default???? -->
-          		<key>name</key>
-          		<value>default</value>
-          	</namespace>
-          </destination>
-          <destinationPort>*</destinationPort>
-          <protocolType>TCP</protocolType>
-        </configurationCondition>
-        <externalData xsi:type="Priority">
-          <value>60000</value>
-        </externalData>
-        <Name>RequestIntent2</Name>
-        <isCNF>false</isCNF>
-      </configurationRule>
-    </configuration>
-  </ITResource>
-  
     <!-- Now define Authorization Intents -->
     <ITResource>
     <configuration xsi:type="AuthorizationIntents">
       <capability>
         <Name>KubernetesNetworkFiltering</Name>
       </capability>
-      <forbiddenConnectionList>
-        <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
-          <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
-        </configurationRuleAction>
-        <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
-          <isCNF>false</isCNF>
-          <source xsi:type="PodNamespaceSelector">
-          	<isHostCluster>false</isHostCluster>
-          	<pod>
-          		<key>app</key>
-          		<value>front-end</value>
-          	</pod>
-          	<namespace>
-          		<!-- lo seleziono così il namespace default???? -->
-          		<key>name</key>
-          		<value>default</value>
-          	</namespace>
-          </source>
-          <sourcePort>80</sourcePort>
-          <destination xsi:type="PodNamespaceSelector">
-          	<isHostCluster>false</isHostCluster>
-          	<pod>
-          		<key>app</key>
-          		<value>front-end</value>
-          	</pod>
-          	<namespace>
-          		<!-- lo seleziono così il namespace default???? -->
-          		<key>name</key>
-          		<value>default</value>
-          	</namespace>
-          </destination>
-          <destinationPort>*</destinationPort>
-          <protocolType>TCP</protocolType>
-        </configurationCondition>
-        <externalData xsi:type="Priority">
-          <value>60000</value>
-        </externalData>
-        <Name>AuthorizationDeny1</Name>
-        <isCNF>false</isCNF>
-      </forbiddenConnectionList>
-      <mandatoryConnectionList>
-        <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
-          <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
-        </configurationRuleAction>
-        <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
-          <isCNF>false</isCNF>
-          <source xsi:type="PodNamespaceSelector">
-          	<isHostCluster>false</isHostCluster>
-          	<pod>
-          		<key>app</key>
-          		<value>front-end</value>
-          	</pod>
-          	<namespace>
-          		<!-- lo seleziono così il namespace default???? -->
-          		<key>name</key>
-          		<value>default</value>
-          	</namespace>
-          </source>
-          <sourcePort>80</sourcePort>
-          <destination xsi:type="PodNamespaceSelector">
-          	<isHostCluster>false</isHostCluster>
-          	<pod>
-          		<key>app</key>
-          		<value>front-end</value>
-          	</pod>
-          	<namespace>
-          		<!-- lo seleziono così il namespace default???? -->
-          		<key>name</key>
-          		<value>default</value>
-          	</namespace>
-          </destination>
-          <destinationPort>*</destinationPort>
-          <protocolType>TCP</protocolType>
-        </configurationCondition>
-        <Name>AuthoriztionAllow1</Name>
-        <isCNF>false</isCNF>
-      </mandatoryConnectionList>
     </configuration>
   </ITResource>
 </ITResourceOrchestration>

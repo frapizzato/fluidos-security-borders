@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -55,7 +55,7 @@ public class AuthenticationOption {
     protected AuthenticationParameters authenticationParameters;
 
     /**
-     * Recupera il valore della propriet√† authenticationTarget.
+     * Recupera il valore della propriet‡ authenticationTarget.
      * 
      * @return
      *     possible object is
@@ -67,7 +67,7 @@ public class AuthenticationOption {
     }
 
     /**
-     * Imposta il valore della propriet√† authenticationTarget.
+     * Imposta il valore della propriet‡ authenticationTarget.
      * 
      * @param value
      *     allowed object is
@@ -79,7 +79,7 @@ public class AuthenticationOption {
     }
 
     /**
-     * Recupera il valore della propriet√† authenticationMethod.
+     * Recupera il valore della propriet‡ authenticationMethod.
      * 
      * @return
      *     possible object is
@@ -91,7 +91,7 @@ public class AuthenticationOption {
     }
 
     /**
-     * Imposta il valore della propriet√† authenticationMethod.
+     * Imposta il valore della propriet‡ authenticationMethod.
      * 
      * @param value
      *     allowed object is
@@ -103,7 +103,7 @@ public class AuthenticationOption {
     }
 
     /**
-     * Recupera il valore della propriet√† authenticationMechanism.
+     * Recupera il valore della propriet‡ authenticationMechanism.
      * 
      * @return
      *     possible object is
@@ -115,7 +115,7 @@ public class AuthenticationOption {
     }
 
     /**
-     * Imposta il valore della propriet√† authenticationMechanism.
+     * Imposta il valore della propriet‡ authenticationMechanism.
      * 
      * @param value
      *     allowed object is
@@ -127,7 +127,7 @@ public class AuthenticationOption {
     }
 
     /**
-     * Recupera il valore della propriet√† authenticationParameters.
+     * Recupera il valore della propriet‡ authenticationParameters.
      * 
      * @return
      *     possible object is
@@ -139,7 +139,7 @@ public class AuthenticationOption {
     }
 
     /**
-     * Imposta il valore della propriet√† authenticationParameters.
+     * Imposta il valore della propriet‡ authenticationParameters.
      * 
      * @param value
      *     allowed object is

@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -61,7 +61,7 @@ public class WSSecurityCondition
     protected String headerNameSpace;
 
     /**
-     * Recupera il valore della propriet√† contentVsElement.
+     * Recupera il valore della propriet‡ contentVsElement.
      * 
      */
     public boolean isContentVsElement() {
@@ -69,7 +69,7 @@ public class WSSecurityCondition
     }
 
     /**
-     * Imposta il valore della propriet√† contentVsElement.
+     * Imposta il valore della propriet‡ contentVsElement.
      * 
      */
     public void setContentVsElement(boolean value) {
@@ -77,7 +77,7 @@ public class WSSecurityCondition
     }
 
     /**
-     * Recupera il valore della propriet√† body.
+     * Recupera il valore della propriet‡ body.
      * 
      * @return
      *     possible object is
@@ -89,7 +89,7 @@ public class WSSecurityCondition
     }
 
     /**
-     * Imposta il valore della propriet√† body.
+     * Imposta il valore della propriet‡ body.
      * 
      * @param value
      *     allowed object is
@@ -101,7 +101,7 @@ public class WSSecurityCondition
     }
 
     /**
-     * Recupera il valore della propriet√† attachment.
+     * Recupera il valore della propriet‡ attachment.
      * 
      * @return
      *     possible object is
@@ -113,7 +113,7 @@ public class WSSecurityCondition
     }
 
     /**
-     * Imposta il valore della propriet√† attachment.
+     * Imposta il valore della propriet‡ attachment.
      * 
      * @param value
      *     allowed object is
@@ -125,7 +125,7 @@ public class WSSecurityCondition
     }
 
     /**
-     * Recupera il valore della propriet√† headerLocalName.
+     * Recupera il valore della propriet‡ headerLocalName.
      * 
      * @return
      *     possible object is
@@ -137,7 +137,7 @@ public class WSSecurityCondition
     }
 
     /**
-     * Imposta il valore della propriet√† headerLocalName.
+     * Imposta il valore della propriet‡ headerLocalName.
      * 
      * @param value
      *     allowed object is
@@ -149,7 +149,7 @@ public class WSSecurityCondition
     }
 
     /**
-     * Recupera il valore della propriet√† headerNameSpace.
+     * Recupera il valore della propriet‡ headerNameSpace.
      * 
      * @return
      *     possible object is
@@ -161,7 +161,7 @@ public class WSSecurityCondition
     }
 
     /**
-     * Imposta il valore della propriet√† headerNameSpace.
+     * Imposta il valore della propriet‡ headerNameSpace.
      * 
      * @param value
      *     allowed object is

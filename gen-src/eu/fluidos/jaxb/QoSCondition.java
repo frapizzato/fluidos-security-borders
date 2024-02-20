@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -68,7 +68,7 @@ public class QoSCondition
     protected BigInteger minBandwidth;
 
     /**
-     * Recupera il valore della propriet√† profile.
+     * Recupera il valore della propriet‡ profile.
      * 
      * @return
      *     possible object is
@@ -80,7 +80,7 @@ public class QoSCondition
     }
 
     /**
-     * Imposta il valore della propriet√† profile.
+     * Imposta il valore della propriet‡ profile.
      * 
      * @param value
      *     allowed object is
@@ -92,7 +92,7 @@ public class QoSCondition
     }
 
     /**
-     * Recupera il valore della propriet√† throughput.
+     * Recupera il valore della propriet‡ throughput.
      * 
      * @return
      *     possible object is
@@ -104,7 +104,7 @@ public class QoSCondition
     }
 
     /**
-     * Imposta il valore della propriet√† throughput.
+     * Imposta il valore della propriet‡ throughput.
      * 
      * @param value
      *     allowed object is
@@ -116,7 +116,7 @@ public class QoSCondition
     }
 
     /**
-     * Recupera il valore della propriet√† transitDelay.
+     * Recupera il valore della propriet‡ transitDelay.
      * 
      * @return
      *     possible object is
@@ -128,7 +128,7 @@ public class QoSCondition
     }
 
     /**
-     * Imposta il valore della propriet√† transitDelay.
+     * Imposta il valore della propriet‡ transitDelay.
      * 
      * @param value
      *     allowed object is
@@ -140,7 +140,7 @@ public class QoSCondition
     }
 
     /**
-     * Recupera il valore della propriet√† priority.
+     * Recupera il valore della propriet‡ priority.
      * 
      * @return
      *     possible object is
@@ -152,7 +152,7 @@ public class QoSCondition
     }
 
     /**
-     * Imposta il valore della propriet√† priority.
+     * Imposta il valore della propriet‡ priority.
      * 
      * @param value
      *     allowed object is
@@ -164,7 +164,7 @@ public class QoSCondition
     }
 
     /**
-     * Recupera il valore della propriet√† errorRate.
+     * Recupera il valore della propriet‡ errorRate.
      * 
      * @return
      *     possible object is
@@ -176,7 +176,7 @@ public class QoSCondition
     }
 
     /**
-     * Imposta il valore della propriet√† errorRate.
+     * Imposta il valore della propriet‡ errorRate.
      * 
      * @param value
      *     allowed object is
@@ -188,7 +188,7 @@ public class QoSCondition
     }
 
     /**
-     * Recupera il valore della propriet√† resilence.
+     * Recupera il valore della propriet‡ resilence.
      * 
      * @return
      *     possible object is
@@ -200,7 +200,7 @@ public class QoSCondition
     }
 
     /**
-     * Imposta il valore della propriet√† resilence.
+     * Imposta il valore della propriet‡ resilence.
      * 
      * @param value
      *     allowed object is
@@ -212,7 +212,7 @@ public class QoSCondition
     }
 
     /**
-     * Recupera il valore della propriet√† maxBandwidth.
+     * Recupera il valore della propriet‡ maxBandwidth.
      * 
      * @return
      *     possible object is
@@ -224,7 +224,7 @@ public class QoSCondition
     }
 
     /**
-     * Imposta il valore della propriet√† maxBandwidth.
+     * Imposta il valore della propriet‡ maxBandwidth.
      * 
      * @param value
      *     allowed object is
@@ -236,7 +236,7 @@ public class QoSCondition
     }
 
     /**
-     * Recupera il valore della propriet√† minBandwidth.
+     * Recupera il valore della propriet‡ minBandwidth.
      * 
      * @return
      *     possible object is
@@ -248,7 +248,7 @@ public class QoSCondition
     }
 
     /**
-     * Imposta il valore della propriet√† minBandwidth.
+     * Imposta il valore della propriet‡ minBandwidth.
      * 
      * @param value
      *     allowed object is

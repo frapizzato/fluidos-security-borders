@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -87,7 +87,7 @@ public class AnonymityAction
     }
 
     /**
-     * Recupera il valore della propriet√† anonymityTarget.
+     * Recupera il valore della propriet‡ anonymityTarget.
      * 
      * @return
      *     possible object is
@@ -99,7 +99,7 @@ public class AnonymityAction
     }
 
     /**
-     * Imposta il valore della propriet√† anonymityTarget.
+     * Imposta il valore della propriet‡ anonymityTarget.
      * 
      * @param value
      *     allowed object is
@@ -111,7 +111,7 @@ public class AnonymityAction
     }
 
     /**
-     * Recupera il valore della propriet√† anonymityTechnologyParameters.
+     * Recupera il valore della propriet‡ anonymityTechnologyParameters.
      * 
      * @return
      *     possible object is
@@ -123,7 +123,7 @@ public class AnonymityAction
     }
 
     /**
-     * Imposta il valore della propriet√† anonymityTechnologyParameters.
+     * Imposta il valore della propriet‡ anonymityTechnologyParameters.
      * 
      * @param value
      *     allowed object is

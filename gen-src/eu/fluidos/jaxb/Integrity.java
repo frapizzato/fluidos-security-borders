@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -49,7 +49,7 @@ public class Integrity
     protected Boolean integrityPayload;
 
     /**
-     * Recupera il valore della propriet√† integrityAlgorithm.
+     * Recupera il valore della propriet‡ integrityAlgorithm.
      * 
      * @return
      *     possible object is
@@ -61,7 +61,7 @@ public class Integrity
     }
 
     /**
-     * Imposta il valore della propriet√† integrityAlgorithm.
+     * Imposta il valore della propriet‡ integrityAlgorithm.
      * 
      * @param value
      *     allowed object is
@@ -73,7 +73,7 @@ public class Integrity
     }
 
     /**
-     * Recupera il valore della propriet√† integrityHeader.
+     * Recupera il valore della propriet‡ integrityHeader.
      * 
      * @return
      *     possible object is
@@ -85,7 +85,7 @@ public class Integrity
     }
 
     /**
-     * Imposta il valore della propriet√† integrityHeader.
+     * Imposta il valore della propriet‡ integrityHeader.
      * 
      * @param value
      *     allowed object is
@@ -97,7 +97,7 @@ public class Integrity
     }
 
     /**
-     * Recupera il valore della propriet√† integrityPayload.
+     * Recupera il valore della propriet‡ integrityPayload.
      * 
      * @return
      *     possible object is
@@ -109,7 +109,7 @@ public class Integrity
     }
 
     /**
-     * Imposta il valore della propriet√† integrityPayload.
+     * Imposta il valore della propriet‡ integrityPayload.
      * 
      * @param value
      *     allowed object is

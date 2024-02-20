@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -54,7 +54,7 @@ public class ActionParameters {
     protected AuthenticationParameters authenticationParameters;
 
     /**
-     * Recupera il valore della propriet√† keyExchange.
+     * Recupera il valore della propriet‡ keyExchange.
      * 
      * @return
      *     possible object is
@@ -66,7 +66,7 @@ public class ActionParameters {
     }
 
     /**
-     * Imposta il valore della propriet√† keyExchange.
+     * Imposta il valore della propriet‡ keyExchange.
      * 
      * @param value
      *     allowed object is
@@ -107,7 +107,7 @@ public class ActionParameters {
     }
 
     /**
-     * Recupera il valore della propriet√† additionalNetworkConfigurationParameters.
+     * Recupera il valore della propriet‡ additionalNetworkConfigurationParameters.
      * 
      * @return
      *     possible object is
@@ -119,7 +119,7 @@ public class ActionParameters {
     }
 
     /**
-     * Imposta il valore della propriet√† additionalNetworkConfigurationParameters.
+     * Imposta il valore della propriet‡ additionalNetworkConfigurationParameters.
      * 
      * @param value
      *     allowed object is
@@ -131,7 +131,7 @@ public class ActionParameters {
     }
 
     /**
-     * Recupera il valore della propriet√† authenticationParameters.
+     * Recupera il valore della propriet‡ authenticationParameters.
      * 
      * @return
      *     possible object is
@@ -143,7 +143,7 @@ public class ActionParameters {
     }
 
     /**
-     * Imposta il valore della propriet√† authenticationParameters.
+     * Imposta il valore della propriet‡ authenticationParameters.
      * 
      * @param value
      *     allowed object is

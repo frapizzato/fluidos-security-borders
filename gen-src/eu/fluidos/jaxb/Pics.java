@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -87,7 +87,7 @@ public class Pics {
     protected SafeNet safeNet;
 
     /**
-     * Recupera il valore della propriet√† icra.
+     * Recupera il valore della propriet‡ icra.
      * 
      * @return
      *     possible object is
@@ -99,7 +99,7 @@ public class Pics {
     }
 
     /**
-     * Imposta il valore della propriet√† icra.
+     * Imposta il valore della propriet‡ icra.
      * 
      * @param value
      *     allowed object is
@@ -111,7 +111,7 @@ public class Pics {
     }
 
     /**
-     * Recupera il valore della propriet√† rsac.
+     * Recupera il valore della propriet‡ rsac.
      * 
      * @return
      *     possible object is
@@ -123,7 +123,7 @@ public class Pics {
     }
 
     /**
-     * Imposta il valore della propriet√† rsac.
+     * Imposta il valore della propriet‡ rsac.
      * 
      * @param value
      *     allowed object is
@@ -135,7 +135,7 @@ public class Pics {
     }
 
     /**
-     * Recupera il valore della propriet√† evaluWEB.
+     * Recupera il valore della propriet‡ evaluWEB.
      * 
      */
     public int getEvaluWEB() {
@@ -143,7 +143,7 @@ public class Pics {
     }
 
     /**
-     * Imposta il valore della propriet√† evaluWEB.
+     * Imposta il valore della propriet‡ evaluWEB.
      * 
      */
     public void setEvaluWEB(int value) {
@@ -151,7 +151,7 @@ public class Pics {
     }
 
     /**
-     * Recupera il valore della propriet√† cyberNOTsex.
+     * Recupera il valore della propriet‡ cyberNOTsex.
      * 
      */
     public int getCyberNOTsex() {
@@ -159,7 +159,7 @@ public class Pics {
     }
 
     /**
-     * Imposta il valore della propriet√† cyberNOTsex.
+     * Imposta il valore della propriet‡ cyberNOTsex.
      * 
      */
     public void setCyberNOTsex(int value) {
@@ -167,7 +167,7 @@ public class Pics {
     }
 
     /**
-     * Recupera il valore della propriet√† weburbia.
+     * Recupera il valore della propriet‡ weburbia.
      * 
      */
     public int getWeburbia() {
@@ -175,7 +175,7 @@ public class Pics {
     }
 
     /**
-     * Imposta il valore della propriet√† weburbia.
+     * Imposta il valore della propriet‡ weburbia.
      * 
      */
     public void setWeburbia(int value) {
@@ -183,7 +183,7 @@ public class Pics {
     }
 
     /**
-     * Recupera il valore della propriet√† vancouver.
+     * Recupera il valore della propriet‡ vancouver.
      * 
      * @return
      *     possible object is
@@ -195,7 +195,7 @@ public class Pics {
     }
 
     /**
-     * Imposta il valore della propriet√† vancouver.
+     * Imposta il valore della propriet‡ vancouver.
      * 
      * @param value
      *     allowed object is
@@ -207,7 +207,7 @@ public class Pics {
     }
 
     /**
-     * Recupera il valore della propriet√† safeNet.
+     * Recupera il valore della propriet‡ safeNet.
      * 
      * @return
      *     possible object is
@@ -219,7 +219,7 @@ public class Pics {
     }
 
     /**
-     * Imposta il valore della propriet√† safeNet.
+     * Imposta il valore della propriet‡ safeNet.
      * 
      * @param value
      *     allowed object is

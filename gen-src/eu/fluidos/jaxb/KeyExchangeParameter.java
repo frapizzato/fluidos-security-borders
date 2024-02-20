@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -50,7 +50,7 @@ public class KeyExchangeParameter {
     protected String authenticationType;
 
     /**
-     * Recupera il valore della propriet√† keyExchangeAction.
+     * Recupera il valore della propriet‡ keyExchangeAction.
      * 
      * @return
      *     possible object is
@@ -62,7 +62,7 @@ public class KeyExchangeParameter {
     }
 
     /**
-     * Imposta il valore della propriet√† keyExchangeAction.
+     * Imposta il valore della propriet‡ keyExchangeAction.
      * 
      * @param value
      *     allowed object is
@@ -74,7 +74,7 @@ public class KeyExchangeParameter {
     }
 
     /**
-     * Recupera il valore della propriet√† hashAlgorithm.
+     * Recupera il valore della propriet‡ hashAlgorithm.
      * 
      * @return
      *     possible object is
@@ -86,7 +86,7 @@ public class KeyExchangeParameter {
     }
 
     /**
-     * Imposta il valore della propriet√† hashAlgorithm.
+     * Imposta il valore della propriet‡ hashAlgorithm.
      * 
      * @param value
      *     allowed object is
@@ -98,7 +98,7 @@ public class KeyExchangeParameter {
     }
 
     /**
-     * Recupera il valore della propriet√† symmetricEncryptionAlgorithm.
+     * Recupera il valore della propriet‡ symmetricEncryptionAlgorithm.
      * 
      * @return
      *     possible object is
@@ -110,7 +110,7 @@ public class KeyExchangeParameter {
     }
 
     /**
-     * Imposta il valore della propriet√† symmetricEncryptionAlgorithm.
+     * Imposta il valore della propriet‡ symmetricEncryptionAlgorithm.
      * 
      * @param value
      *     allowed object is
@@ -122,7 +122,7 @@ public class KeyExchangeParameter {
     }
 
     /**
-     * Recupera il valore della propriet√† authenticationType.
+     * Recupera il valore della propriet‡ authenticationType.
      * 
      * @return
      *     possible object is
@@ -134,7 +134,7 @@ public class KeyExchangeParameter {
     }
 
     /**
-     * Imposta il valore della propriet√† authenticationType.
+     * Imposta il valore della propriet‡ authenticationType.
      * 
      * @param value
      *     allowed object is

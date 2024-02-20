@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -72,7 +72,7 @@ public class ITResourceType {
     protected String sliceID;
 
     /**
-     * Recupera il valore della propriet√† configuration.
+     * Recupera il valore della propriet‡ configuration.
      * 
      * @return
      *     possible object is
@@ -84,7 +84,7 @@ public class ITResourceType {
     }
 
     /**
-     * Imposta il valore della propriet√† configuration.
+     * Imposta il valore della propriet‡ configuration.
      * 
      * @param value
      *     allowed object is
@@ -96,7 +96,7 @@ public class ITResourceType {
     }
 
     /**
-     * Recupera il valore della propriet√† priority.
+     * Recupera il valore della propriet‡ priority.
      * 
      * @return
      *     possible object is
@@ -108,7 +108,7 @@ public class ITResourceType {
     }
 
     /**
-     * Imposta il valore della propriet√† priority.
+     * Imposta il valore della propriet‡ priority.
      * 
      * @param value
      *     allowed object is
@@ -120,7 +120,7 @@ public class ITResourceType {
     }
 
     /**
-     * Recupera il valore della propriet√† dependencies.
+     * Recupera il valore della propriet‡ dependencies.
      * 
      * @return
      *     possible object is
@@ -132,7 +132,7 @@ public class ITResourceType {
     }
 
     /**
-     * Imposta il valore della propriet√† dependencies.
+     * Imposta il valore della propriet‡ dependencies.
      * 
      * @param value
      *     allowed object is
@@ -144,7 +144,7 @@ public class ITResourceType {
     }
 
     /**
-     * Recupera il valore della propriet√† enablerCandidates.
+     * Recupera il valore della propriet‡ enablerCandidates.
      * 
      * @return
      *     possible object is
@@ -156,7 +156,7 @@ public class ITResourceType {
     }
 
     /**
-     * Imposta il valore della propriet√† enablerCandidates.
+     * Imposta il valore della propriet‡ enablerCandidates.
      * 
      * @param value
      *     allowed object is
@@ -168,7 +168,7 @@ public class ITResourceType {
     }
 
     /**
-     * Recupera il valore della propriet√† orchestrationRequirements.
+     * Recupera il valore della propriet‡ orchestrationRequirements.
      * 
      * @return
      *     possible object is
@@ -180,7 +180,7 @@ public class ITResourceType {
     }
 
     /**
-     * Imposta il valore della propriet√† orchestrationRequirements.
+     * Imposta il valore della propriet‡ orchestrationRequirements.
      * 
      * @param value
      *     allowed object is
@@ -192,7 +192,7 @@ public class ITResourceType {
     }
 
     /**
-     * Recupera il valore della propriet√† enforcementRequirements.
+     * Recupera il valore della propriet‡ enforcementRequirements.
      * 
      * @return
      *     possible object is
@@ -204,7 +204,7 @@ public class ITResourceType {
     }
 
     /**
-     * Imposta il valore della propriet√† enforcementRequirements.
+     * Imposta il valore della propriet‡ enforcementRequirements.
      * 
      * @param value
      *     allowed object is
@@ -216,7 +216,7 @@ public class ITResourceType {
     }
 
     /**
-     * Recupera il valore della propriet√† id.
+     * Recupera il valore della propriet‡ id.
      * 
      * @return
      *     possible object is
@@ -228,7 +228,7 @@ public class ITResourceType {
     }
 
     /**
-     * Imposta il valore della propriet√† id.
+     * Imposta il valore della propriet‡ id.
      * 
      * @param value
      *     allowed object is
@@ -240,7 +240,7 @@ public class ITResourceType {
     }
 
     /**
-     * Recupera il valore della propriet√† orchestrationID.
+     * Recupera il valore della propriet‡ orchestrationID.
      * 
      * @return
      *     possible object is
@@ -252,7 +252,7 @@ public class ITResourceType {
     }
 
     /**
-     * Imposta il valore della propriet√† orchestrationID.
+     * Imposta il valore della propriet‡ orchestrationID.
      * 
      * @param value
      *     allowed object is
@@ -264,7 +264,7 @@ public class ITResourceType {
     }
 
     /**
-     * Recupera il valore della propriet√† tenantID.
+     * Recupera il valore della propriet‡ tenantID.
      * 
      * @return
      *     possible object is
@@ -276,7 +276,7 @@ public class ITResourceType {
     }
 
     /**
-     * Imposta il valore della propriet√† tenantID.
+     * Imposta il valore della propriet‡ tenantID.
      * 
      * @param value
      *     allowed object is
@@ -288,7 +288,7 @@ public class ITResourceType {
     }
 
     /**
-     * Recupera il valore della propriet√† sliceID.
+     * Recupera il valore della propriet‡ sliceID.
      * 
      * @return
      *     possible object is
@@ -300,7 +300,7 @@ public class ITResourceType {
     }
 
     /**
-     * Imposta il valore della propriet√† sliceID.
+     * Imposta il valore della propriet‡ sliceID.
      * 
      * @param value
      *     allowed object is

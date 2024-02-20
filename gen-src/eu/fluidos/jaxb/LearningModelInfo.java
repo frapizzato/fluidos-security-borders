@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -46,7 +46,7 @@ public class LearningModelInfo
     protected ModelParameters modelParameters;
 
     /**
-     * Recupera il valore della propriet√† learningType.
+     * Recupera il valore della propriet‡ learningType.
      * 
      * @return
      *     possible object is
@@ -58,7 +58,7 @@ public class LearningModelInfo
     }
 
     /**
-     * Imposta il valore della propriet√† learningType.
+     * Imposta il valore della propriet‡ learningType.
      * 
      * @param value
      *     allowed object is
@@ -70,7 +70,7 @@ public class LearningModelInfo
     }
 
     /**
-     * Recupera il valore della propriet√† modelParameters.
+     * Recupera il valore della propriet‡ modelParameters.
      * 
      * @return
      *     possible object is
@@ -82,7 +82,7 @@ public class LearningModelInfo
     }
 
     /**
-     * Imposta il valore della propriet√† modelParameters.
+     * Imposta il valore della propriet‡ modelParameters.
      * 
      * @param value
      *     allowed object is

@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -64,7 +64,7 @@ public class AdditionalParameters
     protected String delta;
 
     /**
-     * Recupera il valore della propriet√† encoderLayers.
+     * Recupera il valore della propriet‡ encoderLayers.
      * 
      * @return
      *     possible object is
@@ -76,7 +76,7 @@ public class AdditionalParameters
     }
 
     /**
-     * Imposta il valore della propriet√† encoderLayers.
+     * Imposta il valore della propriet‡ encoderLayers.
      * 
      * @param value
      *     allowed object is
@@ -88,7 +88,7 @@ public class AdditionalParameters
     }
 
     /**
-     * Recupera il valore della propriet√† decoderLayers.
+     * Recupera il valore della propriet‡ decoderLayers.
      * 
      * @return
      *     possible object is
@@ -100,7 +100,7 @@ public class AdditionalParameters
     }
 
     /**
-     * Imposta il valore della propriet√† decoderLayers.
+     * Imposta il valore della propriet‡ decoderLayers.
      * 
      * @param value
      *     allowed object is
@@ -112,7 +112,7 @@ public class AdditionalParameters
     }
 
     /**
-     * Recupera il valore della propriet√† encoderNeurons.
+     * Recupera il valore della propriet‡ encoderNeurons.
      * 
      * @return
      *     possible object is
@@ -124,7 +124,7 @@ public class AdditionalParameters
     }
 
     /**
-     * Imposta il valore della propriet√† encoderNeurons.
+     * Imposta il valore della propriet‡ encoderNeurons.
      * 
      * @param value
      *     allowed object is
@@ -136,7 +136,7 @@ public class AdditionalParameters
     }
 
     /**
-     * Recupera il valore della propriet√† decoderNeurons.
+     * Recupera il valore della propriet‡ decoderNeurons.
      * 
      * @return
      *     possible object is
@@ -148,7 +148,7 @@ public class AdditionalParameters
     }
 
     /**
-     * Imposta il valore della propriet√† decoderNeurons.
+     * Imposta il valore della propriet‡ decoderNeurons.
      * 
      * @param value
      *     allowed object is
@@ -160,7 +160,7 @@ public class AdditionalParameters
     }
 
     /**
-     * Recupera il valore della propriet√† codeNeurons.
+     * Recupera il valore della propriet‡ codeNeurons.
      * 
      * @return
      *     possible object is
@@ -172,7 +172,7 @@ public class AdditionalParameters
     }
 
     /**
-     * Imposta il valore della propriet√† codeNeurons.
+     * Imposta il valore della propriet‡ codeNeurons.
      * 
      * @param value
      *     allowed object is
@@ -184,7 +184,7 @@ public class AdditionalParameters
     }
 
     /**
-     * Recupera il valore della propriet√† lossFunction.
+     * Recupera il valore della propriet‡ lossFunction.
      * 
      * @return
      *     possible object is
@@ -196,7 +196,7 @@ public class AdditionalParameters
     }
 
     /**
-     * Imposta il valore della propriet√† lossFunction.
+     * Imposta il valore della propriet‡ lossFunction.
      * 
      * @param value
      *     allowed object is
@@ -208,7 +208,7 @@ public class AdditionalParameters
     }
 
     /**
-     * Recupera il valore della propriet√† epsilon.
+     * Recupera il valore della propriet‡ epsilon.
      * 
      * @return
      *     possible object is
@@ -220,7 +220,7 @@ public class AdditionalParameters
     }
 
     /**
-     * Imposta il valore della propriet√† epsilon.
+     * Imposta il valore della propriet‡ epsilon.
      * 
      * @param value
      *     allowed object is
@@ -232,7 +232,7 @@ public class AdditionalParameters
     }
 
     /**
-     * Recupera il valore della propriet√† delta.
+     * Recupera il valore della propriet‡ delta.
      * 
      * @return
      *     possible object is
@@ -244,7 +244,7 @@ public class AdditionalParameters
     }
 
     /**
-     * Imposta il valore della propriet√† delta.
+     * Imposta il valore della propriet‡ delta.
      * 
      * @param value
      *     allowed object is

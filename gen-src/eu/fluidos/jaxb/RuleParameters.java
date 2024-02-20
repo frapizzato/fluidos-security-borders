@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -52,7 +52,7 @@ public class RuleParameters
     protected String name;
 
     /**
-     * Recupera il valore della propriet√† destinationAddress.
+     * Recupera il valore della propriet‡ destinationAddress.
      * 
      * @return
      *     possible object is
@@ -64,7 +64,7 @@ public class RuleParameters
     }
 
     /**
-     * Imposta il valore della propriet√† destinationAddress.
+     * Imposta il valore della propriet‡ destinationAddress.
      * 
      * @param value
      *     allowed object is
@@ -76,7 +76,7 @@ public class RuleParameters
     }
 
     /**
-     * Recupera il valore della propriet√† action.
+     * Recupera il valore della propriet‡ action.
      * 
      * @return
      *     possible object is
@@ -88,7 +88,7 @@ public class RuleParameters
     }
 
     /**
-     * Imposta il valore della propriet√† action.
+     * Imposta il valore della propriet‡ action.
      * 
      * @param value
      *     allowed object is
@@ -100,7 +100,7 @@ public class RuleParameters
     }
 
     /**
-     * Recupera il valore della propriet√† sourceAddress.
+     * Recupera il valore della propriet‡ sourceAddress.
      * 
      * @return
      *     possible object is
@@ -112,7 +112,7 @@ public class RuleParameters
     }
 
     /**
-     * Imposta il valore della propriet√† sourceAddress.
+     * Imposta il valore della propriet‡ sourceAddress.
      * 
      * @param value
      *     allowed object is
@@ -124,7 +124,7 @@ public class RuleParameters
     }
 
     /**
-     * Recupera il valore della propriet√† name.
+     * Recupera il valore della propriet‡ name.
      * 
      * @return
      *     possible object is
@@ -136,7 +136,7 @@ public class RuleParameters
     }
 
     /**
-     * Imposta il valore della propriet√† name.
+     * Imposta il valore della propriet‡ name.
      * 
      * @param value
      *     allowed object is

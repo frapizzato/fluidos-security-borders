@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -57,7 +57,7 @@ public class TrafficMIXERTechnologyParameter
     protected String cryptoBackend;
 
     /**
-     * Recupera il valore della propriet√† gw.
+     * Recupera il valore della propriet‡ gw.
      * 
      * @return
      *     possible object is
@@ -69,7 +69,7 @@ public class TrafficMIXERTechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† gw.
+     * Imposta il valore della propriet‡ gw.
      * 
      * @param value
      *     allowed object is
@@ -81,7 +81,7 @@ public class TrafficMIXERTechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† peerID.
+     * Recupera il valore della propriet‡ peerID.
      * 
      * @return
      *     possible object is
@@ -93,7 +93,7 @@ public class TrafficMIXERTechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† peerID.
+     * Imposta il valore della propriet‡ peerID.
      * 
      * @param value
      *     allowed object is
@@ -105,7 +105,7 @@ public class TrafficMIXERTechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† key.
+     * Recupera il valore della propriet‡ key.
      * 
      * @return
      *     possible object is
@@ -117,7 +117,7 @@ public class TrafficMIXERTechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† key.
+     * Imposta il valore della propriet‡ key.
      * 
      * @param value
      *     allowed object is
@@ -129,7 +129,7 @@ public class TrafficMIXERTechnologyParameter
     }
 
     /**
-     * Recupera il valore della propriet√† cryptoBackend.
+     * Recupera il valore della propriet‡ cryptoBackend.
      * 
      * @return
      *     possible object is
@@ -141,7 +141,7 @@ public class TrafficMIXERTechnologyParameter
     }
 
     /**
-     * Imposta il valore della propriet√† cryptoBackend.
+     * Imposta il valore della propriet‡ cryptoBackend.
      * 
      * @param value
      *     allowed object is

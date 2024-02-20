@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -60,7 +60,7 @@ public class ICRA {
     protected Boolean icrAviolencetofantasy;
 
     /**
-     * Recupera il valore della propriet√† icrAchat.
+     * Recupera il valore della propriet‡ icrAchat.
      * 
      * @return
      *     possible object is
@@ -72,7 +72,7 @@ public class ICRA {
     }
 
     /**
-     * Imposta il valore della propriet√† icrAchat.
+     * Imposta il valore della propriet‡ icrAchat.
      * 
      * @param value
      *     allowed object is
@@ -84,7 +84,7 @@ public class ICRA {
     }
 
     /**
-     * Recupera il valore della propriet√† icrAlanguagesexual.
+     * Recupera il valore della propriet‡ icrAlanguagesexual.
      * 
      * @return
      *     possible object is
@@ -96,7 +96,7 @@ public class ICRA {
     }
 
     /**
-     * Imposta il valore della propriet√† icrAlanguagesexual.
+     * Imposta il valore della propriet‡ icrAlanguagesexual.
      * 
      * @param value
      *     allowed object is
@@ -108,7 +108,7 @@ public class ICRA {
     }
 
     /**
-     * Recupera il valore della propriet√† icrAnuditygraphic.
+     * Recupera il valore della propriet‡ icrAnuditygraphic.
      * 
      * @return
      *     possible object is
@@ -120,7 +120,7 @@ public class ICRA {
     }
 
     /**
-     * Imposta il valore della propriet√† icrAnuditygraphic.
+     * Imposta il valore della propriet‡ icrAnuditygraphic.
      * 
      * @param value
      *     allowed object is
@@ -132,7 +132,7 @@ public class ICRA {
     }
 
     /**
-     * Recupera il valore della propriet√† icrAnuditytopless.
+     * Recupera il valore della propriet‡ icrAnuditytopless.
      * 
      * @return
      *     possible object is
@@ -144,7 +144,7 @@ public class ICRA {
     }
 
     /**
-     * Imposta il valore della propriet√† icrAnuditytopless.
+     * Imposta il valore della propriet‡ icrAnuditytopless.
      * 
      * @param value
      *     allowed object is
@@ -156,7 +156,7 @@ public class ICRA {
     }
 
     /**
-     * Recupera il valore della propriet√† icrAnuditybottoms.
+     * Recupera il valore della propriet‡ icrAnuditybottoms.
      * 
      * @return
      *     possible object is
@@ -168,7 +168,7 @@ public class ICRA {
     }
 
     /**
-     * Imposta il valore della propriet√† icrAnuditybottoms.
+     * Imposta il valore della propriet‡ icrAnuditybottoms.
      * 
      * @param value
      *     allowed object is
@@ -180,7 +180,7 @@ public class ICRA {
     }
 
     /**
-     * Recupera il valore della propriet√† icrAdrugsuse.
+     * Recupera il valore della propriet‡ icrAdrugsuse.
      * 
      * @return
      *     possible object is
@@ -192,7 +192,7 @@ public class ICRA {
     }
 
     /**
-     * Imposta il valore della propriet√† icrAdrugsuse.
+     * Imposta il valore della propriet‡ icrAdrugsuse.
      * 
      * @param value
      *     allowed object is
@@ -204,7 +204,7 @@ public class ICRA {
     }
 
     /**
-     * Recupera il valore della propriet√† icrAdrugsalcohol.
+     * Recupera il valore della propriet‡ icrAdrugsalcohol.
      * 
      * @return
      *     possible object is
@@ -216,7 +216,7 @@ public class ICRA {
     }
 
     /**
-     * Imposta il valore della propriet√† icrAdrugsalcohol.
+     * Imposta il valore della propriet‡ icrAdrugsalcohol.
      * 
      * @param value
      *     allowed object is
@@ -228,7 +228,7 @@ public class ICRA {
     }
 
     /**
-     * Recupera il valore della propriet√† icrAviolencetofantasy.
+     * Recupera il valore della propriet‡ icrAviolencetofantasy.
      * 
      * @return
      *     possible object is
@@ -240,7 +240,7 @@ public class ICRA {
     }
 
     /**
-     * Imposta il valore della propriet√† icrAviolencetofantasy.
+     * Imposta il valore della propriet‡ icrAviolencetofantasy.
      * 
      * @param value
      *     allowed object is

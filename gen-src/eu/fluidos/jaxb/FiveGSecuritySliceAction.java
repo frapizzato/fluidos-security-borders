@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -56,7 +56,7 @@ public class FiveGSecuritySliceAction
     protected NEST nest;
 
     /**
-     * Recupera il valore della propriet√† fiveGSecuritySliceActionType.
+     * Recupera il valore della propriet‡ fiveGSecuritySliceActionType.
      * 
      * @return
      *     possible object is
@@ -68,7 +68,7 @@ public class FiveGSecuritySliceAction
     }
 
     /**
-     * Imposta il valore della propriet√† fiveGSecuritySliceActionType.
+     * Imposta il valore della propriet‡ fiveGSecuritySliceActionType.
      * 
      * @param value
      *     allowed object is
@@ -109,7 +109,7 @@ public class FiveGSecuritySliceAction
     }
 
     /**
-     * Recupera il valore della propriet√† nest.
+     * Recupera il valore della propriet‡ nest.
      * 
      * @return
      *     possible object is
@@ -121,7 +121,7 @@ public class FiveGSecuritySliceAction
     }
 
     /**
-     * Imposta il valore della propriet√† nest.
+     * Imposta il valore della propriet‡ nest.
      * 
      * @param value
      *     allowed object is

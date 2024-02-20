@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -69,7 +69,7 @@ public class HTTPCondition {
     protected String httpStatus;
 
     /**
-     * Recupera il valore della propriet√† httpMetod.
+     * Recupera il valore della propriet‡ httpMetod.
      * 
      * @return
      *     possible object is
@@ -81,7 +81,7 @@ public class HTTPCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† httpMetod.
+     * Imposta il valore della propriet‡ httpMetod.
      * 
      * @param value
      *     allowed object is
@@ -93,7 +93,7 @@ public class HTTPCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† browser.
+     * Recupera il valore della propriet‡ browser.
      * 
      * @return
      *     possible object is
@@ -105,7 +105,7 @@ public class HTTPCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† browser.
+     * Imposta il valore della propriet‡ browser.
      * 
      * @param value
      *     allowed object is
@@ -117,7 +117,7 @@ public class HTTPCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† userCert.
+     * Recupera il valore della propriet‡ userCert.
      * 
      * @return
      *     possible object is
@@ -129,7 +129,7 @@ public class HTTPCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† userCert.
+     * Imposta il valore della propriet‡ userCert.
      * 
      * @param value
      *     allowed object is
@@ -141,7 +141,7 @@ public class HTTPCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† caCert.
+     * Recupera il valore della propriet‡ caCert.
      * 
      * @return
      *     possible object is
@@ -153,7 +153,7 @@ public class HTTPCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† caCert.
+     * Imposta il valore della propriet‡ caCert.
      * 
      * @param value
      *     allowed object is
@@ -165,7 +165,7 @@ public class HTTPCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† requestMimeType.
+     * Recupera il valore della propriet‡ requestMimeType.
      * 
      * @return
      *     possible object is
@@ -177,7 +177,7 @@ public class HTTPCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† requestMimeType.
+     * Imposta il valore della propriet‡ requestMimeType.
      * 
      * @param value
      *     allowed object is
@@ -189,7 +189,7 @@ public class HTTPCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† responseMimeType.
+     * Recupera il valore della propriet‡ responseMimeType.
      * 
      * @return
      *     possible object is
@@ -201,7 +201,7 @@ public class HTTPCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† responseMimeType.
+     * Imposta il valore della propriet‡ responseMimeType.
      * 
      * @param value
      *     allowed object is
@@ -213,7 +213,7 @@ public class HTTPCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† httpRegexHeader.
+     * Recupera il valore della propriet‡ httpRegexHeader.
      * 
      * @return
      *     possible object is
@@ -225,7 +225,7 @@ public class HTTPCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† httpRegexHeader.
+     * Imposta il valore della propriet‡ httpRegexHeader.
      * 
      * @param value
      *     allowed object is
@@ -237,7 +237,7 @@ public class HTTPCondition {
     }
 
     /**
-     * Recupera il valore della propriet√† httpStatus.
+     * Recupera il valore della propriet‡ httpStatus.
      * 
      * @return
      *     possible object is
@@ -249,7 +249,7 @@ public class HTTPCondition {
     }
 
     /**
-     * Imposta il valore della propriet√† httpStatus.
+     * Imposta il valore della propriet‡ httpStatus.
      * 
      * @param value
      *     allowed object is

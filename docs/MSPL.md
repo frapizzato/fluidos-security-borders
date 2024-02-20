@@ -17,7 +17,7 @@ Same characteristics of the previous element. The only difference is that, the `
 
 ## AuthorizationIntents
 This element contains a sequence of two elements, either with cardinality zero or more, that forms two different lists of intents:
-	- `ForbiddenConnectionList` is the element used to define all the connections that should be forbidden if requested from hosted resources (e.g., don't allow any hosted pod to talk with local services, block access to internet). All the rules of this type have DENY action. 
+	- `ForbiddenConnectionList` is the element used to define all the connections that should be forbidden if requested from hosted resources (e.g., don't allow any hosted pod to talk with local services, block access to internet). All the rules of this type have DENY action. NOTE: in this case, the element "*" represents all the offloaded pods (not all the cluster).
 	- `MandatoryConnectionList` is the element used to define some connections that are mandatory and should be accepted by any hosted resources (e.g., allows connection on a specific port for monitoring). All the rules of this type have ALLOW action.
 
 ## KubernetesNetworkFilteringAction

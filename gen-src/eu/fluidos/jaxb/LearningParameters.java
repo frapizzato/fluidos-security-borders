@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -52,7 +52,7 @@ public class LearningParameters
     protected String stepsPerEpoch;
 
     /**
-     * Recupera il valore della propriet√† testSize.
+     * Recupera il valore della propriet‡ testSize.
      * 
      * @return
      *     possible object is
@@ -64,7 +64,7 @@ public class LearningParameters
     }
 
     /**
-     * Imposta il valore della propriet√† testSize.
+     * Imposta il valore della propriet‡ testSize.
      * 
      * @param value
      *     allowed object is
@@ -76,7 +76,7 @@ public class LearningParameters
     }
 
     /**
-     * Recupera il valore della propriet√† localEpochs.
+     * Recupera il valore della propriet‡ localEpochs.
      * 
      * @return
      *     possible object is
@@ -88,7 +88,7 @@ public class LearningParameters
     }
 
     /**
-     * Imposta il valore della propriet√† localEpochs.
+     * Imposta il valore della propriet‡ localEpochs.
      * 
      * @param value
      *     allowed object is
@@ -100,7 +100,7 @@ public class LearningParameters
     }
 
     /**
-     * Recupera il valore della propriet√† batchSize.
+     * Recupera il valore della propriet‡ batchSize.
      * 
      * @return
      *     possible object is
@@ -112,7 +112,7 @@ public class LearningParameters
     }
 
     /**
-     * Imposta il valore della propriet√† batchSize.
+     * Imposta il valore della propriet‡ batchSize.
      * 
      * @param value
      *     allowed object is
@@ -124,7 +124,7 @@ public class LearningParameters
     }
 
     /**
-     * Recupera il valore della propriet√† stepsPerEpoch.
+     * Recupera il valore della propriet‡ stepsPerEpoch.
      * 
      * @return
      *     possible object is
@@ -136,7 +136,7 @@ public class LearningParameters
     }
 
     /**
-     * Imposta il valore della propriet√† stepsPerEpoch.
+     * Imposta il valore della propriet‡ stepsPerEpoch.
      * 
      * @param value
      *     allowed object is

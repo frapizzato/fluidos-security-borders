@@ -1,8 +1,8 @@
 //
-// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.13 alle 07:01:47 PM CET 
+// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.02.18 alle 05:37:56 PM CET 
 //
 
 
@@ -10,6 +10,7 @@ package eu.fluidos.jaxb;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlSchemaType;
 import jakarta.xml.bind.annotation.XmlType;
 
@@ -24,11 +25,11 @@ import jakarta.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://modeliosoft/xsddesigner/a22bd60b-ee3d-425c-8618-beb6a854051a/ITResource.xsd}ConfigurationCondition"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="source" type="{http://modeliosoft/xsddesigner/a22bd60b-ee3d-425c-8618-beb6a854051a/ITResource.xsd}ResourceSelector" minOccurs="0"/&gt;
- *         &lt;element name="sourcePort" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *         &lt;element name="destination" type="{http://modeliosoft/xsddesigner/a22bd60b-ee3d-425c-8618-beb6a854051a/ITResource.xsd}ResourceSelector" minOccurs="0"/&gt;
- *         &lt;element name="destinationPort" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *         &lt;element name="protocolType" type="{http://modeliosoft/xsddesigner/a22bd60b-ee3d-425c-8618-beb6a854051a/ITResource.xsd}ProtocolType" minOccurs="0"/&gt;
+ *         &lt;element name="source" type="{http://modeliosoft/xsddesigner/a22bd60b-ee3d-425c-8618-beb6a854051a/ITResource.xsd}ResourceSelector"/&gt;
+ *         &lt;element name="sourcePort" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="destination" type="{http://modeliosoft/xsddesigner/a22bd60b-ee3d-425c-8618-beb6a854051a/ITResource.xsd}ResourceSelector"/&gt;
+ *         &lt;element name="destinationPort" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="protocolType" type="{http://modeliosoft/xsddesigner/a22bd60b-ee3d-425c-8618-beb6a854051a/ITResource.xsd}ProtocolType"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -49,15 +50,20 @@ public class KubernetesNetworkFilteringCondition
     extends ConfigurationCondition
 {
 
+    @XmlElement(required = true)
     protected ResourceSelector source;
+    @XmlElement(required = true)
     protected String sourcePort;
+    @XmlElement(required = true)
     protected ResourceSelector destination;
+    @XmlElement(required = true)
     protected String destinationPort;
+    @XmlElement(required = true)
     @XmlSchemaType(name = "string")
     protected ProtocolType protocolType;
 
     /**
-     * Recupera il valore della propriet√† source.
+     * Recupera il valore della propriet‡ source.
      * 
      * @return
      *     possible object is
@@ -69,7 +75,7 @@ public class KubernetesNetworkFilteringCondition
     }
 
     /**
-     * Imposta il valore della propriet√† source.
+     * Imposta il valore della propriet‡ source.
      * 
      * @param value
      *     allowed object is
@@ -81,7 +87,7 @@ public class KubernetesNetworkFilteringCondition
     }
 
     /**
-     * Recupera il valore della propriet√† sourcePort.
+     * Recupera il valore della propriet‡ sourcePort.
      * 
      * @return
      *     possible object is
@@ -93,7 +99,7 @@ public class KubernetesNetworkFilteringCondition
     }
 
     /**
-     * Imposta il valore della propriet√† sourcePort.
+     * Imposta il valore della propriet‡ sourcePort.
      * 
      * @param value
      *     allowed object is
@@ -105,7 +111,7 @@ public class KubernetesNetworkFilteringCondition
     }
 
     /**
-     * Recupera il valore della propriet√† destination.
+     * Recupera il valore della propriet‡ destination.
      * 
      * @return
      *     possible object is
@@ -117,7 +123,7 @@ public class KubernetesNetworkFilteringCondition
     }
 
     /**
-     * Imposta il valore della propriet√† destination.
+     * Imposta il valore della propriet‡ destination.
      * 
      * @param value
      *     allowed object is
@@ -129,7 +135,7 @@ public class KubernetesNetworkFilteringCondition
     }
 
     /**
-     * Recupera il valore della propriet√† destinationPort.
+     * Recupera il valore della propriet‡ destinationPort.
      * 
      * @return
      *     possible object is
@@ -141,7 +147,7 @@ public class KubernetesNetworkFilteringCondition
     }
 
     /**
-     * Imposta il valore della propriet√† destinationPort.
+     * Imposta il valore della propriet‡ destinationPort.
      * 
      * @param value
      *     allowed object is
@@ -153,7 +159,7 @@ public class KubernetesNetworkFilteringCondition
     }
 
     /**
-     * Recupera il valore della propriet√† protocolType.
+     * Recupera il valore della propriet‡ protocolType.
      * 
      * @return
      *     possible object is
@@ -165,7 +171,7 @@ public class KubernetesNetworkFilteringCondition
     }
 
     /**
-     * Imposta il valore della propriet√† protocolType.
+     * Imposta il valore della propriet‡ protocolType.
      * 
      * @param value
      *     allowed object is
