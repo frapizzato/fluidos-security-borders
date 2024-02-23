@@ -29,10 +29,10 @@ public class App
         	Schema sc = sf.newSchema(new File("./xsd/mspl.xsd"));
         	u.setSchema(sc);
         	// User requesting the offloading
-        	Object tmp_1 = u.unmarshal(new FileInputStream("./testfile/provider_MSPL.xml"));
+        	Object tmp_1 = u.unmarshal(new FileInputStream("./testfile/provider_MSPL_demo.xml"));
         	ITResourceOrchestrationType intents_1 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_1).getValue();   
         	// User offering some resources
-        	Object tmp_2 = u.unmarshal(new FileInputStream("./testfile/consumer_MSPL.xml"));
+        	Object tmp_2 = u.unmarshal(new FileInputStream("./testfile/consumer_MSPL_demo.xml"));
         	ITResourceOrchestrationType intents_2 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_2).getValue(); 
         	HarmonizationManager res = new HarmonizationManager(intents_1, intents_2);
         	

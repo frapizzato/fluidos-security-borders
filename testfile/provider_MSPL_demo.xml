@@ -2,7 +2,8 @@
 <ITResourceOrchestration xmlns="http://modeliosoft/xsddesigner/a22bd60b-ee3d-425c-8618-beb6a854051a/ITResource.xsd"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="omspl_5b0fd7359a5e40fe92399710c1152ed9"  
  xsi:schemaLocation="http://modeliosoft/xsddesigner/a22bd60b-ee3d-425c-8618-beb6a854051a/ITResource.xsd ../xsd/mspl.xsd">
-  <ITResource>
+  
+ <ITResource>
     <configuration xsi:type="IntraVClusterConfiguration">
       <capability>
         <Name>KubernetesNetworkFiltering</Name>
@@ -18,12 +19,86 @@
     </configuration>
   </ITResource>
   
-  <!-- Now define Authorization Intents -->  
+  <!-- Authorization Intents -->  
   <ITResource>
     <configuration xsi:type="AuthorizationIntents">
       <capability>
         <Name>KubernetesNetworkFiltering</Name>
       </capability>
+      <!-- To specifically block RequestIntent_2 -->
+      <forbiddenConnectionList>
+        <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+          <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
+        </configurationRuleAction>
+        <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+          <isCNF>false</isCNF>
+          <source xsi:type="PodNamespaceSelector">
+          	<isHostCluster>true</isHostCluster>
+          	<pod>
+          		<key>app</key>
+          		<value>bank_payment</value>
+          	</pod>
+          	<namespace>
+          		<key>*</key>
+          		<value>*</value>
+          	</namespace>
+          </source>
+          <sourcePort>*</sourcePort>
+          <destination xsi:type="PodNamespaceSelector">
+          	<isHostCluster>false</isHostCluster>
+          	<pod>
+          		<key>app</key>
+          		<value>product_catalogue</value>
+          	</pod>
+          	<namespace>
+          		<key>name</key>
+          		<value>default</value>
+          	</namespace>
+          </destination>
+          <destinationPort>*</destinationPort>
+          <protocolType>ALL</protocolType>
+        </configurationCondition>
+        <externalData xsi:type="Priority">
+          <value>60000</value>
+        </externalData>
+        <Name>AuthorizationDeny_1</Name>
+        <isCNF>false</isCNF>
+      </forbiddenConnectionList>
+
+      <!-- To blacklist some bad URLs, should affect RequestIntent_3 -->
+      <forbiddenConnectionList>
+        <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+          <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
+        </configurationRuleAction>
+        <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+          <isCNF>false</isCNF>
+          <source xsi:type="PodNamespaceSelector">
+          	<isHostCluster>true</isHostCluster>
+          	<pod>
+          		<key>*</key>
+          		<value>*</value>
+          	</pod>
+          	<namespace>
+          		<key>*</key>
+          		<value>*</value>
+          	</namespace>
+          </source>
+          <sourcePort>*</sourcePort>
+          <destination xsi:type="CIDRSelector">
+          	<isHostCluster>false</isHostCluster>
+          	<addressRange>0.0.0.0/24</addressRange>
+          </destination>
+          <destinationPort>*</destinationPort>
+          <protocolType>ALL</protocolType>
+        </configurationCondition>
+        <externalData xsi:type="Priority">
+          <value>60000</value>
+        </externalData>
+        <Name>AuthorizationDeny_2</Name>
+        <isCNF>false</isCNF>
+      </forbiddenConnectionList>
+      
+      <!-- Four different rules to deny any other connections to "product_catalogue" with port !80 and protocol !TCP-->
       <forbiddenConnectionList>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
           <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
@@ -59,10 +134,10 @@
         <externalData xsi:type="Priority">
           <value>60000</value>
         </externalData>
-        <Name>AuthorizationDeny3</Name>
+        <Name>AuthorizationDeny_3</Name>
         <isCNF>false</isCNF>
       </forbiddenConnectionList>
-            <forbiddenConnectionList>
+      <forbiddenConnectionList>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
           <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
         </configurationRuleAction>
@@ -97,10 +172,9 @@
         <externalData xsi:type="Priority">
           <value>60000</value>
         </externalData>
-        <Name>AuthorizationDeny4</Name>
+        <Name>AuthorizationDeny_4</Name>
         <isCNF>false</isCNF>
       </forbiddenConnectionList>
-      
       <forbiddenConnectionList>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
           <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
@@ -125,10 +199,6 @@
           		<key>app</key>
           		<value>product_catalogue</value>
           	</pod>
-          	<pod>
-          		<key>test</key>
-          		<value>test</value>
-          	</pod>
           	<namespace>
           		<key>name</key>
           		<value>default</value>
@@ -140,10 +210,9 @@
         <externalData xsi:type="Priority">
           <value>60000</value>
         </externalData>
-        <Name>AuthorizationDeny1</Name>
+        <Name>AuthorizationDeny_5</Name>
         <isCNF>false</isCNF>
       </forbiddenConnectionList>
-      
       <forbiddenConnectionList>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
           <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
@@ -179,10 +248,11 @@
         <externalData xsi:type="Priority">
           <value>60000</value>
         </externalData>
-        <Name>AuthorizationDeny2</Name>
+        <Name>AuthorizationDeny_6</Name>
         <isCNF>false</isCNF>
       </forbiddenConnectionList>
       
+      <!-- Now define the Mandatory connections -->
       <mandatoryConnectionList>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
           <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
@@ -215,7 +285,7 @@
           <destinationPort>43</destinationPort>
           <protocolType>TCP</protocolType>
         </configurationCondition>
-        <Name>AuthoriztionAllow1</Name>
+        <Name>AuthoriztionAllow_1</Name>
         <isCNF>false</isCNF>
       </mandatoryConnectionList>
     </configuration>

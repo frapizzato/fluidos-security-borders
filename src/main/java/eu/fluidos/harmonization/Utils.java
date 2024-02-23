@@ -134,7 +134,7 @@ public class Utils {
 			PodNamespaceSelector pns = (PodNamespaceSelector) cond.getSource();
 			System.out.print("Source: [" + pns.getPod().stream()
 					.map(it -> it.getKey() + ":" + it.getValue())
-					.reduce("", (a,b) -> a + " " + b) + " ], ");
+					.reduce("", (a,b) -> a + " " + b) + " - " + pns.getNamespace().get(0).getKey() + ":" + pns.getNamespace().get(0).getValue() + " ], ");
 		} else {
 			CIDRSelector cidr = (CIDRSelector) cond.getSource();
 			System.out.print("Source: [" + cidr.getAddressRange() + "], ");
@@ -144,7 +144,7 @@ public class Utils {
 			PodNamespaceSelector pns = (PodNamespaceSelector) cond.getDestination();
 			System.out.print("Destination: [" + pns.getPod().stream()
 					.map(it -> it.getKey() + ":" + it.getValue())
-					.reduce("", (a,b) -> a + " " + b) + " ], ");
+					.reduce("", (a,b) -> a + " " + b) + " - " + pns.getNamespace().get(0).getKey() + ":" + pns.getNamespace().get(0).getValue() + " ], ");
 		} else {
 			CIDRSelector cidr = (CIDRSelector) cond.getDestination();
 			System.out.print("Destination: [" + cidr.getAddressRange() + "], ");
@@ -157,8 +157,8 @@ public class Utils {
 	 * Function to compute the difference between two different resourceSelectors.
 	 * @param selector1 is the first resourceSelector.
 	 * @param selector2 is the second resourceSelector.
-	 * @param podsByNamespaceAndLabelsConsumer 
-	 * @param podsByNamespaceAndLabelsProvider 
+	 * @param podsByNamespaceAndLabelsConsumer is the hashmap of pods grouped by namespace and labels for the consumer cluster.
+	 * @param podsByNamespaceAndLabelsProvider  is the hashmap of pods grouped by namespace and labels for the provider cluster.
 	 * @return the list of harmonized resourceSelector (selecting the resources that are selected by selector1 and NOT by selector2)
 	 */
 	public static List<ResourceSelector> computeHarmonizedResourceSelector(ResourceSelector selector1, ResourceSelector selector2, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer) {
@@ -176,7 +176,7 @@ public class Utils {
 			isCIDR_2 = true;
 		}
 
-		// If both are CIDRSelectors, then we can compute the difference.
+		// If both are CIDRSelectors, then we can compute the difference in this way.
 		if(isCIDR_1 && isCIDR_2){
 			CIDRSelector cidr1 = (CIDRSelector) selector1;
 			CIDRSelector cidr2 = (CIDRSelector) selector2;
@@ -192,20 +192,40 @@ public class Utils {
 			}
 			return res;
 		} else if(!isCIDR_1 && !isCIDR_2){
+			// If both are PodNamespaceSelectors, then we can compute the difference in this way.
 			PodNamespaceSelector pns1 = (PodNamespaceSelector) selector1;
 			PodNamespaceSelector pns2 = (PodNamespaceSelector) selector2;
-			// Compute the difference between the two PodNamespaceSelectors.
-			if(true) { //TODO: check which HashMapToGive!!
+			/*
+			 * STRONG ASSUMPTION HERE: the first selector is DEFINED BY CONSUMER, and the second selector is DEFINED BY PROVIDER.
+			 */
+			// First, need to check if the two selectors refer to the same cluster.
+			if(pns1.isIsHostCluster() && !pns2.isIsHostCluster()) {
+				// CONSUMER considers the host cluster, the PROVIDER considers the local one. Use the hashmap of the PROVIDER.
 				res.addAll(computeHarmonizedPodNamespaceSelector(pns1, pns2, podsByNamespaceAndLabelsProvider));
+			} else if(!pns1.isIsHostCluster() && pns2.isIsHostCluster()){
+				// CONSUMER considers the local cluster, the PROVIDER considers the remote one. Use the hashmap of the CONSUMER.
+				res.addAll(computeHarmonizedPodNamespaceSelector(pns1, pns2, podsByNamespaceAndLabelsConsumer));
+			} else {
+				// There is not compatibility between the two selectors... they cover different clusters.
+				//System.out.println("Can not compute the difference between two PodNamespaceSelectors that refer to different clusters");
+				return null;
 			}
 		} else {
-			// QUESTION: If one is a CIDRSelector and the other is a PodNamespaceSelector, then we can not compute the difference.
-			System.out.println("Can not compute the difference between a CIDRSelector and a PodNamespaceSelector");
+			// If one is a CIDRSelector and the other is a PodNamespaceSelector, then we can not compute the difference (for the moment...)
+			//System.out.println("Can not compute the difference between a CIDRSelector and a PodNamespaceSelector");
+			return null;
 		}
 		
 		return res;
 	}
-		
+	
+	/**
+	 * Function to compute the difference between two different resourceSelectors.
+	 * @param selector1 is the first resourceSelector.
+	 * @param selector2 is the second resourceSelector.
+	 * @param c is the cluster where the selectors are applied.
+	 * @return the list of harmonized resourceSelector (selecting the resources that are selected by selector1 and NOT by selector2)
+	 */
 	private static List<PodNamespaceSelector> computeHarmonizedPodNamespaceSelector(PodNamespaceSelector pns1, PodNamespaceSelector pns2, HashMap<String, HashMap<String, List<Pod>>> clusterMap) {
 		// Here do something to compare and check overlap between the two sets.
 
@@ -332,8 +352,9 @@ public class Utils {
 							pns.getPod().add(kv_1);
 							KeyValue kv_2 = new KeyValue();
 							kv_2.setKey(s.split(":")[0]);
-							kv_2.setKey(s.split(":")[1]);
+							kv_2.setValue(s.split(":")[1]);
 							pns.getNamespace().add(kv_2);
+							pns.setIsHostCluster(pns1.isIsHostCluster());
 							resSelectors.add(pns);							
 						}
 					}
@@ -344,53 +365,6 @@ public class Utils {
 		return resSelectors;
 	}
 
-	public boolean isPodNamespaceSelectorSubsetOf(PodNamespaceSelector x, PodNamespaceSelector y, Cluster c) {
-		// This can not be a simple string equality check. Needs to verify if both selector identify the same set of resources.
-		
-		// Case 1: y select all cluster resources (all "*" for namespace and pod)
-		if(y.getNamespace().get(0).getKey().equals("*") && y.getPod().get(0).getKey().equals("*")
-				&& y.getNamespace().get(0).getValue().equals("*") && y.getPod().get(0).getValue().equals("*")) {
-			return true;
-		}
-
-		// Case 2: x select all cluster resources AND y select a subset of x
-		if(x.getNamespace().get(0).getKey().equals("*") && x.getPod().get(0).getKey().equals("*")
-				&& x.getNamespace().get(0).getValue().equals("*") && x.getPod().get(0).getValue().equals("*")) {
-			return false;
-		}
-
-		// Case 3: x and y are both subsets of cluster resources, find if resources selected by x are also selected by y
-		ArrayList<Pod> xSelectedPods = new ArrayList<Pod>();
-		ArrayList<Pod> ySelectedPods = new ArrayList<Pod>();
-		for(Pod p: c.getPods()) {
-			// x selects this pod...
-			for(KeyValue kv: x.getNamespace()){
-				if(p.getNamespace().getLabels().containsKey(kv.getKey()) && p.getNamespace().getLabels().get(kv.getKey()).equals(kv.getValue())){
-					// ... if the namespace selector matches...
-					for(KeyValue kv2: x.getPod()){
-						if(p.getLabels().containsKey(kv2.getKey()) && p.getLabels().get(kv2.getKey()).equals(kv2.getValue())){
-								// ... and the pod selector matches, then add it to x's selected pods
-								xSelectedPods.add(p);
-						}
-					}
-				}
-			}
-			// y selects this pod...
-			for(KeyValue kv: y.getNamespace()){
-				if(p.getNamespace().getLabels().containsKey(kv.getKey()) && p.getNamespace().getLabels().get(kv.getKey()).equals(kv.getValue())){
-					// ... if the namespace selector matches...
-					for(KeyValue kv2: y.getPod()){
-						if(p.getLabels().containsKey(kv2.getKey()) && p.getLabels().get(kv2.getKey()).equals(kv2.getValue())){
-								// ... and the pod selector matches, then add it to y's selected pods
-								ySelectedPods.add(p);
-						}
-					}
-				}
-			}
-		}
-		return false;
-	}
-
 	/**
 	 * Function to convert a CIDR string into an array of two integers: the first is the IP address in numeric format, the second is the length of the network prefix.
 	 * @param cidr is the CIDR string to be converted.
@@ -399,6 +373,8 @@ public class Utils {
 	 */
 	private static int[] cidrToIp(String cidr) {
 		// Split the string into two parts, IP address and prefix.
+		if(cidr.equals("*"))
+			cidr = "0.0.0.0/0";
 		String[] parts = cidr.split("/");
 		String ip = parts[0];
 		int prefix = Integer.parseInt(parts[1]);
@@ -439,26 +415,32 @@ public class Utils {
 		int bc2 = ip2[0] | mask2;
 
 		// If range 1 is completely included in range 2, then the difference is empty.
-		if (net1 <= bc2 && net2 >= bc1) {
+		if(Integer.compareUnsigned(net1, bc2) <= 0 && Integer.compareUnsigned(net2, bc1) >= 0) {
+		//if (net1 <= bc2 && net2 >= bc1) {
 			return null;
 		} 
 
 		// Range 1 is partially (or completely) overlapping with range 2.
-		if(net1 <= bc2 && bc1 >= net2) {
-			if(net1 >= net2 && bc1 <= bc2){
+		if(Integer.compareUnsigned(net1, bc2) <= 0 && Integer.compareUnsigned(bc1, net2) >= 0) {
+		//if(net1 <= bc2 && bc1 >= net2) {
+			if(Integer.compareUnsigned(net1, net2) >= 0 && Integer.compareUnsigned(bc1, bc2) <= 0) {
+			//if(net1 >= net2 && bc1 <= bc2){
 				// range 1 is completely included in range 2...
 				return null;
-			} else if(net1 <= net2 && bc1 <= bc2){
+			} else if(Integer.compareUnsigned(net1, net2) <= 0 && Integer.compareUnsigned(bc1, bc2) <= 0) {
+			//} else if(net1 <= net2 && bc1 <= bc2){
 				// range 1 starts before the range 2 and ends inside the range 2...
 				int diff = net2 - net1; 
 				resString += computeTotalSubnetting(net1, net1 + diff);
 				return resString;
-			} else if(net1 >= net2 && bc1 >= bc2){
+			} else if(Integer.compareUnsigned(net1,net2) >= 0 && Integer.compareUnsigned(bc1, bc2) >= 0) {
+			//} else if(net1 >= net2 && bc1 >= bc2){
 				// range 1 starts inside range 2 and ends after range 2...
 				int diff = bc1 - bc2;
-				resString += computeTotalSubnetting(bc2 + 1, bc2 + 1 + diff);
+				resString += computeTotalSubnetting(bc2 + 1, bc2 + diff);
 				return resString;
-			} else if(net1 <= net2 && bc1 >= bc2){
+			} else if(Integer.compareUnsigned(net1, net2) <= 0 && Integer.compareUnsigned(bc1, bc2) >= 0) {
+			//} else if(net1 <= net2 && bc1 >= bc2){
 				// range 2 is completely included in range 1...
 				int diff_1 = net2 - net1;
 				int diff_2 = bc1 - bc2;
@@ -476,17 +458,23 @@ public class Utils {
 	 * Function to compute the subnetting of an IP address range.
 	 * @param startIP is the first IP address of the range.
 	 * @param endIP is the last IP address of the range.
-	 * @return one or multiple subnet addresses (in the form of CIDR strings) that cover the whole range. They are separated by ";".
+	 * @return one or multiple subnet addresses (in the form of CIDR strings) that cover the whole range - ENDS INCLUDED. They are separated by ";".
 	 */
 	private static String computeTotalSubnetting(int startIP, int endIP) {
 		// Compute the total number of IPs in the range.
-		int diff = endIP - startIP;
+		int diff = endIP - startIP + 1;
 		// Compute the largest power of 2 that is smaller than the number of IPs.
 		int prefix = 1;
-		while(prefix <= diff){
+		while(Integer.compareUnsigned(prefix, diff) <= 0 //(prefix <= diff)
+				&& prefix != 0) {  
 			prefix *= 2;
 		}
-		prefix /= 2;
+		if(prefix != 0) {
+			prefix /= 2;
+		} else {
+			// Handle edge case: overflow of the prefix value
+			prefix = 1 << 31;
+		}
 		// Then the prexif is...
 		prefix = 32 - Integer.numberOfTrailingZeros(prefix);
 		// Find valid start address (i.e., the first address that is a valid network address for the computed prefix).
@@ -506,12 +494,12 @@ public class Utils {
 		String netString = octect[0] + "." + octect[1] + "." + octect[2] + "." + octect[3] + "/" + prefix + ";";
 		// Now check if there is still some subnetting to do in the higher range...
 		int bc = net | ~(-1 << (32 - prefix));
-		if((bc+1) < endIP){
+		if(Integer.compareUnsigned(bc, endIP) < 0) { //((bc+1) < endIP)
 			netString += computeTotalSubnetting(bc + 1, endIP);
 		}
 		// ... but also on the lower range (possible if the startIP was changed because not a valid network address)
 		if(net != startIP){
-			netString += computeTotalSubnetting(startIP, net);
+			netString += computeTotalSubnetting(startIP, net-1);
 		}
 		return netString;
 	}
@@ -523,26 +511,41 @@ public class Utils {
 	 * @return true if rs_1 and rs_2 are equal, false otherwise.
 	 */
 	public static boolean compareResourceSelector(ResourceSelector rs_1, ResourceSelector rs_2) {
+		Boolean found;
+
 		if(rs_1.getClass().equals(PodNamespaceSelector.class) && rs_2.getClass().equals(PodNamespaceSelector.class)){
 			PodNamespaceSelector pns_1 = (PodNamespaceSelector) rs_1;
 			PodNamespaceSelector pns_2 = (PodNamespaceSelector) rs_2;
 			if(pns_1.getPod().size() != pns_2.getPod().size() || pns_1.getNamespace().size() != pns_2.getNamespace().size()){
 				return false;
 			}
-			for(int i = 0; i < pns_1.getPod().size(); i++){
-				for(KeyValue kv: pns_1.getPod()){
-					if(!pns_2.getPod().contains(kv)){
-						return false;
+
+			for(KeyValue kv_1: pns_1.getPod()){
+				found = false;
+				for(KeyValue kv_2: pns_2.getPod()){
+					if(kv_1.getKey().equals(kv_2.getKey()) && kv_1.getValue().equals(kv_2.getValue())){
+						found = true;
+						break;
 					}
 				}
-			}
-			for(int i = 0; i < pns_1.getNamespace().size(); i++){
-				for(KeyValue kv: pns_1.getNamespace()){
-					if(!pns_2.getNamespace().contains(kv)){
-						return false;
-					}
+				if(!found){
+					return false;
 				}
 			}
+
+			for(KeyValue kv_1: pns_1.getNamespace()){
+				found = false;
+				for(KeyValue kv_2: pns_2.getNamespace()){
+					if(kv_1.getKey().equals(kv_2.getKey()) && kv_1.getValue().equals(kv_2.getValue())){
+						found = true;
+						break;
+					}
+				}
+				if(!found){
+					return false;
+				}
+			}
+
 			return true;
 		} else if(rs_1.getClass().equals(CIDRSelector.class) && rs_2.getClass().equals(CIDRSelector.class)){
 			CIDRSelector cidr_1 = (CIDRSelector) rs_1;
@@ -551,5 +554,21 @@ public class Utils {
 		} else {
 			return false;
 		}
+	}
+
+	public static boolean compareConfigurationRule(ConfigurationRule cr1, ConfigurationRule cr2) {
+		if(cr1.getName().equals(cr2.getName()) 
+			&& cr1.getConfigurationRuleAction().equals(cr2.getConfigurationRuleAction())){
+			KubernetesNetworkFilteringCondition cr1_cond = (KubernetesNetworkFilteringCondition) cr1.getConfigurationCondition();
+			KubernetesNetworkFilteringCondition cr2_cond = (KubernetesNetworkFilteringCondition) cr2.getConfigurationCondition();
+			if(compareResourceSelector(cr1_cond.getSource(), cr2_cond.getSource())
+				&& compareResourceSelector(cr1_cond.getDestination(), cr2_cond.getDestination())
+				&& cr1_cond.getSourcePort().equals(cr2_cond.getSourcePort())
+				&& cr1_cond.getDestinationPort().equals(cr2_cond.getDestinationPort())
+				&& cr1_cond.getProtocolType().equals(cr2_cond.getProtocolType())){
+				return true;
+			}
+		}
+		return false;
 	}
 }
