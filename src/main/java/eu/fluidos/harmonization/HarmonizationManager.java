@@ -273,7 +273,7 @@ public class HarmonizationManager {
 		
 		// Loop over the forbiddenConnectionList.		
 		for(ConfigurationRule confRule: forbiddenConnectionList) {
-			//System.out.println("Processing " + it.getName() + " vs " + confRule.getName());
+//			System.out.println("Processing " + it.getName() + " vs " + confRule.getName());
 			
 			flag = 0;
 			KubernetesNetworkFilteringCondition tmp = (KubernetesNetworkFilteringCondition) confRule.getConfigurationCondition();
@@ -326,48 +326,48 @@ public class HarmonizationManager {
 				ConfigurationRule res2 = Utils.deepCopyConfigurationRule(res);
 				KubernetesNetworkFilteringCondition resCond2 = (KubernetesNetworkFilteringCondition) res2.getConfigurationCondition();
 				resCond2.setSourcePort(sourcePortList[1]);
-				//resList.addAll(harmonizeForbiddenConnectionIntent(res2, forbiddenConnectionList));
-				harmonizeForbiddenConnectionIntent(res2, forbiddenConnectionList).forEach(x -> {
-					Boolean found = false;
-					for(ConfigurationRule cr: resList) {
-						if(Utils.compareConfigurationRule(cr, x)) {
-							found = true;
-						}
-					}
-					if(!found)
-						resList.add(x);
-				});
+				resList.addAll(harmonizeForbiddenConnectionIntent(res2, forbiddenConnectionList));
+//				harmonizeForbiddenConnectionIntent(res2, forbiddenConnectionList).forEach(x -> {
+//					Boolean found = false;
+//					for(ConfigurationRule cr: resList) {
+//						if(Utils.compareConfigurationRule(cr, x)) {
+//							found = true;
+//						}
+//					}
+//					if(!found)
+//						resList.add(x);
+//				});
 				// ... then modify the local ConfigurationRule with the other range and continue.
 				ConfigurationRule res3 = Utils.deepCopyConfigurationRule(res);
 				KubernetesNetworkFilteringCondition resCond3 = (KubernetesNetworkFilteringCondition) res3.getConfigurationCondition();
 				resCond3.setSourcePort(sourcePortList[0]);
-				//resList.addAll(harmonizeForbiddenConnectionIntent(res3, forbiddenConnectionList));
-				harmonizeForbiddenConnectionIntent(res3, forbiddenConnectionList).forEach(x -> {
-					Boolean found = false;
-					for(ConfigurationRule cr: resList) {
-						if(Utils.compareConfigurationRule(cr, x)) {
-							found = true;
-						}
-					}
-					if(!found)
-						resList.add(x);
-				});
+				resList.addAll(harmonizeForbiddenConnectionIntent(res3, forbiddenConnectionList));
+//				harmonizeForbiddenConnectionIntent(res3, forbiddenConnectionList).forEach(x -> {
+//					Boolean found = false;
+//					for(ConfigurationRule cr: resList) {
+//						if(Utils.compareConfigurationRule(cr, x)) {
+//							found = true;
+//						}
+//					}
+//					if(!found)
+//						resList.add(x);
+//				});
 			} else {
 				// Partial overlap, but no need to break the port range into two.
 				ConfigurationRule res3 = Utils.deepCopyConfigurationRule(res);
 				KubernetesNetworkFilteringCondition resCond3 = (KubernetesNetworkFilteringCondition) res3.getConfigurationCondition();
 				resCond3.setSourcePort(sourcePortList[0]);
-				//resList.addAll(harmonizeForbiddenConnectionIntent(res3, forbiddenConnectionList));
-				harmonizeForbiddenConnectionIntent(res3, forbiddenConnectionList).forEach(x -> {
-					Boolean found = false;
-					for(ConfigurationRule cr: resList) {
-						if(Utils.compareConfigurationRule(cr, x)) {
-							found = true;
-						}
-					}
-					if(!found)
-						resList.add(x);
-				});
+				resList.addAll(harmonizeForbiddenConnectionIntent(res3, forbiddenConnectionList));
+//				harmonizeForbiddenConnectionIntent(res3, forbiddenConnectionList).forEach(x -> {
+//					Boolean found = false;
+//					for(ConfigurationRule cr: resList) {
+//						if(Utils.compareConfigurationRule(cr, x)) {
+//							found = true;
+//						}
+//					}
+//					if(!found)
+//						resList.add(x);
+//				});
 			}
 			// Repeat the process for the destinationPort range.
 			if(destinationPortList[0].isEmpty()){
@@ -376,46 +376,46 @@ public class HarmonizationManager {
 				ConfigurationRule res2 = Utils.deepCopyConfigurationRule(res);
 				KubernetesNetworkFilteringCondition resCond2 = (KubernetesNetworkFilteringCondition) res2.getConfigurationCondition();
 				resCond2.setDestinationPort(destinationPortList[1]);
-				//resList.addAll(harmonizeForbiddenConnectionIntent(res2, forbiddenConnectionList));
-				harmonizeForbiddenConnectionIntent(res2, forbiddenConnectionList).forEach(x -> {
-					Boolean found = false;
-					for(ConfigurationRule cr: resList) {
-						if(Utils.compareConfigurationRule(cr, x)) {
-							found = true;
-						}
-					}
-					if(!found)
-						resList.add(x);
-				});
+				resList.addAll(harmonizeForbiddenConnectionIntent(res2, forbiddenConnectionList));
+//				harmonizeForbiddenConnectionIntent(res2, forbiddenConnectionList).forEach(x -> {
+//					Boolean found = false;
+//					for(ConfigurationRule cr: resList) {
+//						if(Utils.compareConfigurationRule(cr, x)) {
+//							found = true;
+//						}
+//					}
+//					if(!found)
+//						resList.add(x);
+//				});
 				ConfigurationRule res3 = Utils.deepCopyConfigurationRule(res);
 				KubernetesNetworkFilteringCondition resCond3 = (KubernetesNetworkFilteringCondition) res3.getConfigurationCondition();
 				resCond3.setDestinationPort(destinationPortList[0]);
-				//resList.addAll(harmonizeForbiddenConnectionIntent(res3, forbiddenConnectionList));
-				harmonizeForbiddenConnectionIntent(res3, forbiddenConnectionList).forEach(x -> {
-					Boolean found = false;
-					for(ConfigurationRule cr: resList) {
-						if(Utils.compareConfigurationRule(cr, x)) {
-							found = true;
-						}
-					}
-					if(!found)
-						resList.add(x);
-				});
+				resList.addAll(harmonizeForbiddenConnectionIntent(res3, forbiddenConnectionList));
+//				harmonizeForbiddenConnectionIntent(res3, forbiddenConnectionList).forEach(x -> {
+//					Boolean found = false;
+//					for(ConfigurationRule cr: resList) {
+//						if(Utils.compareConfigurationRule(cr, x)) {
+//							found = true;
+//						}
+//					}
+//					if(!found)
+//						resList.add(x);
+//				});
 			} else {
 				ConfigurationRule res3 = Utils.deepCopyConfigurationRule(res);
 				KubernetesNetworkFilteringCondition resCond3 = (KubernetesNetworkFilteringCondition) res3.getConfigurationCondition();
 				resCond3.setDestinationPort(destinationPortList[0]);
-				//resList.addAll(harmonizeForbiddenConnectionIntent(res3, forbiddenConnectionList));
-				harmonizeForbiddenConnectionIntent(res3, forbiddenConnectionList).forEach(x -> {
-					Boolean found = false;
-					for(ConfigurationRule cr: resList) {
-						if(Utils.compareConfigurationRule(cr, x)) {
-							found = true;
-						}
-					}
-					if(!found)
-						resList.add(x);
-				});
+				resList.addAll(harmonizeForbiddenConnectionIntent(res3, forbiddenConnectionList));
+//				harmonizeForbiddenConnectionIntent(res3, forbiddenConnectionList).forEach(x -> {
+//					Boolean found = false;
+//					for(ConfigurationRule cr: resList) {
+//						if(Utils.compareConfigurationRule(cr, x)) {
+//							found = true;
+//						}
+//					}
+//					if(!found)
+//						resList.add(x);
+//				});
 			}
 
 			// Step-2.2: handle the overlap with the protocol type field. Also in this case, it could be that the overlap is partial and the result is a list of protocol types (max size 2 WITH CURRENT VALUES).
@@ -426,46 +426,46 @@ public class HarmonizationManager {
 				ConfigurationRule res1 = Utils.deepCopyConfigurationRule(res);
 				KubernetesNetworkFilteringCondition resCond1 = (KubernetesNetworkFilteringCondition) res1.getConfigurationCondition();
 				resCond1.setProtocolType(ProtocolType.fromValue(protocolList[1]));
-				//resList.addAll(harmonizeForbiddenConnectionIntent(res1, forbiddenConnectionList));
-				harmonizeForbiddenConnectionIntent(res1, forbiddenConnectionList).forEach(x -> {
-					Boolean found = false;
-					for(ConfigurationRule cr: resList) {
-						if(Utils.compareConfigurationRule(cr, x)) {
-							found = true;
-						}
-					}
-					if(!found)
-						resList.add(x);
-				});
+				resList.addAll(harmonizeForbiddenConnectionIntent(res1, forbiddenConnectionList));
+//				harmonizeForbiddenConnectionIntent(res1, forbiddenConnectionList).forEach(x -> {
+//					Boolean found = false;
+//					for(ConfigurationRule cr: resList) {
+//						if(Utils.compareConfigurationRule(cr, x)) {
+//							found = true;
+//						}
+//					}
+//					if(!found)
+//						resList.add(x);
+//				});
 				ConfigurationRule res2 = Utils.deepCopyConfigurationRule(res);
 				KubernetesNetworkFilteringCondition resCond2 = (KubernetesNetworkFilteringCondition) res2.getConfigurationCondition();
 				resCond2.setProtocolType(ProtocolType.fromValue(protocolList[0]));
-				//resList.addAll(harmonizeForbiddenConnectionIntent(res2, forbiddenConnectionList));
-				harmonizeForbiddenConnectionIntent(res2, forbiddenConnectionList).forEach(x -> {
-					Boolean found = false;
-					for(ConfigurationRule cr: resList) {
-						if(Utils.compareConfigurationRule(cr, x)) {
-							found = true;
-						}
-					}
-					if(!found)
-						resList.add(x);
-				});
+				resList.addAll(harmonizeForbiddenConnectionIntent(res2, forbiddenConnectionList));
+//				harmonizeForbiddenConnectionIntent(res2, forbiddenConnectionList).forEach(x -> {
+//					Boolean found = false;
+//					for(ConfigurationRule cr: resList) {
+//						if(Utils.compareConfigurationRule(cr, x)) {
+//							found = true;
+//						}
+//					}
+//					if(!found)
+//						resList.add(x);
+//				});
 			} else {
 				ConfigurationRule res2 = Utils.deepCopyConfigurationRule(res);
 				KubernetesNetworkFilteringCondition resCond2 = (KubernetesNetworkFilteringCondition) res2.getConfigurationCondition();
 				resCond2.setProtocolType(ProtocolType.fromValue(protocolList[0]));
-				//resList.addAll(harmonizeForbiddenConnectionIntent(res2, forbiddenConnectionList));
-				harmonizeForbiddenConnectionIntent(res2, forbiddenConnectionList).forEach(x -> {
-					Boolean found = false;
-					for(ConfigurationRule cr: resList) {
-						if(Utils.compareConfigurationRule(cr, x)) {
-							found = true;
-						}
-					}
-					if(!found)
-						resList.add(x);
-				});
+				resList.addAll(harmonizeForbiddenConnectionIntent(res2, forbiddenConnectionList));
+//				harmonizeForbiddenConnectionIntent(res2, forbiddenConnectionList).forEach(x -> {
+//					Boolean found = false;
+//					for(ConfigurationRule cr: resList) {
+//						if(Utils.compareConfigurationRule(cr, x)) {
+//							found = true;
+//						}
+//					}
+//					if(!found)
+//						resList.add(x);
+//				});
 			}			
 			
 			// Step-2.3: solve possible problems with the source and destination selectors.
@@ -477,17 +477,17 @@ public class HarmonizationManager {
 					ConfigurationRule res1 = Utils.deepCopyConfigurationRule(res);
 					KubernetesNetworkFilteringCondition resCond1 = (KubernetesNetworkFilteringCondition) res1.getConfigurationCondition();
 					resCond1.setSource(rs);
-					//resList.addAll(harmonizeForbiddenConnectionIntent(res1, forbiddenConnectionList));
-					harmonizeForbiddenConnectionIntent(res1, forbiddenConnectionList).forEach(x -> {
-						Boolean found = false;
-						for(ConfigurationRule cr: resList) {
-							if(Utils.compareConfigurationRule(cr, x)) {
-								found = true;
-							}
-						}
-						if(!found)
-							resList.add(x);
-					});
+					resList.addAll(harmonizeForbiddenConnectionIntent(res1, forbiddenConnectionList));
+//					harmonizeForbiddenConnectionIntent(res1, forbiddenConnectionList).forEach(x -> {
+//						Boolean found = false;
+//						for(ConfigurationRule cr: resList) {
+//							if(Utils.compareConfigurationRule(cr, x)) {
+//								found = true;
+//							}
+//						}
+//						if(!found)
+//							resList.add(x);
+//					});
 				}
 			} 
 			if(destination.size() == 0) {
@@ -497,24 +497,27 @@ public class HarmonizationManager {
 					ConfigurationRule res1 = Utils.deepCopyConfigurationRule(res);
 					KubernetesNetworkFilteringCondition resCond1 = (KubernetesNetworkFilteringCondition) res1.getConfigurationCondition();
 					resCond1.setDestination(rs);
-					//resList.addAll(harmonizeForbiddenConnectionIntent(res1, forbiddenConnectionList));
-					harmonizeForbiddenConnectionIntent(res1, forbiddenConnectionList).forEach(x -> {
-						Boolean found = false;
-						for(ConfigurationRule cr: resList) {
-							if(Utils.compareConfigurationRule(cr, x)) {
-								found = true;
-							}
-						}
-						if(!found)
-							resList.add(x);
-					});
+					resList.addAll(harmonizeForbiddenConnectionIntent(res1, forbiddenConnectionList));
+//					harmonizeForbiddenConnectionIntent(res1, forbiddenConnectionList).forEach(x -> {
+//						Boolean found = false;
+//						for(ConfigurationRule cr: resList) {
+//							if(Utils.compareConfigurationRule(cr, x)) {
+//								found = true;
+//							}
+//						}
+//						if(!found)
+//							resList.add(x);
+//					});
 				}
 			}
 
 			// Step-3: if this point is reached, it means it was not possible to harmonize all fields. This means that the res communication is completely included into the list of denied communications! Thus, the current intent is NOT added to the resulting list.
-			if(flag == 5){
-				return resList;
-			}
+//			if(flag == 5){
+//				return resList;
+//			}
+			//In this case, it either had complete overlap with all fields (i.e., the connection is "fully denied") or partial overlap with all the field and the recursive iterations with non-overlapping components have been issued.
+			//In the end, whatever is the specific case, current request should be discarded and stop comparing it versus other rules.
+			return resList;
 		}
 
 		// If all the rules into ForbiddenConnectionList have been processed, add the current intent to the list and return it.
@@ -528,27 +531,6 @@ public class HarmonizationManager {
 		
 	}
 	
-	/**
-	 * This function is used to verify if a connection (expressed through set of pod(s)) is included or not in another defined in the same way.
-	 * @param it is the first connection we want to check
-	 * @param cond is the second connection we want to check
-	 * @return true if x is included in y, false otherwise
-	 */
-	private boolean checkPodOverlap(KubernetesNetworkFilteringCondition it, KubernetesNetworkFilteringCondition cond) {
-		//Selection can be done:
-		// 1) single pod or group of pods in a namespace(s) (i.e., one key+value label for pod and namespace)
-		// 2) all pods within a namespace (i.e., namespace key+value and pod  *+*)
-		// 3) all pods in all namespaces (i.e., namespace *+* and pod *+*)
-		
-		//To check for overlap, select the pods from the cluster data and compare the two sets (?)
-		for(Pod p: provider.getPods()) {
-			//Seleziona i pod in base alle due condizioni!
-
-		}
-
-
-		return false;
-	}
 
 	public ITResourceOrchestrationType getProviderIntents() {
 		return providerIntents;
