@@ -34,13 +34,27 @@
         <version>4.0.3</version>
         <scope>runtime</scope>
     </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+	<dependency>
+    	<groupId>org.apache.logging.log4j</groupId>
+    	<artifactId>log4j-core</artifactId>
+    	<version>2.20.0</version>
+	</dependency>
+	<dependency>
+    	<groupId>org.apache.logging.log4j</groupId>
+    	<artifactId>log4j-api</artifactId>
+    	<version>2.20.0</version>
+	</dependency>
+
 
 
   </dependencies>
   
-  
+    
   <!-- Code to generae Java code starting from XSD schema -->
   <build>
+
 	  <plugins>
 		  <!-- Plugin required to build java classes from XSD using XJC -->
 		  <plugin>
@@ -67,6 +81,37 @@
         		<!-- <forceRegenerate>true</forceRegenerate> -->
 			  </configuration>
 		  </plugin>
+		  
+		  <plugin>
+		  	<groupId>org.apache.maven.plugins</groupId>
+		  	<artifactId>maven-assembly-plugin</artifactId>
+		  	<executions>
+		  		<execution>
+		  			<phase>package</phase>
+		  			<goals>
+		  				<goal>single</goal>
+		  			</goals>
+            		<configuration>
+                		<archive>
+                			<manifest>
+                    			<mainClass>
+                        			eu.fluidos.Main
+                    			</mainClass>
+                			</manifest>
+                		</archive>
+                		<descriptorRefs>
+                    		<descriptorRef>jar-with-dependencies</descriptorRef>
+                		</descriptorRefs>
+            		</configuration>
+	        	</execution>
+    		</executions>
+		</plugin>
 	  </plugins>
   </build>
+  
+  <properties>
+   <maven.compiler.source>1.8</maven.compiler.source>
+   <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+ 
 </project>

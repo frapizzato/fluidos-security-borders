@@ -32,8 +32,8 @@
           <destination xsi:type="PodNamespaceSelector">
           	<isHostCluster>true</isHostCluster>
           	<pod>
-          		<key>*</key>
-          		<value>*</value>
+          		<key>app</key>
+          		<value>product_catalogue</value>
           	</pod>
           	<namespace>
           		<key>name</key>

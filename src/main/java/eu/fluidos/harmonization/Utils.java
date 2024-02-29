@@ -1,7 +1,6 @@
 package eu.fluidos.harmonization;
 
 import eu.fluidos.jaxb.*;
-import eu.fluidos.Cluster;
 import eu.fluidos.Pod;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,9 +96,9 @@ public class Utils {
 	}
 
 	/**
-	 * Function to compute the (set) difference between first and second arguments.
-	 * @param value is the first set.
-	 * @param value2 is the second set.
+	 * Function to compute the (set) difference between two Protocol types.
+	 * @param value is the first set of protocols.
+	 * @param value2 is the second set of protocols.
 	 * @return the resulting of first set MINUS second set.
 	 */
 	public static String[] computeHarmonizedProtocolType(String value, String value2) {
@@ -153,6 +152,36 @@ public class Utils {
 		System.out.print("Protocol Type: [" + cond.getProtocolType() + "]\n");
 	}
 
+	/**
+	 * Function convert a KubernetesNetworkFilteringCondition into a string.
+	 * @param cond is the condition to be printed.
+	 * @return the string representation
+	 */
+	public static String kubernetesNetworkFilteringConditionToString(KubernetesNetworkFilteringCondition cond) {
+		String res = new String();
+		if(cond.getSource().getClass().equals(PodNamespaceSelector.class)){
+			PodNamespaceSelector pns = (PodNamespaceSelector) cond.getSource();
+			res = res + "Source: [" + pns.getPod().stream()
+					.map(it -> it.getKey() + ":" + it.getValue())
+					.reduce("", (a,b) -> a + " " + b) + " - " + pns.getNamespace().get(0).getKey() + ":" + pns.getNamespace().get(0).getValue() + " ], ";
+		} else {
+			CIDRSelector cidr = (CIDRSelector) cond.getSource();
+			res = res + "Source: [" + cidr.getAddressRange() + "], ";
+		}
+		res = res + "Source Port: [" + cond.getSourcePort() + "], ";
+		if(cond.getDestination().getClass().equals(PodNamespaceSelector.class)){
+			PodNamespaceSelector pns = (PodNamespaceSelector) cond.getDestination();
+			res = res + "Destination: [" + pns.getPod().stream()
+					.map(it -> it.getKey() + ":" + it.getValue())
+					.reduce("", (a,b) -> a + " " + b) + " - " + pns.getNamespace().get(0).getKey() + ":" + pns.getNamespace().get(0).getValue() + " ], ";
+		} else {
+			CIDRSelector cidr = (CIDRSelector) cond.getDestination();
+			res = res + "Destination: [" + cidr.getAddressRange() + "], ";
+		}
+		res = res + "Destination Port: [" + cond.getDestinationPort() + "], ";
+		res = res + "Protocol Type: [" + cond.getProtocolType() + "]";
+		return res;
+	}
 	/**
 	 * Function to compute the difference between two different resourceSelectors.
 	 * @param selector1 is the first resourceSelector.
@@ -220,14 +249,13 @@ public class Utils {
 	}
 	
 	/**
-	 * Function to compute the difference between two different resourceSelectors.
-	 * @param selector1 is the first resourceSelector.
-	 * @param selector2 is the second resourceSelector.
+	 * Function to compute the difference between two different PodNamespaceSelector.
+	 * @param selector1 is the first PodNamespaceSelector.
+	 * @param selector2 is the second PodNamespaceSelector.
 	 * @param c is the cluster where the selectors are applied.
-	 * @return the list of harmonized resourceSelector (selecting the resources that are selected by selector1 and NOT by selector2)
+	 * @return the list of harmonized PodNamespaceSelectors (selecting the resources that are selected by selector1 and NOT by selector2)
 	 */
 	private static List<PodNamespaceSelector> computeHarmonizedPodNamespaceSelector(PodNamespaceSelector pns1, PodNamespaceSelector pns2, HashMap<String, HashMap<String, List<Pod>>> clusterMap) {
-		// Here do something to compare and check overlap between the two sets.
 
 		//Case-1: pns2 selects all pods and namespaces, so pns1 - pns2 = 0
 		if(pns2.getNamespace().get(0).getKey().equals("*") && pns2.getPod().get(0).getValue().equals("*")) {
@@ -556,6 +584,12 @@ public class Utils {
 		}
 	}
 
+	/**
+	 * Function to check equality between two different ConfigurationRules.
+	 * @param cr1 is the first ConfigurationRule.
+	 * @param cr2 is the second ConfigurationRule.
+	 * @return true if cr1 and cr2 are equal, false otherwise.
+	 */
 	public static boolean compareConfigurationRule(ConfigurationRule cr1, ConfigurationRule cr2) {
 		if(cr1.getName().equals(cr2.getName()) 
 			&& cr1.getConfigurationRuleAction().equals(cr2.getConfigurationRuleAction())){
@@ -570,5 +604,36 @@ public class Utils {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Function to deepCopy a ConfigurationRule and inverting the source and destination "isHostCluster" flags.
+	 * @param cr is the ConfigurationRule.
+	 * @return the resulting ConfigurationRule.
+	 */
+	public static ConfigurationRule deepCopyConfigurationAndInvertVCluster(ConfigurationRule cr) {
+		ConfigurationRule cr_inverse = deepCopyConfigurationRule(cr);
+		KubernetesNetworkFilteringCondition cr_inverse_cond = (KubernetesNetworkFilteringCondition) cr_inverse.getConfigurationCondition();
+		// Invert the source and destination "isHostCluster" flags.
+		cr_inverse_cond.getSource().setIsHostCluster(!cr_inverse_cond.getSource().isIsHostCluster());
+		cr_inverse_cond.getDestination().setIsHostCluster(!cr_inverse_cond.getDestination().isIsHostCluster());
+
+		/*
+		ConfigurationRule cr_inverse = new ConfigurationRule();
+		cr_inverse.setName(cr.getName()+"_harmonized");
+		cr_inverse.setConfigurationRuleAction(cr.getConfigurationRuleAction());
+		KubernetesNetworkFilteringCondition cr_inverse_cond = new KubernetesNetworkFilteringCondition();
+		KubernetesNetworkFilteringCondition cr_cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
+		cr_inverse_cond.setSource(cr_cond.getSource());
+		cr_inverse_cond.setDestination(cr_cond.getDestination());
+		//Should invert the flag on both source and destination...
+		cr_inverse_cond.getDestination().setIsHostCluster(!cr_cond.getDestination().isIsHostCluster());
+		cr_inverse_cond.getSource().setIsHostCluster(!cr_cond.getSource().isIsHostCluster());
+		cr_inverse_cond.setSourcePort(cr_cond.getSourcePort());
+		cr_inverse_cond.setDestinationPort(cr_cond.getDestinationPort());
+		cr_inverse_cond.setProtocolType(cr_cond.getProtocolType());
+		cr_inverse.setConfigurationCondition(cr_inverse_cond);
+		*/
+		return cr_inverse;
 	}
 }
