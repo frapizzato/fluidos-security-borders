@@ -71,8 +71,8 @@
           <destination xsi:type="PodNamespaceSelector">
           	<isHostCluster>true</isHostCluster>
           	<pod>
-          		<key>app</key>
-          		<value>product_catalogue</value>
+          		<key>*</key>
+          		<value>*</value>
           	</pod>
           	<namespace>
           		<key>name</key>
@@ -118,6 +118,45 @@
           <value>60000</value>
         </externalData>
         <Name>RequestIntent_3</Name>
+        <isCNF>false</isCNF>
+      </configurationRule>
+	<!-- This should partially overlap with mandatory connection: "from ANY (in "monitoring") to app:order_placement, ALL"  -->
+      <configurationRule>
+        <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+          <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
+        </configurationRuleAction>
+        <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+          <isCNF>false</isCNF>
+          <source xsi:type="PodNamespaceSelector">
+          	<isHostCluster>true</isHostCluster>
+          	<pod>
+          		<key>*</key>
+          		<value>*</value>
+          	</pod>
+          	<namespace>
+          		<key>name</key>
+          		<value>monitoring</value>
+          	</namespace>
+          </source>
+          <sourcePort>*</sourcePort>
+          <destination xsi:type="PodNamespaceSelector">
+          	<isHostCluster>false</isHostCluster>
+          	<pod>
+          		<key>app</key>
+          		<value>order_placement</value>
+          	</pod>
+          	<namespace>
+          		<key>name</key>
+          		<value>fluidos</value>
+          	</namespace>
+          </destination>
+          <destinationPort>*</destinationPort>
+          <protocolType>ALL</protocolType>
+        </configurationCondition>
+        <externalData xsi:type="Priority">
+          <value>60000</value>
+        </externalData>
+        <Name>RequestIntent_4</Name>
         <isCNF>false</isCNF>
       </configurationRule>
     </configuration>

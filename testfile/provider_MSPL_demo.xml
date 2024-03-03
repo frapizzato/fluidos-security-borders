@@ -65,7 +65,7 @@
         <Name>KubernetesNetworkFiltering</Name>
       </capability>
       <!-- ForbiddenConnectionList (action = DENY) -->
-      <!-- from "app:bank_payment" to "app:product_catalogue", ALL protocols -->
+      <!-- from "app:bank_payment" to ANY, ALL protocols -->
       <forbiddenConnectionList>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
           <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
@@ -87,12 +87,12 @@
           <destination xsi:type="PodNamespaceSelector">
           	<isHostCluster>false</isHostCluster>
           	<pod>
-          		<key>app</key>
-          		<value>product_catalogue</value>
+          		<key>*</key>
+          		<value>*</value>
           	</pod>
           	<namespace>
-          		<key>name</key>
-          		<value>default</value>
+          		<key>*</key>
+          		<value>*</value>
           	</namespace>
           </destination>
           <destinationPort>*</destinationPort>
@@ -126,7 +126,7 @@
           <sourcePort>*</sourcePort>
           <destination xsi:type="CIDRSelector">
           	<isHostCluster>false</isHostCluster>
-          	<addressRange>0.0.0.0/24</addressRange>
+          	<addressRange>0.0.0.0/4</addressRange>
           </destination>
           <destinationPort>*</destinationPort>
           <protocolType>ALL</protocolType>
@@ -296,7 +296,8 @@
         <isCNF>false</isCNF>
       </forbiddenConnectionList>
 
-      <!-- To clean out the output basically..
+      <!-- To clean out the output basically.. 
+      		from "ANY" to "app:database", ALL -->
       <forbiddenConnectionList>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
           <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
@@ -335,7 +336,6 @@
         <Name>AuthorizationDeny_7</Name>
         <isCNF>false</isCNF>
       </forbiddenConnectionList>
-       -->
       
       <!-- MandatoryConnectionList (action = ALLOW) -->
       <!-- from "app:resource_monitor" to ANY:43, TCP  -->
@@ -349,11 +349,11 @@
           	<isHostCluster>false</isHostCluster>
           	<pod>
           		<key>app</key>
-          		<value>database</value>
+          		<value>resource_monitor</value>
           	</pod>
           	<namespace>
           		<key>name</key>
-          		<value>default</value>
+          		<value>monitoring</value>
           	</namespace>
           </source>
           <sourcePort>*</sourcePort>
@@ -364,14 +364,14 @@
           		<value>*</value>
           	</pod>
           	<namespace>
-          		<key>*</key>
-          		<value>*</value>
+          		<key>name</key>
+          		<value>fluidos</value>
           	</namespace>
           </destination>
           <destinationPort>43</destinationPort>
           <protocolType>TCP</protocolType>
         </configurationCondition>
-        <Name>AuthoriztionAllow_1</Name>
+        <Name>AuthorizationMandatory_1</Name>
         <isCNF>false</isCNF>
       </mandatoryConnectionList>
     </configuration>

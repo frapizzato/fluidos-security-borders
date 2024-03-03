@@ -3,6 +3,7 @@ package eu.fluidos;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.StringWriter;
+import java.util.Scanner;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,11 +35,11 @@ public class Main
     public static void main( String[] args )
     {    	
     	String arg_1 = "./testfile/provider_MSPL_demo.xml";
-    	String arg_2 = "./testfile/consumer_MSPL_demo_2.xml";
+    	String arg_2 = "./testfile/consumer_MSPL_demo.xml";
     	
     	System.out.println(ANSI_PURPLE + "-".repeat(150)+ ANSI_RESET);
     	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_YELLOW + "   Harmonization Module" + ANSI_RESET + " has the scope of detecting and correcting all the discordances between consumer and provider intents.");
-    	System.out.println("\t\tThe required inputs are:\n\t\t\t\t(1) inter-VCluster intents of the CONSUMER\n\t\t\t\t(2) Authorization intents of the PROVIDER\n\t\t\t\t(3) information about the offloaded resources.");
+    	System.out.println("\t\tThe required inputs are:\n\t\t\t\t(1) Request Intents of the CONSUMER\n\t\t\t\t(2) Authorization intents of the PROVIDER\n\t\t\t\t(3) information about the cluster resources.");
     	System.out.println("\t\tThe output will be the harmonized sets of intents, free of all discordances.");
     	System.out.println(ANSI_PURPLE + "-".repeat(150)+ ANSI_RESET);
     	// To convert XML files into Java objects
@@ -64,17 +65,23 @@ public class Main
         	HarmonizationManager res = new HarmonizationManager(intents_1, intents_2);
         	
         	//Here output the "Harmonized" set of intents
-        	
+        	Scanner scan = new Scanner(System.in);
         	Marshaller m = jc.createMarshaller();
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 			m.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "./xsd/mspl.xsd");
 			QName qName = new QName("eu.fluidos.jaxb.ITResourceOrchestrationType", "ITResourceOrchestrationType");
 			JAXBElement<ITResourceOrchestrationType> root = new JAXBElement<>(qName, ITResourceOrchestrationType.class, res.getConsumerIntents());
-			loggerInfo.info("----------------------OUTPUT----------------------");
+	    	System.out.println(ANSI_PURPLE + "-".repeat(150)+ ANSI_RESET);
+	    	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_RESET + "Press ENTER to output Consumer MSPL schema...");
+			scan.nextLine();
+			loggerInfo.info("----------------------Consumer MSPL OUTPUT----------------------");
 			StringWriter stringWriter = new StringWriter();
 			m.marshal(root, stringWriter);
 			loggerInfo.info(stringWriter.toString());
 			loggerInfo.info("--------------------------------------------------");
+	    	System.out.println(ANSI_PURPLE + "-".repeat(150)+ ANSI_RESET);
+	    	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_RESET + "Press ENTER to output Producer MSPL schema...");
+			scan.nextLine();
 			root = new JAXBElement<>(qName, ITResourceOrchestrationType.class, res.getProviderIntents());
 			loggerInfo.info("----------------------OUTPUT----------------------");
 			StringWriter stringWriter_2 = new StringWriter();

@@ -247,6 +247,63 @@ public class Utils {
 		
 		return res;
 	}
+
+	public static List<ResourceSelector> computeHarmonizedResourceSelector_provider(ResourceSelector selector1, ResourceSelector selector2, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer) {
+		Boolean isCIDR_1 = false, isCIDR_2 = false;
+		List<ResourceSelector> res = new ArrayList<ResourceSelector>();
+
+		if(selector1.getClass().equals(PodNamespaceSelector.class)){
+			isCIDR_1 = false;
+		} else {
+			isCIDR_1 = true;
+		}
+		if(selector2.getClass().equals(PodNamespaceSelector.class)){
+			isCIDR_2 = false;
+		} else {
+			isCIDR_2 = true;
+		}
+
+		// If both are CIDRSelectors, then we can compute the difference in this way.
+		if(isCIDR_1 && isCIDR_2){
+			CIDRSelector cidr1 = (CIDRSelector) selector1;
+			CIDRSelector cidr2 = (CIDRSelector) selector2;
+			String resCIDRHarmonization = cidrDifference(cidr1.getAddressRange(), cidr2.getAddressRange());
+			if(resCIDRHarmonization == null) {
+				return res;				
+			}
+			// Convert the resulting CIDR strings into CIDRSelectors.
+			for(String s: resCIDRHarmonization.split(";")){
+				CIDRSelector tmp = new CIDRSelector();
+				tmp.setAddressRange(s);
+				res.add(tmp);
+			}
+			return res;
+		} else if(!isCIDR_1 && !isCIDR_2){
+			// If both are PodNamespaceSelectors, then we can compute the difference in this way.
+			PodNamespaceSelector pns1 = (PodNamespaceSelector) selector1;
+			PodNamespaceSelector pns2 = (PodNamespaceSelector) selector2;
+			/*
+			 * STRONG ASSUMPTION HERE: the first selector is DEFINED BY PROVIDER, and the second selector is DEFINED BY CONSUMER.
+			 */
+			// First, need to check if the two selectors refer to the same cluster.
+			if(pns1.isIsHostCluster() && !pns2.isIsHostCluster()) {
+				res.addAll(computeHarmonizedPodNamespaceSelector(pns1, pns2, podsByNamespaceAndLabelsProvider));
+			} else if(!pns1.isIsHostCluster() && pns2.isIsHostCluster()){
+				res.addAll(computeHarmonizedPodNamespaceSelector(pns1, pns2, podsByNamespaceAndLabelsConsumer));
+			} else {
+				// There is not compatibility between the two selectors... they cover different clusters.
+				//System.out.println("Can not compute the difference between two PodNamespaceSelectors that refer to different clusters");
+				return null;
+			}
+		} else {
+			// If one is a CIDRSelector and the other is a PodNamespaceSelector, then we can not compute the difference (for the moment...)
+			//System.out.println("Can not compute the difference between a CIDRSelector and a PodNamespaceSelector");
+			return null;
+		}
+		
+		return res;
+	}
+
 	
 	/**
 	 * Function to compute the difference between two different PodNamespaceSelector.
@@ -613,6 +670,7 @@ public class Utils {
 	 */
 	public static ConfigurationRule deepCopyConfigurationAndInvertVCluster(ConfigurationRule cr) {
 		ConfigurationRule cr_inverse = deepCopyConfigurationRule(cr);
+		
 		KubernetesNetworkFilteringCondition cr_inverse_cond = (KubernetesNetworkFilteringCondition) cr_inverse.getConfigurationCondition();
 		// Invert the source and destination "isHostCluster" flags.
 		cr_inverse_cond.getSource().setIsHostCluster(!cr_inverse_cond.getSource().isIsHostCluster());
