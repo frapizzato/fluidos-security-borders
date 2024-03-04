@@ -72,22 +72,20 @@ public class Main
 			QName qName = new QName("eu.fluidos.jaxb.ITResourceOrchestrationType", "ITResourceOrchestrationType");
 			JAXBElement<ITResourceOrchestrationType> root = new JAXBElement<>(qName, ITResourceOrchestrationType.class, res.getConsumerIntents());
 	    	System.out.println(ANSI_PURPLE + "-".repeat(150)+ ANSI_RESET);
-	    	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_RESET + "Press ENTER to output Consumer MSPL schema...");
+	    	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_RESET + "Press ENTER to output " + ANSI_YELLOW + "Consumer" + ANSI_RESET + " MSPL schema...");
 			scan.nextLine();
-			loggerInfo.info("----------------------Consumer MSPL OUTPUT----------------------");
+			loggerInfo.info("[harmonization] Consumer MSPL OUTPUT");
 			StringWriter stringWriter = new StringWriter();
 			m.marshal(root, stringWriter);
-			loggerInfo.info(stringWriter.toString());
-			loggerInfo.info("--------------------------------------------------");
+			loggerInfo.info("\n" + stringWriter.toString());
 	    	System.out.println(ANSI_PURPLE + "-".repeat(150)+ ANSI_RESET);
-	    	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_RESET + "Press ENTER to output Producer MSPL schema...");
+	    	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_RESET + "Press ENTER to output " + ANSI_YELLOW + "Provider" + ANSI_RESET + " MSPL schema...");
 			scan.nextLine();
 			root = new JAXBElement<>(qName, ITResourceOrchestrationType.class, res.getProviderIntents());
-			loggerInfo.info("----------------------OUTPUT----------------------");
+			loggerInfo.info(" [harmonization] Provider MSPL OUTPUT");
 			StringWriter stringWriter_2 = new StringWriter();
 			m.marshal(root, stringWriter_2);
-			loggerInfo.info(stringWriter_2.toString());
-			loggerInfo.info("--------------------------------------------------");
+			loggerInfo.info("\n" + stringWriter_2.toString());
 
 
         	

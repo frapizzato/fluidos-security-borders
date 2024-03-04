@@ -10,7 +10,7 @@
         <Name>KubernetesNetworkFiltering</Name>
       </capability>
 
-      <!-- This should be partially approved, just with a different set of ports and protocols -->
+      <!-- from "app:order_placement" to "app:product_catalogue", ALL  -->
       <configurationRule>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
           <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
@@ -49,7 +49,8 @@
         <Name>RequestIntent_1</Name>
         <isCNF>false</isCNF>
       </configurationRule>
-      <!-- This should be denied -->
+      
+      <!-- from "app:bank_payment" to ANY, ALL -->
       <configurationRule>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
           <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
@@ -88,7 +89,8 @@
         <Name>RequestIntent_2</Name>
         <isCNF>false</isCNF>
       </configurationRule>
-      <!-- This should be partially approved (i.e., some address should be blocked out) -->
+      
+      <!-- from "app:bank_payment" to 0.0.0.0/0, ALL -->
       <configurationRule>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
           <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
@@ -120,7 +122,8 @@
         <Name>RequestIntent_3</Name>
         <isCNF>false</isCNF>
       </configurationRule>
-	<!-- This should partially overlap with mandatory connection: "from ANY (in "monitoring") to app:order_placement, ALL"  -->
+      
+	  <!-- from ANY ("monitoring") to "app:order_placement", ALL  -->
       <configurationRule>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
           <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>

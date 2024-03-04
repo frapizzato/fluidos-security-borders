@@ -17,6 +17,7 @@
       <capability>
         <Name>KubernetesNetworkFiltering</Name>
       </capability>
+      <!-- from ANY to "app:product_catalogue", TCP:80 -->
       <configurationRule>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
           <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
@@ -296,8 +297,7 @@
         <isCNF>false</isCNF>
       </forbiddenConnectionList>
 
-      <!-- To clean out the output basically.. 
-      		from "ANY" to "app:database", ALL -->
+      <!-- from "ANY" to "app:database", ALL -->
       <forbiddenConnectionList>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
           <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>

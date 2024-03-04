@@ -88,6 +88,14 @@ public class HarmonizationManager {
 		}
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(150)+ Main.ANSI_RESET);
 		
+		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET +"Local cluster defined the following " + Main.ANSI_YELLOW + "Request intents" + Main.ANSI_RESET + " (PROVIDER):");
+		for(ConfigurationRule cr: this.interVClusterProvider.getConfigurationRule()) {
+			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
+			System.out.print("\t\t (*) " + cr.getName() + " - ");
+			Utils.printKubernetesNetworkFilteringCondition(cond);
+		}
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(150)+ Main.ANSI_RESET);
+		
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET +"Local cluster defined the following " + Main.ANSI_YELLOW + "Authorization Intents" + Main.ANSI_RESET +" (PROVIDER):");
 		System.out.print("\t\t|\n");
 		System.out.print("\t\t.-> " + Main.ANSI_YELLOW + "ForbiddenConnectionList"+ Main.ANSI_RESET + ":\n");
@@ -371,7 +379,8 @@ public class HarmonizationManager {
 		 *  The final harmonized set is: private(hostingVC) + (requested - private(hostingVC)).
 		 */
 		for(ConfigurationRule cr_cons: harmonizedRequestConsumerRules) {
-			List<ConfigurationRule> tmp = harmonizeForbiddenConnectionIntent(cr_cons, harmonizedRules);
+			ConfigurationRule cr_inverted = Utils.deepCopyConfigurationRule(cr_cons);
+			List<ConfigurationRule> tmp = harmonizeForbiddenConnectionIntent(cr_inverted, harmonizedRules);
 			for (ConfigurationRule cr : tmp)
 				harmonizedRules.add(Utils.deepCopyConfigurationAndInvertVCluster(cr));
 		}
@@ -444,7 +453,7 @@ public class HarmonizationManager {
 			flag = 0;
 			KubernetesNetworkFilteringCondition tmp = (KubernetesNetworkFilteringCondition) confRule.getConfigurationCondition();
 			
-			//loggerInfo.debug("[harmonization/harmonizeForbiddenConnectionIntent] - processing rule " + Utils.kubernetesNetworkFilteringConditionToString(resCond) + " vs. " + Utils.kubernetesNetworkFilteringConditionToString(tmp));
+			loggerInfo.debug("[harmonization/harmonizeForbiddenConnectionIntent] - processing rule " + Utils.kubernetesNetworkFilteringConditionToString(resCond) + " vs. " + Utils.kubernetesNetworkFilteringConditionToString(tmp));
 
 			// Step-1.1: starts with the simplest case, that is protocol type. Detect if protocol types of res are overlapping with tmp.
 			String [] protocolList = Utils.computeHarmonizedProtocolType(resCond.getProtocolType().value(), tmp.getProtocolType().value());
