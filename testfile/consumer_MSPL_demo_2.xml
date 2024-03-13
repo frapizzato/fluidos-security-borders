@@ -5,7 +5,7 @@
  
   <!-- Request Intents -->
   <ITResource>
-    <configuration xsi:type="InterVClusterConfiguration">
+    <configuration xsi:type="RequestIntents">
       <capability>
         <Name>KubernetesNetworkFiltering</Name>
       </capability>
