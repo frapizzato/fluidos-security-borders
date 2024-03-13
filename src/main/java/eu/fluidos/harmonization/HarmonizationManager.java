@@ -79,40 +79,40 @@ public class HarmonizationManager {
 				.map(it -> (InterVClusterConfiguration) it.getConfiguration()).findFirst().orElse(null);
 	
 
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(150)+ Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET +"Received the following " + Main.ANSI_YELLOW + "Request intents" + Main.ANSI_RESET + " (CONSUMER):");
 		for(ConfigurationRule cr: this.interVClusterConsumer.getConfigurationRule()) {
 			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
-			System.out.print("\t\t (*) " + cr.getName() + " - ");
+			System.out.print("   (*) " + cr.getName() + " - ");
 			Utils.printKubernetesNetworkFilteringCondition(cond);
 		}
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(150)+ Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET +"Local cluster defined the following " + Main.ANSI_YELLOW + "Request intents" + Main.ANSI_RESET + " (PROVIDER):");
 		for(ConfigurationRule cr: this.interVClusterProvider.getConfigurationRule()) {
 			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
-			System.out.print("\t\t (*) " + cr.getName() + " - ");
+			System.out.print("  (*) " + cr.getName() + " - ");
 			Utils.printKubernetesNetworkFilteringCondition(cond);
 		}
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(150)+ Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET +"Local cluster defined the following " + Main.ANSI_YELLOW + "Authorization Intents" + Main.ANSI_RESET +" (PROVIDER):");
-		System.out.print("\t\t|\n");
-		System.out.print("\t\t.-> " + Main.ANSI_YELLOW + "ForbiddenConnectionList"+ Main.ANSI_RESET + ":\n");
+		System.out.print("   |\n");
+		System.out.print("   .-> " + Main.ANSI_YELLOW + "ForbiddenConnectionList"+ Main.ANSI_RESET + ":\n");
 		for(ConfigurationRule cr: this.authIntentsProvider.getForbiddenConnectionList()) {
 			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
-			System.out.print("\t\t| (*) " + cr.getName() + " - ");
+			System.out.print("   | (*) " + cr.getName() + " - ");
 			Utils.printKubernetesNetworkFilteringCondition(cond);
 		}
-		System.out.print("\t\t|\n");
-		System.out.print("\t\t.-> " + Main.ANSI_YELLOW + "MandatoryConnectionList" + Main.ANSI_RESET + ":\n");
+		System.out.print("   |\n");
+		System.out.print("   .-> " + Main.ANSI_YELLOW + "MandatoryConnectionList" + Main.ANSI_RESET + ":\n");
 		for(ConfigurationRule cr: this.authIntentsProvider.getMandatoryConnectionList()) {
 			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
-			System.out.print("\t\t (*) " + cr.getName() + " - ");
+			System.out.print("   (*) " + cr.getName() + " - ");
 			Utils.printKubernetesNetworkFilteringCondition(cond);
 		}
 
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(150)+ Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		
 		
 		/**
@@ -293,9 +293,9 @@ public class HarmonizationManager {
 	 * If this happens, additional rules are added to the inter-VCluster set of the consumer.
 	 */
 	private List<ConfigurationRule> solverTypeTwoDiscordances(List<ConfigurationRule> harmonizedRequestConsumerRules) {
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(150)+ Main.ANSI_RESET);
-		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW + "TYPE-2 DISCORDANCES"+ Main.ANSI_RESET +" = when elements in the \"MandatoryConnectionsList\" (PROVIDER) are not completely satisfied by the set of Request Intents (CONSUMER)...press ENTER to continue.");
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(150)+ Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW + "TYPE-2 DISCORDANCES"+ Main.ANSI_RESET + /*" = when elements in the \"MandatoryConnectionsList\" (PROVIDER) are not completely satisfied by the set of Request Intents (CONSUMER)*/"...press ENTER to continue.");
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		
 		scan.nextLine();
 		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
@@ -328,14 +328,14 @@ public class HarmonizationManager {
 		
 		
 
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(150)+ Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET + "List of "+ Main.ANSI_YELLOW + "harmonized CONSUMER intents" +Main.ANSI_RESET +" after type-2 discordances resolution:");
 		for(ConfigurationRule cr: harmonizedRules) {
 			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
-			System.out.print("\t\t(*) " + cr.getName() + " - ");
+			System.out.print("   (*) " + cr.getName() + " - ");
 			Utils.printKubernetesNetworkFilteringCondition(cond);
 		}
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(150)+ Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		return harmonizedRules;
 	}
 
@@ -347,9 +347,9 @@ public class HarmonizationManager {
 	private List<ConfigurationRule> solverTypeThreeDiscordances(List<ConfigurationRule> harmonizedRequestConsumerRules) {
 		
 
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(150)+ Main.ANSI_RESET);
-		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW + "TYPE-3 DISCORDANCES"+ Main.ANSI_RESET +" = when elements in the Requested set of intents (CONSUMER), that have already been authorized, don't have a specular intent on the PROVIDER's Requested set (which is needed to open the \"hole\" in the protected border)...press ENTER to continue.");
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(150)+ Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW + "TYPE-3 DISCORDANCES"+ Main.ANSI_RESET + /*" = when elements in the Requested set of intents (CONSUMER), that have already been authorized, don't have a specular intent on the PROVIDER's Requested set (which is needed to open the \"hole\" in the protected border)*/"...press ENTER to continue.");
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		
 		scan.nextLine();
 		
@@ -385,14 +385,14 @@ public class HarmonizationManager {
 				harmonizedRules.add(Utils.deepCopyConfigurationAndInvertVCluster(cr));
 		}
 
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(150)+ Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET + "List of " + Main.ANSI_YELLOW + "harmonized PROVIDER intents"+ Main.ANSI_RESET+" after type-3 discordances resolution:");
 		for(ConfigurationRule cr: harmonizedRules) {
 			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
-			System.out.print("\t\t(*) " + cr.getName() + " - ");
+			System.out.print("   (*) " + cr.getName() + " - ");
 			Utils.printKubernetesNetworkFilteringCondition(cond);
 		}
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(150)+ Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		
 		return harmonizedRules;		
 	}
@@ -405,9 +405,9 @@ public class HarmonizationManager {
 	 */
 	private List<ConfigurationRule> solveTypeOneDiscordances() {
 
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(150)+ Main.ANSI_RESET);
-		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW + "TYPE-1 DISCORDANCES"+ Main.ANSI_RESET +" = when Requested intents (CONSUMER) are not authorized by the Authorization intents (PROVIDER)...press ENTER to continue.");
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(150)+ Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW + "TYPE-1 DISCORDANCES"+ Main.ANSI_RESET +/*" = when Requested intents (CONSUMER) are not authorized by the Authorization intents (PROVIDER)"*/"...press ENTER to continue.");
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		
 		scan.nextLine();
 		
@@ -418,14 +418,14 @@ public class HarmonizationManager {
 			harmonizedRules.addAll(harmonizeForbiddenConnectionIntent(cr,this.authIntentsProvider.getForbiddenConnectionList()));
 		}		
 		
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(150)+ Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET +"List of " + Main.ANSI_YELLOW +"harmonized REQUEST intents" + Main.ANSI_RESET+" after type-1 discordances resolution:");
 		for(ConfigurationRule cr: harmonizedRules) {
 			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
-			System.out.print("\t\t(*) " + cr.getName() + " - ");
+			System.out.print("   (*) " + cr.getName() + " - ");
 			Utils.printKubernetesNetworkFilteringCondition(cond);
 		}
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(150)+ Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		
 		return harmonizedRules;
 	}

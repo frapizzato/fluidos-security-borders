@@ -131,22 +131,22 @@ public class Utils {
 	public static void printKubernetesNetworkFilteringCondition(KubernetesNetworkFilteringCondition cond) {
 		if(cond.getSource().getClass().equals(PodNamespaceSelector.class)){
 			PodNamespaceSelector pns = (PodNamespaceSelector) cond.getSource();
-			System.out.print("Src: [(" + cond.getSource().isIsHostCluster() + ") " +  pns.getPod().stream()
+			System.out.print("Src: [" +  pns.getPod().stream()
 					.map(it -> it.getKey() + ":" + it.getValue())
 					.reduce("", (a,b) -> a + " " + b) + " - " + pns.getNamespace().get(0).getKey() + ":" + pns.getNamespace().get(0).getValue() + " ], ");
 		} else {
 			CIDRSelector cidr = (CIDRSelector) cond.getSource();
-			System.out.print("Src: [(" + cond.getSource().isIsHostCluster() + ") " + cidr.getAddressRange() + "], ");
+			System.out.print("Src: [" + cidr.getAddressRange() + "], ");
 		}
 		System.out.print("SrcPort: [" + cond.getSourcePort() + "], ");
 		if(cond.getDestination().getClass().equals(PodNamespaceSelector.class)){
 			PodNamespaceSelector pns = (PodNamespaceSelector) cond.getDestination();
-			System.out.print("Dst: [(" + cond.getDestination().isIsHostCluster() + ") " + pns.getPod().stream()
+			System.out.print("Dst: [" + pns.getPod().stream()
 					.map(it -> it.getKey() + ":" + it.getValue())
 					.reduce("", (a,b) -> a + " " + b) + " - " + pns.getNamespace().get(0).getKey() + ":" + pns.getNamespace().get(0).getValue() + " ], ");
 		} else {
 			CIDRSelector cidr = (CIDRSelector) cond.getDestination();
-			System.out.print("Dst: [(" + cond.getDestination().isIsHostCluster() + ") " + cidr.getAddressRange() + "], ");
+			System.out.print("Dst: [" + cidr.getAddressRange() + "], ");
 		}
 		System.out.print("DstPort: [" + cond.getDestinationPort() + "], ");
 		System.out.print("ProtocolType: [" + cond.getProtocolType() + "]\n");
@@ -161,22 +161,22 @@ public class Utils {
 		String res = new String();
 		if(cond.getSource().getClass().equals(PodNamespaceSelector.class)){
 			PodNamespaceSelector pns = (PodNamespaceSelector) cond.getSource();
-			res = res + "Src: [(" + cond.getSource().isIsHostCluster() + ") " + pns.getPod().stream()
+			res = res + "Src: [" + pns.getPod().stream()
 					.map(it -> it.getKey() + ":" + it.getValue())
 					.reduce("", (a,b) -> a + " " + b) + " - " + pns.getNamespace().get(0).getKey() + ":" + pns.getNamespace().get(0).getValue() + " ], ";
 		} else {
 			CIDRSelector cidr = (CIDRSelector) cond.getSource();
-			res = res + "Src: [(" + cond.getSource().isIsHostCluster() + ") " + cidr.getAddressRange() + "], ";
+			res = res + "Src: [" + cidr.getAddressRange() + "], ";
 		}
 		res = res + "SrcPort: [" + cond.getSourcePort() + "], ";
 		if(cond.getDestination().getClass().equals(PodNamespaceSelector.class)){
 			PodNamespaceSelector pns = (PodNamespaceSelector) cond.getDestination();
-			res = res + "Dst: [(" + cond.getDestination().isIsHostCluster() + ") " + pns.getPod().stream()
+			res = res + "Dst: [" + pns.getPod().stream()
 					.map(it -> it.getKey() + ":" + it.getValue())
 					.reduce("", (a,b) -> a + " " + b) + " - " + pns.getNamespace().get(0).getKey() + ":" + pns.getNamespace().get(0).getValue() + " ], ";
 		} else {
 			CIDRSelector cidr = (CIDRSelector) cond.getDestination();
-			res = res + "Dst: [(" + cond.getDestination().isIsHostCluster() + ") " + cidr.getAddressRange() + "], ";
+			res = res + "Dst: [" + cidr.getAddressRange() + "], ";
 		}
 		res = res + "DstPort: [" + cond.getDestinationPort() + "], ";
 		res = res + "ProtocolType: [" + cond.getProtocolType() + "]";
