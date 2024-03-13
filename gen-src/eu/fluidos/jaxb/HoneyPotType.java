@@ -1,8 +1,8 @@
 //
-// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.18 alle 05:37:56 PM CET 
+// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.03.11 alle 03:40:39 PM CET 
 //
 
 
@@ -69,7 +69,7 @@ public class HoneyPotType {
     protected Byte id;
 
     /**
-     * Recupera il valore della propriet‡ name.
+     * Recupera il valore della propriet√† name.
      * 
      * @return
      *     possible object is
@@ -81,7 +81,7 @@ public class HoneyPotType {
     }
 
     /**
-     * Imposta il valore della propriet‡ name.
+     * Imposta il valore della propriet√† name.
      * 
      * @param value
      *     allowed object is
@@ -93,7 +93,7 @@ public class HoneyPotType {
     }
 
     /**
-     * Recupera il valore della propriet‡ interactionLevel.
+     * Recupera il valore della propriet√† interactionLevel.
      * 
      * @return
      *     possible object is
@@ -105,7 +105,7 @@ public class HoneyPotType {
     }
 
     /**
-     * Imposta il valore della propriet‡ interactionLevel.
+     * Imposta il valore della propriet√† interactionLevel.
      * 
      * @param value
      *     allowed object is
@@ -117,7 +117,7 @@ public class HoneyPotType {
     }
 
     /**
-     * Recupera il valore della propriet‡ if.
+     * Recupera il valore della propriet√† if.
      * 
      * @return
      *     possible object is
@@ -129,7 +129,7 @@ public class HoneyPotType {
     }
 
     /**
-     * Imposta il valore della propriet‡ if.
+     * Imposta il valore della propriet√† if.
      * 
      * @param value
      *     allowed object is
@@ -141,7 +141,7 @@ public class HoneyPotType {
     }
 
     /**
-     * Recupera il valore della propriet‡ operatingSystem.
+     * Recupera il valore della propriet√† operatingSystem.
      * 
      * @return
      *     possible object is
@@ -153,7 +153,7 @@ public class HoneyPotType {
     }
 
     /**
-     * Imposta il valore della propriet‡ operatingSystem.
+     * Imposta il valore della propriet√† operatingSystem.
      * 
      * @param value
      *     allowed object is
@@ -165,7 +165,7 @@ public class HoneyPotType {
     }
 
     /**
-     * Recupera il valore della propriet‡ software.
+     * Recupera il valore della propriet√† software.
      * 
      * @return
      *     possible object is
@@ -177,7 +177,7 @@ public class HoneyPotType {
     }
 
     /**
-     * Imposta il valore della propriet‡ software.
+     * Imposta il valore della propriet√† software.
      * 
      * @param value
      *     allowed object is
@@ -189,7 +189,7 @@ public class HoneyPotType {
     }
 
     /**
-     * Recupera il valore della propriet‡ id.
+     * Recupera il valore della propriet√† id.
      * 
      * @return
      *     possible object is
@@ -201,7 +201,7 @@ public class HoneyPotType {
     }
 
     /**
-     * Imposta il valore della propriet‡ id.
+     * Imposta il valore della propriet√† id.
      * 
      * @param value
      *     allowed object is

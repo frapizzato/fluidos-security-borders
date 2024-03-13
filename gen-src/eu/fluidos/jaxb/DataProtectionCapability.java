@@ -1,8 +1,8 @@
 //
-// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.18 alle 05:37:56 PM CET 
+// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.03.11 alle 03:40:39 PM CET 
 //
 
 
@@ -56,7 +56,7 @@ public class DataProtectionCapability
     protected boolean supportsKeyExchange;
 
     /**
-     * Recupera il valore della propriet‡ supportsDataAuthenticationAndIntegrity.
+     * Recupera il valore della propriet√† supportsDataAuthenticationAndIntegrity.
      * 
      */
     public boolean isSupportsDataAuthenticationAndIntegrity() {
@@ -64,7 +64,7 @@ public class DataProtectionCapability
     }
 
     /**
-     * Imposta il valore della propriet‡ supportsDataAuthenticationAndIntegrity.
+     * Imposta il valore della propriet√† supportsDataAuthenticationAndIntegrity.
      * 
      */
     public void setSupportsDataAuthenticationAndIntegrity(boolean value) {
@@ -72,7 +72,7 @@ public class DataProtectionCapability
     }
 
     /**
-     * Recupera il valore della propriet‡ supportsDigitalSignature.
+     * Recupera il valore della propriet√† supportsDigitalSignature.
      * 
      */
     public boolean isSupportsDigitalSignature() {
@@ -80,7 +80,7 @@ public class DataProtectionCapability
     }
 
     /**
-     * Imposta il valore della propriet‡ supportsDigitalSignature.
+     * Imposta il valore della propriet√† supportsDigitalSignature.
      * 
      */
     public void setSupportsDigitalSignature(boolean value) {
@@ -88,7 +88,7 @@ public class DataProtectionCapability
     }
 
     /**
-     * Recupera il valore della propriet‡ supportsEncryption.
+     * Recupera il valore della propriet√† supportsEncryption.
      * 
      */
     public boolean isSupportsEncryption() {
@@ -96,7 +96,7 @@ public class DataProtectionCapability
     }
 
     /**
-     * Imposta il valore della propriet‡ supportsEncryption.
+     * Imposta il valore della propriet√† supportsEncryption.
      * 
      */
     public void setSupportsEncryption(boolean value) {
@@ -104,7 +104,7 @@ public class DataProtectionCapability
     }
 
     /**
-     * Recupera il valore della propriet‡ supportsKeyExchange.
+     * Recupera il valore della propriet√† supportsKeyExchange.
      * 
      */
     public boolean isSupportsKeyExchange() {
@@ -112,7 +112,7 @@ public class DataProtectionCapability
     }
 
     /**
-     * Imposta il valore della propriet‡ supportsKeyExchange.
+     * Imposta il valore della propriet√† supportsKeyExchange.
      * 
      */
     public void setSupportsKeyExchange(boolean value) {

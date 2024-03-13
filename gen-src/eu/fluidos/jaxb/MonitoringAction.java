@@ -1,8 +1,8 @@
 //
-// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.18 alle 05:37:56 PM CET 
+// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.03.11 alle 03:40:39 PM CET 
 //
 
 
@@ -98,7 +98,7 @@ public class MonitoringAction
     }
 
     /**
-     * Recupera il valore della propriet‡ probeID.
+     * Recupera il valore della propriet√† probeID.
      * 
      * @return
      *     possible object is
@@ -110,7 +110,7 @@ public class MonitoringAction
     }
 
     /**
-     * Imposta il valore della propriet‡ probeID.
+     * Imposta il valore della propriet√† probeID.
      * 
      * @param value
      *     allowed object is
@@ -122,7 +122,7 @@ public class MonitoringAction
     }
 
     /**
-     * Recupera il valore della propriet‡ reportPeriodicity.
+     * Recupera il valore della propriet√† reportPeriodicity.
      * 
      * @return
      *     possible object is
@@ -134,7 +134,7 @@ public class MonitoringAction
     }
 
     /**
-     * Imposta il valore della propriet‡ reportPeriodicity.
+     * Imposta il valore della propriet√† reportPeriodicity.
      * 
      * @param value
      *     allowed object is
@@ -146,7 +146,7 @@ public class MonitoringAction
     }
 
     /**
-     * Recupera il valore della propriet‡ reportPerFlow.
+     * Recupera il valore della propriet√† reportPerFlow.
      * 
      * @return
      *     possible object is
@@ -158,7 +158,7 @@ public class MonitoringAction
     }
 
     /**
-     * Imposta il valore della propriet‡ reportPerFlow.
+     * Imposta il valore della propriet√† reportPerFlow.
      * 
      * @param value
      *     allowed object is
@@ -170,7 +170,7 @@ public class MonitoringAction
     }
 
     /**
-     * Recupera il valore della propriet‡ ruleID.
+     * Recupera il valore della propriet√† ruleID.
      * 
      * @return
      *     possible object is
@@ -182,7 +182,7 @@ public class MonitoringAction
     }
 
     /**
-     * Imposta il valore della propriet‡ ruleID.
+     * Imposta il valore della propriet√† ruleID.
      * 
      * @param value
      *     allowed object is
@@ -194,7 +194,7 @@ public class MonitoringAction
     }
 
     /**
-     * Recupera il valore della propriet‡ count.
+     * Recupera il valore della propriet√† count.
      * 
      * @return
      *     possible object is
@@ -206,7 +206,7 @@ public class MonitoringAction
     }
 
     /**
-     * Imposta il valore della propriet‡ count.
+     * Imposta il valore della propriet√† count.
      * 
      * @param value
      *     allowed object is

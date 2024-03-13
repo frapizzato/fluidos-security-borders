@@ -1,8 +1,8 @@
 //
-// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.18 alle 05:37:56 PM CET 
+// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.03.11 alle 03:40:39 PM CET 
 //
 
 
@@ -49,7 +49,7 @@ public class PolicyDependencyCondition
     protected String status;
 
     /**
-     * Recupera il valore della propriet‡ policyID.
+     * Recupera il valore della propriet√† policyID.
      * 
      * @return
      *     possible object is
@@ -61,7 +61,7 @@ public class PolicyDependencyCondition
     }
 
     /**
-     * Imposta il valore della propriet‡ policyID.
+     * Imposta il valore della propriet√† policyID.
      * 
      * @param value
      *     allowed object is
@@ -73,7 +73,7 @@ public class PolicyDependencyCondition
     }
 
     /**
-     * Recupera il valore della propriet‡ status.
+     * Recupera il valore della propriet√† status.
      * 
      * @return
      *     possible object is
@@ -85,7 +85,7 @@ public class PolicyDependencyCondition
     }
 
     /**
-     * Imposta il valore della propriet‡ status.
+     * Imposta il valore della propriet√† status.
      * 
      * @param value
      *     allowed object is

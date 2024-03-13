@@ -1,8 +1,8 @@
 //
-// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.18 alle 05:37:56 PM CET 
+// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.03.11 alle 03:40:39 PM CET 
 //
 
 
@@ -74,7 +74,7 @@ public class ApplicationLayerCondition {
     protected String urlRegex;
 
     /**
-     * Recupera il valore della propriet‡ applicationProtocol.
+     * Recupera il valore della propriet√† applicationProtocol.
      * 
      * @return
      *     possible object is
@@ -86,7 +86,7 @@ public class ApplicationLayerCondition {
     }
 
     /**
-     * Imposta il valore della propriet‡ applicationProtocol.
+     * Imposta il valore della propriet√† applicationProtocol.
      * 
      * @param value
      *     allowed object is
@@ -98,7 +98,7 @@ public class ApplicationLayerCondition {
     }
 
     /**
-     * Recupera il valore della propriet‡ url.
+     * Recupera il valore della propriet√† url.
      * 
      * @return
      *     possible object is
@@ -110,7 +110,7 @@ public class ApplicationLayerCondition {
     }
 
     /**
-     * Imposta il valore della propriet‡ url.
+     * Imposta il valore della propriet√† url.
      * 
      * @param value
      *     allowed object is
@@ -122,7 +122,7 @@ public class ApplicationLayerCondition {
     }
 
     /**
-     * Recupera il valore della propriet‡ httpCondition.
+     * Recupera il valore della propriet√† httpCondition.
      * 
      * @return
      *     possible object is
@@ -134,7 +134,7 @@ public class ApplicationLayerCondition {
     }
 
     /**
-     * Imposta il valore della propriet‡ httpCondition.
+     * Imposta il valore della propriet√† httpCondition.
      * 
      * @param value
      *     allowed object is
@@ -146,7 +146,7 @@ public class ApplicationLayerCondition {
     }
 
     /**
-     * Recupera il valore della propriet‡ fileExtension.
+     * Recupera il valore della propriet√† fileExtension.
      * 
      * @return
      *     possible object is
@@ -158,7 +158,7 @@ public class ApplicationLayerCondition {
     }
 
     /**
-     * Imposta il valore della propriet‡ fileExtension.
+     * Imposta il valore della propriet√† fileExtension.
      * 
      * @param value
      *     allowed object is
@@ -170,7 +170,7 @@ public class ApplicationLayerCondition {
     }
 
     /**
-     * Recupera il valore della propriet‡ mimeType.
+     * Recupera il valore della propriet√† mimeType.
      * 
      * @return
      *     possible object is
@@ -182,7 +182,7 @@ public class ApplicationLayerCondition {
     }
 
     /**
-     * Imposta il valore della propriet‡ mimeType.
+     * Imposta il valore della propriet√† mimeType.
      * 
      * @param value
      *     allowed object is
@@ -194,7 +194,7 @@ public class ApplicationLayerCondition {
     }
 
     /**
-     * Recupera il valore della propriet‡ maxconn.
+     * Recupera il valore della propriet√† maxconn.
      * 
      * @return
      *     possible object is
@@ -206,7 +206,7 @@ public class ApplicationLayerCondition {
     }
 
     /**
-     * Imposta il valore della propriet‡ maxconn.
+     * Imposta il valore della propriet√† maxconn.
      * 
      * @param value
      *     allowed object is
@@ -218,7 +218,7 @@ public class ApplicationLayerCondition {
     }
 
     /**
-     * Recupera il valore della propriet‡ dstDomain.
+     * Recupera il valore della propriet√† dstDomain.
      * 
      * @return
      *     possible object is
@@ -230,7 +230,7 @@ public class ApplicationLayerCondition {
     }
 
     /**
-     * Imposta il valore della propriet‡ dstDomain.
+     * Imposta il valore della propriet√† dstDomain.
      * 
      * @param value
      *     allowed object is
@@ -242,7 +242,7 @@ public class ApplicationLayerCondition {
     }
 
     /**
-     * Recupera il valore della propriet‡ srcDomain.
+     * Recupera il valore della propriet√† srcDomain.
      * 
      * @return
      *     possible object is
@@ -254,7 +254,7 @@ public class ApplicationLayerCondition {
     }
 
     /**
-     * Imposta il valore della propriet‡ srcDomain.
+     * Imposta il valore della propriet√† srcDomain.
      * 
      * @param value
      *     allowed object is
@@ -266,7 +266,7 @@ public class ApplicationLayerCondition {
     }
 
     /**
-     * Recupera il valore della propriet‡ urlRegex.
+     * Recupera il valore della propriet√† urlRegex.
      * 
      * @return
      *     possible object is
@@ -278,7 +278,7 @@ public class ApplicationLayerCondition {
     }
 
     /**
-     * Imposta il valore della propriet‡ urlRegex.
+     * Imposta il valore della propriet√† urlRegex.
      * 
      * @param value
      *     allowed object is

@@ -1,8 +1,8 @@
 //
-// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.18 alle 05:37:56 PM CET 
+// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.03.11 alle 03:40:39 PM CET 
 //
 
 
@@ -63,7 +63,7 @@ public class KubernetesNetworkFilteringCondition
     protected ProtocolType protocolType;
 
     /**
-     * Recupera il valore della propriet‡ source.
+     * Recupera il valore della propriet√† source.
      * 
      * @return
      *     possible object is
@@ -75,7 +75,7 @@ public class KubernetesNetworkFilteringCondition
     }
 
     /**
-     * Imposta il valore della propriet‡ source.
+     * Imposta il valore della propriet√† source.
      * 
      * @param value
      *     allowed object is
@@ -87,7 +87,7 @@ public class KubernetesNetworkFilteringCondition
     }
 
     /**
-     * Recupera il valore della propriet‡ sourcePort.
+     * Recupera il valore della propriet√† sourcePort.
      * 
      * @return
      *     possible object is
@@ -99,7 +99,7 @@ public class KubernetesNetworkFilteringCondition
     }
 
     /**
-     * Imposta il valore della propriet‡ sourcePort.
+     * Imposta il valore della propriet√† sourcePort.
      * 
      * @param value
      *     allowed object is
@@ -111,7 +111,7 @@ public class KubernetesNetworkFilteringCondition
     }
 
     /**
-     * Recupera il valore della propriet‡ destination.
+     * Recupera il valore della propriet√† destination.
      * 
      * @return
      *     possible object is
@@ -123,7 +123,7 @@ public class KubernetesNetworkFilteringCondition
     }
 
     /**
-     * Imposta il valore della propriet‡ destination.
+     * Imposta il valore della propriet√† destination.
      * 
      * @param value
      *     allowed object is
@@ -135,7 +135,7 @@ public class KubernetesNetworkFilteringCondition
     }
 
     /**
-     * Recupera il valore della propriet‡ destinationPort.
+     * Recupera il valore della propriet√† destinationPort.
      * 
      * @return
      *     possible object is
@@ -147,7 +147,7 @@ public class KubernetesNetworkFilteringCondition
     }
 
     /**
-     * Imposta il valore della propriet‡ destinationPort.
+     * Imposta il valore della propriet√† destinationPort.
      * 
      * @param value
      *     allowed object is
@@ -159,7 +159,7 @@ public class KubernetesNetworkFilteringCondition
     }
 
     /**
-     * Recupera il valore della propriet‡ protocolType.
+     * Recupera il valore della propriet√† protocolType.
      * 
      * @return
      *     possible object is
@@ -171,7 +171,7 @@ public class KubernetesNetworkFilteringCondition
     }
 
     /**
-     * Imposta il valore della propriet‡ protocolType.
+     * Imposta il valore della propriet√† protocolType.
      * 
      * @param value
      *     allowed object is

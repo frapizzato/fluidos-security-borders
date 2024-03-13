@@ -1,8 +1,8 @@
 //
-// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.18 alle 05:37:56 PM CET 
+// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.03.11 alle 03:40:39 PM CET 
 //
 
 
@@ -49,7 +49,7 @@ public class Authentication
     protected String peerAuthenticationMechanism;
 
     /**
-     * Recupera il valore della propriet‡ serverAuthenticationMechanism.
+     * Recupera il valore della propriet√† serverAuthenticationMechanism.
      * 
      * @return
      *     possible object is
@@ -61,7 +61,7 @@ public class Authentication
     }
 
     /**
-     * Imposta il valore della propriet‡ serverAuthenticationMechanism.
+     * Imposta il valore della propriet√† serverAuthenticationMechanism.
      * 
      * @param value
      *     allowed object is
@@ -73,7 +73,7 @@ public class Authentication
     }
 
     /**
-     * Recupera il valore della propriet‡ clientAuthenticationMechanism.
+     * Recupera il valore della propriet√† clientAuthenticationMechanism.
      * 
      * @return
      *     possible object is
@@ -85,7 +85,7 @@ public class Authentication
     }
 
     /**
-     * Imposta il valore della propriet‡ clientAuthenticationMechanism.
+     * Imposta il valore della propriet√† clientAuthenticationMechanism.
      * 
      * @param value
      *     allowed object is
@@ -97,7 +97,7 @@ public class Authentication
     }
 
     /**
-     * Recupera il valore della propriet‡ peerAuthenticationMechanism.
+     * Recupera il valore della propriet√† peerAuthenticationMechanism.
      * 
      * @return
      *     possible object is
@@ -109,7 +109,7 @@ public class Authentication
     }
 
     /**
-     * Imposta il valore della propriet‡ peerAuthenticationMechanism.
+     * Imposta il valore della propriet√† peerAuthenticationMechanism.
      * 
      * @param value
      *     allowed object is

@@ -1,8 +1,8 @@
 //
-// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.18 alle 05:37:56 PM CET 
+// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.03.11 alle 03:40:39 PM CET 
 //
 
 
@@ -87,7 +87,7 @@ public class AuthenticationParameters {
     protected String remoteId;
 
     /**
-     * Recupera il valore della propriet‡ psKeyValue.
+     * Recupera il valore della propriet√† psKeyValue.
      * 
      * @return
      *     possible object is
@@ -99,7 +99,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Imposta il valore della propriet‡ psKeyValue.
+     * Imposta il valore della propriet√† psKeyValue.
      * 
      * @param value
      *     allowed object is
@@ -111,7 +111,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Recupera il valore della propriet‡ psKeyPath.
+     * Recupera il valore della propriet√† psKeyPath.
      * 
      * @return
      *     possible object is
@@ -123,7 +123,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Imposta il valore della propriet‡ psKeyPath.
+     * Imposta il valore della propriet√† psKeyPath.
      * 
      * @param value
      *     allowed object is
@@ -135,7 +135,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Recupera il valore della propriet‡ caPath.
+     * Recupera il valore della propriet√† caPath.
      * 
      * @return
      *     possible object is
@@ -147,7 +147,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Imposta il valore della propriet‡ caPath.
+     * Imposta il valore della propriet√† caPath.
      * 
      * @param value
      *     allowed object is
@@ -159,7 +159,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Recupera il valore della propriet‡ certPath.
+     * Recupera il valore della propriet√† certPath.
      * 
      * @return
      *     possible object is
@@ -171,7 +171,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Imposta il valore della propriet‡ certPath.
+     * Imposta il valore della propriet√† certPath.
      * 
      * @param value
      *     allowed object is
@@ -183,7 +183,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Recupera il valore della propriet‡ publicKeyPath.
+     * Recupera il valore della propriet√† publicKeyPath.
      * 
      * @return
      *     possible object is
@@ -195,7 +195,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Imposta il valore della propriet‡ publicKeyPath.
+     * Imposta il valore della propriet√† publicKeyPath.
      * 
      * @param value
      *     allowed object is
@@ -207,7 +207,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Recupera il valore della propriet‡ publicKeyFilename.
+     * Recupera il valore della propriet√† publicKeyFilename.
      * 
      * @return
      *     possible object is
@@ -219,7 +219,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Imposta il valore della propriet‡ publicKeyFilename.
+     * Imposta il valore della propriet√† publicKeyFilename.
      * 
      * @param value
      *     allowed object is
@@ -231,7 +231,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Recupera il valore della propriet‡ publicKeyPassphrase.
+     * Recupera il valore della propriet√† publicKeyPassphrase.
      * 
      * @return
      *     possible object is
@@ -243,7 +243,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Imposta il valore della propriet‡ publicKeyPassphrase.
+     * Imposta il valore della propriet√† publicKeyPassphrase.
      * 
      * @param value
      *     allowed object is
@@ -255,7 +255,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Recupera il valore della propriet‡ caId.
+     * Recupera il valore della propriet√† caId.
      * 
      * @return
      *     possible object is
@@ -267,7 +267,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Imposta il valore della propriet‡ caId.
+     * Imposta il valore della propriet√† caId.
      * 
      * @param value
      *     allowed object is
@@ -279,7 +279,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Recupera il valore della propriet‡ caFilename.
+     * Recupera il valore della propriet√† caFilename.
      * 
      * @return
      *     possible object is
@@ -291,7 +291,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Imposta il valore della propriet‡ caFilename.
+     * Imposta il valore della propriet√† caFilename.
      * 
      * @param value
      *     allowed object is
@@ -303,7 +303,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Recupera il valore della propriet‡ certId.
+     * Recupera il valore della propriet√† certId.
      * 
      * @return
      *     possible object is
@@ -315,7 +315,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Imposta il valore della propriet‡ certId.
+     * Imposta il valore della propriet√† certId.
      * 
      * @param value
      *     allowed object is
@@ -327,7 +327,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Recupera il valore della propriet‡ certFilename.
+     * Recupera il valore della propriet√† certFilename.
      * 
      * @return
      *     possible object is
@@ -339,7 +339,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Imposta il valore della propriet‡ certFilename.
+     * Imposta il valore della propriet√† certFilename.
      * 
      * @param value
      *     allowed object is
@@ -351,7 +351,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Recupera il valore della propriet‡ remoteId.
+     * Recupera il valore della propriet√† remoteId.
      * 
      * @return
      *     possible object is
@@ -363,7 +363,7 @@ public class AuthenticationParameters {
     }
 
     /**
-     * Imposta il valore della propriet‡ remoteId.
+     * Imposta il valore della propriet√† remoteId.
      * 
      * @param value
      *     allowed object is

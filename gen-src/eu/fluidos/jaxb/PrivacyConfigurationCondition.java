@@ -1,8 +1,8 @@
 //
-// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.18 alle 05:37:56 PM CET 
+// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.03.11 alle 03:40:39 PM CET 
 //
 
 
@@ -49,7 +49,7 @@ public class PrivacyConfigurationCondition
     protected String target;
 
     /**
-     * Recupera il valore della propriet‡ subject.
+     * Recupera il valore della propriet√† subject.
      * 
      * @return
      *     possible object is
@@ -61,7 +61,7 @@ public class PrivacyConfigurationCondition
     }
 
     /**
-     * Imposta il valore della propriet‡ subject.
+     * Imposta il valore della propriet√† subject.
      * 
      * @param value
      *     allowed object is
@@ -73,7 +73,7 @@ public class PrivacyConfigurationCondition
     }
 
     /**
-     * Recupera il valore della propriet‡ target.
+     * Recupera il valore della propriet√† target.
      * 
      * @return
      *     possible object is
@@ -85,7 +85,7 @@ public class PrivacyConfigurationCondition
     }
 
     /**
-     * Imposta il valore della propriet‡ target.
+     * Imposta il valore della propriet√† target.
      * 
      * @param value
      *     allowed object is

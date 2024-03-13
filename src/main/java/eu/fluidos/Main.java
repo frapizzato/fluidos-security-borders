@@ -17,9 +17,8 @@ import javax.xml.validation.SchemaFactory;
 import jakarta.xml.bind.*;
 import eu.fluidos.harmonization.HarmonizationManager;
 import eu.fluidos.jaxb.*;
-
-
-
+import eu.fluidos.harmonization.Utils;
+import eu.fluidos.traslator.Traslator;
 public class Main 
 {
 	public static Logger loggerInfo = LogManager.getLogger(Main.class);
@@ -59,33 +58,32 @@ public class Main
         	// User offering some resources
         	Object tmp_2 = u.unmarshal(new FileInputStream(arg_2));
         	ITResourceOrchestrationType intents_2 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_2).getValue(); 
-        	loggerInfo.debug("Successfull unmarshalling of second input file ["+arg_2+"].");
-        	
-        	loggerInfo.debug("Start of the harmonization process.");
-        	HarmonizationManager res = new HarmonizationManager(intents_1, intents_2);
-        	
-        	//Here output the "Harmonized" set of intents
-        	Scanner scan = new Scanner(System.in);
-        	Marshaller m = jc.createMarshaller();
-			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-			m.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "./xsd/mspl.xsd");
-			QName qName = new QName("eu.fluidos.jaxb.ITResourceOrchestrationType", "ITResourceOrchestrationType");
-			JAXBElement<ITResourceOrchestrationType> root = new JAXBElement<>(qName, ITResourceOrchestrationType.class, res.getConsumerIntents());
-	    	System.out.println(ANSI_PURPLE + "-".repeat(150)+ ANSI_RESET);
-	    	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_RESET + "Press ENTER to output " + ANSI_YELLOW + "Consumer" + ANSI_RESET + " MSPL schema...");
-			scan.nextLine();
-			loggerInfo.info("[harmonization] Consumer MSPL OUTPUT");
-			StringWriter stringWriter = new StringWriter();
-			m.marshal(root, stringWriter);
-			loggerInfo.info("\n" + stringWriter.toString());
-	    	System.out.println(ANSI_PURPLE + "-".repeat(150)+ ANSI_RESET);
-	    	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_RESET + "Press ENTER to output " + ANSI_YELLOW + "Provider" + ANSI_RESET + " MSPL schema...");
-			scan.nextLine();
-			root = new JAXBElement<>(qName, ITResourceOrchestrationType.class, res.getProviderIntents());
-			loggerInfo.info(" [harmonization] Provider MSPL OUTPUT");
-			StringWriter stringWriter_2 = new StringWriter();
-			m.marshal(root, stringWriter_2);
-			loggerInfo.info("\n" + stringWriter_2.toString());
+			Traslator intent_traslation = new Traslator(intents_2);
+
+			
+        	//HarmonizationManager res = new HarmonizationManager(intents_1, intents_2);
+        	// //Here output the "Harmonized" set of intents
+        	// Scanner scan = new Scanner(System.in);
+        	// Marshaller m = jc.createMarshaller();
+			// m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+			// m.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "./xsd/mspl.xsd");
+			// QName qName = new QName("eu.fluidos.jaxb.ITResourceOrchestrationType", "ITResourceOrchestrationType");
+			// JAXBElement<ITResourceOrchestrationType> root = new JAXBElement<>(qName, ITResourceOrchestrationType.class, res.getConsumerIntents());
+	    	// System.out.println(ANSI_PURPLE + "-".repeat(150)+ ANSI_RESET);
+	    	// System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_RESET + "Press ENTER to output " + ANSI_YELLOW + "Consumer" + ANSI_RESET + " MSPL schema...");
+			// scan.nextLine();
+			// loggerInfo.info("[harmonization] Consumer MSPL OUTPUT");
+			// StringWriter stringWriter = new StringWriter();
+			// m.marshal(root, stringWriter);
+			// loggerInfo.info("\n" + stringWriter.toString());
+	    	// System.out.println(ANSI_PURPLE + "-".repeat(150)+ ANSI_RESET);
+	    	// System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_RESET + "Press ENTER to output " + ANSI_YELLOW + "Provider" + ANSI_RESET + " MSPL schema...");
+			// scan.nextLine();
+			// root = new JAXBElement<>(qName, ITResourceOrchestrationType.class, res.getProviderIntents());
+			// loggerInfo.info(" [harmonization] Provider MSPL OUTPUT");
+			// StringWriter stringWriter_2 = new StringWriter();
+			// m.marshal(root, stringWriter_2);
+			// loggerInfo.info("\n" + stringWriter_2.toString());
 
 
         	

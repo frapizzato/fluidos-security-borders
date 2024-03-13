@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: RequestIntent_3
+spec:
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: fluidos
+      podSelector:
+        matchLabels:
+          app: bank_payment
+    ports:
+    - port: '*'
+      protocol: '*'
+  podSelector:
+    matchExpressions:
+    - key: PodIp
+      operator: In
+      values:
+      - 0.0.0.0/0
+  policyTypes:
+  - Ingress

@@ -1,8 +1,8 @@
 //
-// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.18 alle 05:37:56 PM CET 
+// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.03.11 alle 03:40:39 PM CET 
 //
 
 
@@ -86,7 +86,7 @@ public class Vancouver {
     protected Integer vancouvergambling;
 
     /**
-     * Recupera il valore della propriet‡ vancouvereducationalcontent.
+     * Recupera il valore della propriet√† vancouvereducationalcontent.
      * 
      * @return
      *     possible object is
@@ -98,7 +98,7 @@ public class Vancouver {
     }
 
     /**
-     * Imposta il valore della propriet‡ vancouvereducationalcontent.
+     * Imposta il valore della propriet√† vancouvereducationalcontent.
      * 
      * @param value
      *     allowed object is
@@ -110,7 +110,7 @@ public class Vancouver {
     }
 
     /**
-     * Recupera il valore della propriet‡ vancouverviolence.
+     * Recupera il valore della propriet√† vancouverviolence.
      * 
      * @return
      *     possible object is
@@ -122,7 +122,7 @@ public class Vancouver {
     }
 
     /**
-     * Imposta il valore della propriet‡ vancouverviolence.
+     * Imposta il valore della propriet√† vancouverviolence.
      * 
      * @param value
      *     allowed object is
@@ -134,7 +134,7 @@ public class Vancouver {
     }
 
     /**
-     * Recupera il valore della propriet‡ vancouversex.
+     * Recupera il valore della propriet√† vancouversex.
      * 
      * @return
      *     possible object is
@@ -146,7 +146,7 @@ public class Vancouver {
     }
 
     /**
-     * Imposta il valore della propriet‡ vancouversex.
+     * Imposta il valore della propriet√† vancouversex.
      * 
      * @param value
      *     allowed object is
@@ -158,7 +158,7 @@ public class Vancouver {
     }
 
     /**
-     * Recupera il valore della propriet‡ vancouverprofanity.
+     * Recupera il valore della propriet√† vancouverprofanity.
      * 
      * @return
      *     possible object is
@@ -170,7 +170,7 @@ public class Vancouver {
     }
 
     /**
-     * Imposta il valore della propriet‡ vancouverprofanity.
+     * Imposta il valore della propriet√† vancouverprofanity.
      * 
      * @param value
      *     allowed object is
@@ -182,7 +182,7 @@ public class Vancouver {
     }
 
     /**
-     * Recupera il valore della propriet‡ vancouvergambling.
+     * Recupera il valore della propriet√† vancouvergambling.
      * 
      * @return
      *     possible object is
@@ -194,7 +194,7 @@ public class Vancouver {
     }
 
     /**
-     * Imposta il valore della propriet‡ vancouvergambling.
+     * Imposta il valore della propriet√† vancouvergambling.
      * 
      * @param value
      *     allowed object is

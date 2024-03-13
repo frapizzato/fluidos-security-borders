@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: PrivateIntent_1
+spec:
+  egress:
+  - ports:
+    - port: '80'
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          name: default
+      podSelector:
+        matchLabels:
+          app: product_catalogue
+  policyTypes:
+  - Egress

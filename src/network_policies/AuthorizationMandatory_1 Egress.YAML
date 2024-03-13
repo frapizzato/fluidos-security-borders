@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: AuthorizationMandatory_1
+  namespace: monitoring
+spec:
+  egress:
+  - ports:
+    - port: '43'
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          name: fluidos
+  podSelector:
+    matchLabels:
+      app: resource_monitor
+  policyTypes:
+  - Egress

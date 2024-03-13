@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: RequestIntent_2
+  namespace: fluidos
+spec:
+  egress:
+  - ports:
+    - port: '*'
+      protocol: '*'
+    to:
+    - namespaceSelector:
+        matchLabels:
+          name: default
+  podSelector:
+    matchLabels:
+      app: bank_payment
+  policyTypes:
+  - Egress

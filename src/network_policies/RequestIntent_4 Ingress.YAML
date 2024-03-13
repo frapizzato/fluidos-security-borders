@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: RequestIntent_4
+  namespace: fluidos
+spec:
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - port: '*'
+      protocol: '*'
+  podSelector:
+    matchLabels:
+      app: order_placement
+  policyTypes:
+  - Ingress

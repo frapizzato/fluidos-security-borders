@@ -1,8 +1,8 @@
 //
-// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.18 alle 05:37:56 PM CET 
+// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.03.11 alle 03:40:39 PM CET 
 //
 
 
@@ -63,7 +63,7 @@ public class ConfigurationRule {
     protected List<HSPL> hspl;
 
     /**
-     * Recupera il valore della propriet‡ configurationRuleAction.
+     * Recupera il valore della propriet√† configurationRuleAction.
      * 
      * @return
      *     possible object is
@@ -75,7 +75,7 @@ public class ConfigurationRule {
     }
 
     /**
-     * Imposta il valore della propriet‡ configurationRuleAction.
+     * Imposta il valore della propriet√† configurationRuleAction.
      * 
      * @param value
      *     allowed object is
@@ -87,7 +87,7 @@ public class ConfigurationRule {
     }
 
     /**
-     * Recupera il valore della propriet‡ configurationCondition.
+     * Recupera il valore della propriet√† configurationCondition.
      * 
      * @return
      *     possible object is
@@ -99,7 +99,7 @@ public class ConfigurationRule {
     }
 
     /**
-     * Imposta il valore della propriet‡ configurationCondition.
+     * Imposta il valore della propriet√† configurationCondition.
      * 
      * @param value
      *     allowed object is
@@ -111,7 +111,7 @@ public class ConfigurationRule {
     }
 
     /**
-     * Recupera il valore della propriet‡ externalData.
+     * Recupera il valore della propriet√† externalData.
      * 
      * @return
      *     possible object is
@@ -123,7 +123,7 @@ public class ConfigurationRule {
     }
 
     /**
-     * Imposta il valore della propriet‡ externalData.
+     * Imposta il valore della propriet√† externalData.
      * 
      * @param value
      *     allowed object is
@@ -135,7 +135,7 @@ public class ConfigurationRule {
     }
 
     /**
-     * Recupera il valore della propriet‡ name.
+     * Recupera il valore della propriet√† name.
      * 
      * @return
      *     possible object is
@@ -147,7 +147,7 @@ public class ConfigurationRule {
     }
 
     /**
-     * Imposta il valore della propriet‡ name.
+     * Imposta il valore della propriet√† name.
      * 
      * @param value
      *     allowed object is
@@ -159,7 +159,7 @@ public class ConfigurationRule {
     }
 
     /**
-     * Recupera il valore della propriet‡ isCNF.
+     * Recupera il valore della propriet√† isCNF.
      * 
      */
     public boolean isIsCNF() {
@@ -167,7 +167,7 @@ public class ConfigurationRule {
     }
 
     /**
-     * Imposta il valore della propriet‡ isCNF.
+     * Imposta il valore della propriet√† isCNF.
      * 
      */
     public void setIsCNF(boolean value) {

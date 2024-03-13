@@ -1,8 +1,8 @@
 //
-// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.18 alle 05:37:56 PM CET 
+// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.03.11 alle 03:40:39 PM CET 
 //
 
 
@@ -51,7 +51,7 @@ public class RouteType {
     protected Byte id;
 
     /**
-     * Recupera il valore della propriet‡ dst.
+     * Recupera il valore della propriet√† dst.
      * 
      * @return
      *     possible object is
@@ -63,7 +63,7 @@ public class RouteType {
     }
 
     /**
-     * Imposta il valore della propriet‡ dst.
+     * Imposta il valore della propriet√† dst.
      * 
      * @param value
      *     allowed object is
@@ -75,7 +75,7 @@ public class RouteType {
     }
 
     /**
-     * Recupera il valore della propriet‡ gw.
+     * Recupera il valore della propriet√† gw.
      * 
      * @return
      *     possible object is
@@ -87,7 +87,7 @@ public class RouteType {
     }
 
     /**
-     * Imposta il valore della propriet‡ gw.
+     * Imposta il valore della propriet√† gw.
      * 
      * @param value
      *     allowed object is
@@ -99,7 +99,7 @@ public class RouteType {
     }
 
     /**
-     * Recupera il valore della propriet‡ id.
+     * Recupera il valore della propriet√† id.
      * 
      * @return
      *     possible object is
@@ -111,7 +111,7 @@ public class RouteType {
     }
 
     /**
-     * Imposta il valore della propriet‡ id.
+     * Imposta il valore della propriet√† id.
      * 
      * @param value
      *     allowed object is

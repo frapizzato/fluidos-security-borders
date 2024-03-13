@@ -1,8 +1,8 @@
 //
-// Questo file Ë stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
+// Questo file √® stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
-// Qualsiasi modifica a questo file andr‡ persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.02.18 alle 05:37:56 PM CET 
+// Qualsiasi modifica a questo file andr√† persa durante la ricompilazione dello schema di origine. 
+// Generato il: 2024.03.11 alle 03:40:39 PM CET 
 //
 
 
@@ -57,7 +57,7 @@ public class Count {
     protected TimeUnit per;
 
     /**
-     * Recupera il valore della propriet‡ measureUnit.
+     * Recupera il valore della propriet√† measureUnit.
      * 
      * @return
      *     possible object is
@@ -69,7 +69,7 @@ public class Count {
     }
 
     /**
-     * Imposta il valore della propriet‡ measureUnit.
+     * Imposta il valore della propriet√† measureUnit.
      * 
      * @param value
      *     allowed object is
@@ -81,7 +81,7 @@ public class Count {
     }
 
     /**
-     * Recupera il valore della propriet‡ timeUnit.
+     * Recupera il valore della propriet√† timeUnit.
      * 
      * @return
      *     possible object is
@@ -93,7 +93,7 @@ public class Count {
     }
 
     /**
-     * Imposta il valore della propriet‡ timeUnit.
+     * Imposta il valore della propriet√† timeUnit.
      * 
      * @param value
      *     allowed object is
@@ -105,7 +105,7 @@ public class Count {
     }
 
     /**
-     * Recupera il valore della propriet‡ value.
+     * Recupera il valore della propriet√† value.
      * 
      * @return
      *     possible object is
@@ -117,7 +117,7 @@ public class Count {
     }
 
     /**
-     * Imposta il valore della propriet‡ value.
+     * Imposta il valore della propriet√† value.
      * 
      * @param value
      *     allowed object is
@@ -129,7 +129,7 @@ public class Count {
     }
 
     /**
-     * Recupera il valore della propriet‡ per.
+     * Recupera il valore della propriet√† per.
      * 
      * @return
      *     possible object is
@@ -141,7 +141,7 @@ public class Count {
     }
 
     /**
-     * Imposta il valore della propriet‡ per.
+     * Imposta il valore della propriet√† per.
      * 
      * @param value
      *     allowed object is
