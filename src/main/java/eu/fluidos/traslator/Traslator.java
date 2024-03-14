@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.ObjectUtils.Null;
+import org.yaml.snakeyaml.DumperOptions;
 
 import io.kubernetes.client.openapi.models.V1NetworkPolicy;
 import io.kubernetes.client.openapi.models.V1NetworkPolicyIngressRule;
@@ -34,8 +34,8 @@ import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import io.kubernetes.client.proto.V1beta1Extensions.Ingress;
 import io.kubernetes.client.util.Yaml;
 import io.kubernetes.client.openapi.models.V1NetworkPolicySpec;
-
-
+import java.util.Arrays;
+import org.yaml.snakeyaml.DumperOptions;
 
 public class Traslator {
     private ITResourceOrchestrationType intents;
@@ -144,7 +144,6 @@ public class Traslator {
         List<V1NetworkPolicyEgressRule> egressRules = new ArrayList<>();
         V1NetworkPolicyPort port = new V1NetworkPolicyPort();
         String destPort = cond.getDestinationPort();
-        
         switch (cond.getProtocolType()) {
             case TCP:
                 port.setProtocol("TCP");
@@ -159,9 +158,17 @@ public class Traslator {
                 port.setProtocol("*");
                 break;
         }
-        port.setPort(new IntOrString(destPort));
+        if (destPort.contains("-")) {
+            String[] portRange = destPort.split("-");
+            int startPort = Integer.parseInt(portRange[0]);
+            int endPort = Integer.parseInt(portRange[1]);
+            port.setPort(new IntOrString(startPort));
+            port.setEndPort(endPort);
+        } else {;
+            port.setPort(new IntOrString(destPort));
+        }
         egressRule.setPorts(Collections.singletonList(port)); 
-
+        
         //Setting of the destination, in particoular I'm setting the name of the destinationPod or the cidrIp address and eventually the destination namespace
         V1LabelSelector destinationSelector = new V1LabelSelector();
         V1NetworkPolicyPeer destinationPeer = new V1NetworkPolicyPeer();
@@ -278,7 +285,16 @@ public class Traslator {
                 port.setProtocol("*");
                 break;
         }
-        port.setPort(new IntOrString(destPort));
+        
+        if (destPort.contains("-")) {
+            String[] portRange = destPort.split("-");
+            int startPort = Integer.parseInt(portRange[0]);
+            int endPort = Integer.parseInt(portRange[1]);
+            port.setPort(new IntOrString(startPort));
+            port.setEndPort(endPort);
+        } else {;
+            port.setPort(new IntOrString(destPort));
+        }
         ingressRule.setPorts(Collections.singletonList(port)); 
 
         //Setting of the destination, in particoular I'm setting the name of the destinationPod or the cidrIp address and eventually the destination namespace
