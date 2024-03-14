@@ -18,8 +18,8 @@ public class HarmonizationManager {
 	private ITResourceOrchestrationType providerIntents, consumerIntents;
 	private Cluster consumer, provider;
 	private AuthorizationIntents authIntentsProvider, authIntentsConsumer;
-	private IntraVClusterConfiguration intraVClusterProvider, intraVClusterConsumer;
-	private InterVClusterConfiguration interVClusterProvider, interVClusterConsumer;
+	private PrivateIntents privateIntentsProvider, privateIntentsConsumer;
+	private RequestIntents requestIntentsProvider, requestIntentsConsumer;
 
 	private HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider = new HashMap();
 	private HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer = new HashMap();
@@ -30,8 +30,8 @@ public class HarmonizationManager {
 	/**
 	 * Functions executing all the Harmonization process
 	 * 
-	 *  @param provider is the "ITResourceOrchestration" element retrieved from XML given by the user requesting the offloading
-	 *  @param consumer is the "ITResourceOrchestration" element retrieved from XML given by the user offering the resources
+	 *  @param consumer is the "ITResourceOrchestration" element retrieved from XML given by the user requesting the offloading
+	 *  @param provider is the "ITResourceOrchestration" element retrieved from XML given by the user offering the resources
 	 */
 	public HarmonizationManager(ITResourceOrchestrationType provider, ITResourceOrchestrationType consumer) {
 
@@ -39,9 +39,9 @@ public class HarmonizationManager {
 		this.consumerIntents = consumer;
 		
 		/**
-		 * In the current version, all the data about the cluster is hard-coded here. TEMPORARY!
-		 * Final version should retrieve these data from the API server of peered clusters.
-		 * QUESTION: is this needed or plausible? Hosting cluster can access all the data about the requesting cluster? (don't think so...)
+		 * In the current version, all the data about the cluster is hard-coded here (temporary solution).
+		 * TODO: final version should retrieve these data from the API server of peered clusters.
+		 * 		 need to understand which data is needed.
 		 */
 		initializeClusterData();
 
@@ -53,46 +53,46 @@ public class HarmonizationManager {
 		/**
 		 *  First, the intents are extracted from the given data structure into three different lists (for both provider and consumer):
 		 *  	- "AuthorizationIntents"
-		 *  	- "IntraVClusterConfiguration"
-		 *  	- "InterVClusterConfiguration"
+		 *  	- "PrivateIntents"
+		 *  	- "RequestIntents"
 		 */
 		loggerInfo.debug("[harmonization] - parse the received ITResourceOrchestration types to extract the CONSUMER/PROVIDER intent sets.");
 		this.authIntentsProvider = providerIntents.getITResource().stream()
 				.filter(it -> it.getConfiguration().getClass().equals(AuthorizationIntents.class))
 				.map(it -> (AuthorizationIntents) it.getConfiguration()).findFirst().orElse(null);
-		this.intraVClusterProvider = providerIntents.getITResource().stream()
-				.filter(it -> it.getConfiguration().getClass().equals(IntraVClusterConfiguration.class))
-				.map(it -> (IntraVClusterConfiguration) it.getConfiguration()).findFirst().orElse(null);
-		this.interVClusterProvider = providerIntents.getITResource().stream()
-				.filter(it -> it.getConfiguration().getClass().equals(InterVClusterConfiguration.class))
-				.map(it -> (InterVClusterConfiguration) it.getConfiguration()).findFirst().orElse(null);
+		this.privateIntentsProvider = providerIntents.getITResource().stream()
+				.filter(it -> it.getConfiguration().getClass().equals(PrivateIntents.class))
+				.map(it -> (PrivateIntents) it.getConfiguration()).findFirst().orElse(null);
+		this.requestIntentsProvider = providerIntents.getITResource().stream()
+				.filter(it -> it.getConfiguration().getClass().equals(RequestIntents.class))
+				.map(it -> (RequestIntents) it.getConfiguration()).findFirst().orElse(null);
 		
 		
 		this.authIntentsConsumer = consumerIntents.getITResource().stream()
 				.filter(it -> it.getConfiguration().getClass().equals(AuthorizationIntents.class))
 				.map(it -> (AuthorizationIntents) it.getConfiguration()).findFirst().orElse(null);		
-		this.intraVClusterConsumer = consumerIntents.getITResource().stream()
-				.filter(it -> it.getConfiguration().getClass().equals(IntraVClusterConfiguration.class))
-				.map(it -> (IntraVClusterConfiguration) it.getConfiguration()).findFirst().orElse(null);
-		this.interVClusterConsumer = consumerIntents.getITResource().stream()
-				.filter(it -> it.getConfiguration().getClass().equals(InterVClusterConfiguration.class))
-				.map(it -> (InterVClusterConfiguration) it.getConfiguration()).findFirst().orElse(null);
+		this.privateIntentsConsumer = consumerIntents.getITResource().stream()
+				.filter(it -> it.getConfiguration().getClass().equals(PrivateIntents.class))
+				.map(it -> (PrivateIntents) it.getConfiguration()).findFirst().orElse(null);
+		this.requestIntentsConsumer = consumerIntents.getITResource().stream()
+				.filter(it -> it.getConfiguration().getClass().equals(RequestIntents.class))
+				.map(it -> (RequestIntents) it.getConfiguration()).findFirst().orElse(null);
 	
 
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET +"Received the following " + Main.ANSI_YELLOW + "Request intents" + Main.ANSI_RESET + " (CONSUMER):");
-		for(ConfigurationRule cr: this.interVClusterConsumer.getConfigurationRule()) {
+		for(ConfigurationRule cr: this.requestIntentsConsumer.getConfigurationRule()) {
 			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
 			System.out.print("   (*) " + cr.getName() + " - ");
-			Utils.printKubernetesNetworkFilteringCondition(cond);
+			System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
 		}
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET +"Local cluster defined the following " + Main.ANSI_YELLOW + "Request intents" + Main.ANSI_RESET + " (PROVIDER):");
-		for(ConfigurationRule cr: this.interVClusterProvider.getConfigurationRule()) {
+		for(ConfigurationRule cr: this.requestIntentsProvider.getConfigurationRule()) {
 			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
 			System.out.print("  (*) " + cr.getName() + " - ");
-			Utils.printKubernetesNetworkFilteringCondition(cond);
+			System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
 		}
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		
@@ -102,14 +102,14 @@ public class HarmonizationManager {
 		for(ConfigurationRule cr: this.authIntentsProvider.getForbiddenConnectionList()) {
 			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
 			System.out.print("   | (*) " + cr.getName() + " - ");
-			Utils.printKubernetesNetworkFilteringCondition(cond);
+			System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
 		}
 		System.out.print("   |\n");
 		System.out.print("   .-> " + Main.ANSI_YELLOW + "MandatoryConnectionList" + Main.ANSI_RESET + ":\n");
 		for(ConfigurationRule cr: this.authIntentsProvider.getMandatoryConnectionList()) {
 			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
 			System.out.print("   (*) " + cr.getName() + " - ");
-			Utils.printKubernetesNetworkFilteringCondition(cond);
+			System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
 		}
 
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
@@ -121,42 +121,28 @@ public class HarmonizationManager {
 		 * 		2) provider asks for a mandatory connection not asked by the provider -> these are forced into the final set of "Consumer" intents
 		 * 		3) consumer asks for a connection TO a service in the provider space and this is not forbidden by host -> these are forced into the final set of "Provider" intents
 		 */
-		List <ConfigurationRule> harmonizedInterVClusterConsumerRules = solveTypeOneDiscordances();
-		harmonizedInterVClusterConsumerRules = solverTypeTwoDiscordances(harmonizedInterVClusterConsumerRules);
-		List <ConfigurationRule> harmonizedInterVClusterProviderRules = solverTypeThreeDiscordances(harmonizedInterVClusterConsumerRules);
+		List <ConfigurationRule> harmonizedRequest_Consumer = solveTypeOneDiscordances();
+		harmonizedRequest_Consumer = solverTypeTwoDiscordances(harmonizedRequest_Consumer);
+		List <ConfigurationRule> harmonizedRequest_Provider = solverTypeThreeDiscordances(harmonizedRequest_Consumer);
 		
 		/**
 		 * Finally, write the resulting Intents in the original data structures so that they can be retrieved
 		 */
-//		this.consumerIntents.getITResource().stream().map(
-//				x -> {
-//					if(x.getConfiguration().getClass().equals(IntraVClusterConfiguration.class)) {
-//						IntraVClusterConfiguration tmp = (IntraVClusterConfiguration)x.getConfiguration();
-//						tmp.getConfigurationRule().clear();
-//						tmp.getConfigurationRule().addAll(harmonizedInterVClusterConsumerRules);
-//						return tmp;
-//					} else {
-//						return x;
-//					}
-//				}).close();
 		for(ITResourceType IT_rt: this.consumerIntents.getITResource()) {
-			if(IT_rt.getConfiguration().getClass().equals(InterVClusterConfiguration.class)) {
-				InterVClusterConfiguration tmp = (InterVClusterConfiguration) IT_rt.getConfiguration();
+			if(IT_rt.getConfiguration().getClass().equals(RequestIntents.class)) {
+				RequestIntents tmp = (RequestIntents) IT_rt.getConfiguration();
 				tmp.getConfigurationRule().clear();
-				tmp.getConfigurationRule().addAll(harmonizedInterVClusterConsumerRules);
+				tmp.getConfigurationRule().addAll(harmonizedRequest_Consumer);
 			}
 		}
 		
 		for(ITResourceType IT_rt: this.providerIntents.getITResource()) {
-			if(IT_rt.getConfiguration().getClass().equals(InterVClusterConfiguration.class)) {
-				InterVClusterConfiguration tmp = (InterVClusterConfiguration) IT_rt.getConfiguration();
+			if(IT_rt.getConfiguration().getClass().equals(RequestIntents.class)) {
+				RequestIntents tmp = (RequestIntents) IT_rt.getConfiguration();
 				tmp.getConfigurationRule().clear();
-				tmp.getConfigurationRule().addAll(harmonizedInterVClusterProviderRules);
+				tmp.getConfigurationRule().addAll(harmonizedRequest_Provider);
 			}
 		}
-		
-		
-		
 	}
 	
 	private void initializeHashMaps() {
@@ -290,7 +276,7 @@ public class HarmonizationManager {
 
 	/**
 	 * Discordances of Type-2 happens when the "mandatoryConnectionList" of the provider is not completely satisfied by the consumer.
-	 * If this happens, additional rules are added to the inter-VCluster set of the consumer.
+	 * If this happens, additional rules are added to the Harmonized-Request set of the consumer.
 	 */
 	private List<ConfigurationRule> solverTypeTwoDiscordances(List<ConfigurationRule> harmonizedRequestConsumerRules) {
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
@@ -301,39 +287,24 @@ public class HarmonizationManager {
 		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
 
 		harmonizedRules.addAll(harmonizedRequestConsumerRules);
-		// BASIC VERSION: add all the mandatoryConnectionList of the provider to the consumer's interVCluster list.
-		
-//		for(ConfigurationRule cr_provider: this.authIntentsProvider.getMandatoryConnectionList()) {
-//			Boolean found = false;
-//			for(ConfigurationRule cr_consumer: harmonizedRequestConsumerRules) {
-//				if(Utils.compareConfigurationRule(cr_provider, cr_consumer)) {
-//					found = true;
-//				}
-//			}
-//			if(!found) {
-//				harmonizedRules.add(Utils.deepCopyConfigurationRule(cr_provider));
-//			}
-//		}
-		// ADVANCED VERSION:
+
 		/*
-		 * Like TYPE-2 but computing the difference between the mandatoryConnectionList of the provider and the harmonizedRequestIntents of the consumer.
+		 * Like TYPE-1 but computing the difference between the mandatoryConnectionList of the provider and the harmonizedRequestIntents of the consumer.
 		 * Then, the resulting harmonizedRequestIntents = harmonizedRequestIntents + (mandatoryConnectionList - harmonizedRequestIntents).
 		 */
 		for(ConfigurationRule cr_provider: this.authIntentsProvider.getMandatoryConnectionList()) {
 			List<ConfigurationRule> tmp = harmonizeForbiddenConnectionIntent_Provider(cr_provider, harmonizedRules);
 			for (ConfigurationRule cr : tmp)
-//				harmonizedRules.add(Utils.deepCopyConfigurationAndInvertVCluster(cr));
 				harmonizedRules.add(Utils.deepCopyConfigurationRule(cr));
 		}
 		
 		
-
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET + "List of "+ Main.ANSI_YELLOW + "harmonized CONSUMER intents" +Main.ANSI_RESET +" after type-2 discordances resolution:");
 		for(ConfigurationRule cr: harmonizedRules) {
 			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
 			System.out.print("   (*) " + cr.getName() + " - ");
-			Utils.printKubernetesNetworkFilteringCondition(cond);
+			System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
 		}
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		return harmonizedRules;
@@ -341,8 +312,8 @@ public class HarmonizationManager {
 
 
 	/**
-	 * Discordances of Type-3 happens when the (inter-VCluster) connections requested by the consumer, and AUTHORIZED by the provider, do not have a corresponding rule in the hosting cluster.
-	 * If this happens, additional rules are added to the inter-VCluster set of the provider.
+	 * Discordances of Type-3 happens when the Requested intents of the consumer, already AUTHORIZED by the provider, do not have a corresponding rule in the hosting cluster.
+	 * If this happens, additional rules are added to the harmonized-Request set of the provider in order to create the "hole".
 	 */
 	private List<ConfigurationRule> solverTypeThreeDiscordances(List<ConfigurationRule> harmonizedRequestConsumerRules) {
 		
@@ -350,30 +321,11 @@ public class HarmonizationManager {
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW + "TYPE-3 DISCORDANCES"+ Main.ANSI_RESET + /*" = when elements in the Requested set of intents (CONSUMER), that have already been authorized, don't have a specular intent on the PROVIDER's Requested set (which is needed to open the \"hole\" in the protected border)*/"...press ENTER to continue.");
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
-		
 		scan.nextLine();
 		
 		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
 
-		harmonizedRules.addAll(this.interVClusterProvider.getConfigurationRule());
-		// External loop over the interVClusterConsumer list.
-//		for(ConfigurationRule cr_consumer: harmonizedRequestConsumerRules) {
-//			// Inner loop over the InterVClusterProvider list.
-//			Boolean found = false;
-//			// BASIC VERSION: just see if an identical rule is present.
-//			for(ConfigurationRule cr_provider: this.interVClusterProvider.getConfigurationRule()) {
-//				// If the current consumer rule has not a corresponding rule in the provider list, add it.
-//				if(Utils.compareConfigurationRule(cr_consumer, cr_provider)) {
-//					found = true;
-//				}
-//			}
-//			if(!found) {
-//				harmonizedRules.add(Utils.deepCopyConfigurationAndInvertVCluster(cr_consumer));
-//			}
-//		}
-		
-		// ADVANCED VERSION: see if a rule is present that contains the current consumer rule. If not, add it or the non-overlapping part of it.
-		
+		harmonizedRules.addAll(this.requestIntentsProvider.getConfigurationRule());
 		/*
 		 *  Basically like for TYPE-1 but instead of being "requested - forbidden" it is "requested - private(hostingVC)".
 		 *  The final harmonized set is: private(hostingVC) + (requested - private(hostingVC)).
@@ -390,7 +342,7 @@ public class HarmonizationManager {
 		for(ConfigurationRule cr: harmonizedRules) {
 			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
 			System.out.print("   (*) " + cr.getName() + " - ");
-			Utils.printKubernetesNetworkFilteringCondition(cond);
+			System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
 		}
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		
@@ -398,7 +350,7 @@ public class HarmonizationManager {
 	}
 
 	/**
-	 * Discordances of Type-1 happens when the (inter-VCluster) connections requested by the consumer are not all authorized by the provider.
+	 * Discordances of Type-1 happens when the Requested Intents of the consumer are not all authorized by the provider.
 	 * This function gets all the consumer.Requested connections and perform the set operation: 
 	 * 		(consumer.Requested) - (provider.AuthorizationIntents.deniedConnectionsList)
 	 * i.e., remove from the requested connections those overlapping with the forbidden ones.
@@ -408,12 +360,11 @@ public class HarmonizationManager {
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW + "TYPE-1 DISCORDANCES"+ Main.ANSI_RESET +/*" = when Requested intents (CONSUMER) are not authorized by the Authorization intents (PROVIDER)"*/"...press ENTER to continue.");
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
-		
 		scan.nextLine();
 		
 		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
 		// External loop over the interVClusterConsumer list.
-		for(ConfigurationRule cr: this.interVClusterConsumer.getConfigurationRule()) {
+		for(ConfigurationRule cr: this.requestIntentsConsumer.getConfigurationRule()) {
 			loggerInfo.debug("[harmonization/harmonizeForbiddenConnectionIntent] - processing rule { [" + cr.getName() +"]" + Utils.kubernetesNetworkFilteringConditionToString((KubernetesNetworkFilteringCondition) cr.getConfigurationCondition()) + "}");
 			harmonizedRules.addAll(harmonizeForbiddenConnectionIntent(cr,this.authIntentsProvider.getForbiddenConnectionList()));
 		}		
@@ -423,7 +374,7 @@ public class HarmonizationManager {
 		for(ConfigurationRule cr: harmonizedRules) {
 			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
 			System.out.print("   (*) " + cr.getName() + " - ");
-			Utils.printKubernetesNetworkFilteringCondition(cond);
+			System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
 		}
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		

@@ -47,8 +47,6 @@
     	<version>2.20.0</version>
 	</dependency>
 
-
-
   </dependencies>
   
     
@@ -66,6 +64,7 @@
 					  <goals>
 						  <goal>xjc</goal>
 					  </goals>
+					  
 				  </execution>
 			  </executions>
 			  <configuration>
@@ -73,7 +72,7 @@
                 <packageName>eu.fluidos.jaxb</packageName>
                 <!-- The path of the XSD -->
                 <sources>
-					<source>${basedir}/xsd/mspl.xsd</source>
+					<source>${basedir}/xsd</source>
 				</sources>
 				<!-- The directory where the java classes will be generated -->
 				<outputDirectory>${basedir}/gen-src</outputDirectory>

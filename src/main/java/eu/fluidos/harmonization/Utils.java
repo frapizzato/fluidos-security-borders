@@ -124,35 +124,6 @@ public class Utils {
 	}
 
 	/**
-	 * Function print a KubernetesNetworkFilteringCondition.
-	 * @param cond is the condition to be printed.
-	 * @return void (the function just prints the condition to the console)
-	 */
-	public static void printKubernetesNetworkFilteringCondition(KubernetesNetworkFilteringCondition cond) {
-		if(cond.getSource().getClass().equals(PodNamespaceSelector.class)){
-			PodNamespaceSelector pns = (PodNamespaceSelector) cond.getSource();
-			System.out.print("Src: [" +  pns.getPod().stream()
-					.map(it -> it.getKey() + ":" + it.getValue())
-					.reduce("", (a,b) -> a + " " + b) + " - " + pns.getNamespace().get(0).getKey() + ":" + pns.getNamespace().get(0).getValue() + " ], ");
-		} else {
-			CIDRSelector cidr = (CIDRSelector) cond.getSource();
-			System.out.print("Src: [" + cidr.getAddressRange() + "], ");
-		}
-		System.out.print("SrcPort: [" + cond.getSourcePort() + "], ");
-		if(cond.getDestination().getClass().equals(PodNamespaceSelector.class)){
-			PodNamespaceSelector pns = (PodNamespaceSelector) cond.getDestination();
-			System.out.print("Dst: [" + pns.getPod().stream()
-					.map(it -> it.getKey() + ":" + it.getValue())
-					.reduce("", (a,b) -> a + " " + b) + " - " + pns.getNamespace().get(0).getKey() + ":" + pns.getNamespace().get(0).getValue() + " ], ");
-		} else {
-			CIDRSelector cidr = (CIDRSelector) cond.getDestination();
-			System.out.print("Dst: [" + cidr.getAddressRange() + "], ");
-		}
-		System.out.print("DstPort: [" + cond.getDestinationPort() + "], ");
-		System.out.print("ProtocolType: [" + cond.getProtocolType() + "]\n");
-	}
-
-	/**
 	 * Function convert a KubernetesNetworkFilteringCondition into a string.
 	 * @param cond is the condition to be printed.
 	 * @return the string representation
@@ -236,12 +207,10 @@ public class Utils {
 				res.addAll(computeHarmonizedPodNamespaceSelector(pns1, pns2, podsByNamespaceAndLabelsConsumer));
 			} else {
 				// There is not compatibility between the two selectors... they cover different clusters.
-				//System.out.println("Can not compute the difference between two PodNamespaceSelectors that refer to different clusters");
 				return null;
 			}
 		} else {
 			// If one is a CIDRSelector and the other is a PodNamespaceSelector, then we can not compute the difference (for the moment...)
-			//System.out.println("Can not compute the difference between a CIDRSelector and a PodNamespaceSelector");
 			return null;
 		}
 		
@@ -326,14 +295,15 @@ public class Utils {
 		//BEWARE! Here it make the hypothesis that first selectors defined by CONSUMER, and second by PROVIDER. This allows to define the meaning of "isHostCluster" field.
 		// NOOOOOO---> to compare they should refer to same cluster, this complexity is handled by the caller (checking if both use "isHost" etc..)
 		
-		// Special case-1: select all cluster's pods
 		if(pns1.getNamespace().get(0).getKey().equals("*") && pns1.getNamespace().get(0).getValue().equals("*") && 
 			pns1.getPod().get(0).getKey().equals("*") && pns1.getPod().get(0).getValue().equals("*")){
+			// Special case-1: select all cluster's pods
+			
 			// Select all pods in the cluster
 			pns1SelectedPods.addAll(clusterMap.values().stream().flatMap(it -> it.values().stream()).flatMap(it -> it.stream()).collect(Collectors.toList()));
-		}
-		// Special case-2: select all pods in the namespace
-		if(pns1.getPod().get(0).getKey().equals("*") && pns1.getPod().get(0).getValue().equals("*")){
+		} else if(pns1.getPod().get(0).getKey().equals("*") && pns1.getPod().get(0).getValue().equals("*")){
+			// Special case-2: select all pods in the namespace
+			
 			// Select all pods in the namespace
 			for(KeyValue ns : pns1.getNamespace()) {
 				if(clusterMap.containsKey(ns.getKey() + ":" + ns.getValue())) {
@@ -342,9 +312,9 @@ public class Utils {
 					}
 				}
 			}
-		}
-		// Special case-3: select all namespaces with a specific pod label
-		if(pns1.getNamespace().get(0).getKey().equals("*") && pns1.getNamespace().get(0).getValue().equals("*")){
+		} else if(pns1.getNamespace().get(0).getKey().equals("*") && pns1.getNamespace().get(0).getValue().equals("*")){
+			// Special case-3: select all namespaces with a specific pod label
+			
 			// Select all namespaces with a specific pod label
 			for(KeyValue pod : pns1.getPod()) {
 				for(HashMap<String, List<Pod>> pods : clusterMap.values()) {
@@ -353,28 +323,31 @@ public class Utils {
 					}
 				}
 			}
-		}
-		// Normal selection: select specific pods in specific namespaces
-		for(KeyValue ns : pns1.getNamespace()) {
-			// Search namespace and pod in the clusterMap...
-			if(clusterMap.containsKey(ns.getKey() + ":" + ns.getValue())) {
-				for(KeyValue pod : pns1.getPod()) {
-					if(clusterMap.get(ns.getKey() + ":" + ns.getValue()).containsKey(pod.getKey() + ":" + pod.getValue())) {
-						pns1SelectedPods.addAll(clusterMap.get(ns.getKey() + ":" + ns.getValue()).get(pod.getKey() + ":" + pod.getValue()));
+		} else {
+			// Normal selection: select specific pods in specific namespaces
+			for(KeyValue ns : pns1.getNamespace()) {
+				// Search namespace and pod in the clusterMap...
+				if(clusterMap.containsKey(ns.getKey() + ":" + ns.getValue())) {
+					for(KeyValue pod : pns1.getPod()) {
+						if(clusterMap.get(ns.getKey() + ":" + ns.getValue()).containsKey(pod.getKey() + ":" + pod.getValue())) {
+							pns1SelectedPods.addAll(clusterMap.get(ns.getKey() + ":" + ns.getValue()).get(pod.getKey() + ":" + pod.getValue()));
+						}
 					}
 				}
 			}
 		}
 
 		// Repeat everything for pns2...
-		// Special case-1: select all cluster's pods
+
 		if(pns2.getNamespace().get(0).getKey().equals("*") && pns2.getNamespace().get(0).getValue().equals("*") && 
 			pns2.getPod().get(0).getKey().equals("*") && pns2.getPod().get(0).getValue().equals("*")){
+			// Special case-1: select all cluster's pods
+			
 			// Select all pods in the cluster
 			pns2SelectedPods.addAll(clusterMap.values().stream().flatMap(it -> it.values().stream()).flatMap(it -> it.stream()).collect(Collectors.toList()));
-		}
-		// Special case-2: select all pods in the namespace
-		if(pns2.getPod().get(0).getKey().equals("*") && pns2.getPod().get(0).getValue().equals("*")){
+		} else if(pns2.getPod().get(0).getKey().equals("*") && pns2.getPod().get(0).getValue().equals("*")){
+			// Special case-2: select all pods in the namespace
+			
 			// Select all pods in the namespace
 			for(KeyValue ns : pns2.getNamespace()) {
 				if(clusterMap.containsKey(ns.getKey() + ":" + ns.getValue())) {
@@ -383,9 +356,9 @@ public class Utils {
 					}
 				}
 			}
-		}
-		// Special case-3: select all namespaces with a specific pod label
-		if(pns2.getNamespace().get(0).getKey().equals("*") && pns2.getNamespace().get(0).getValue().equals("*")){
+		} else if(pns2.getNamespace().get(0).getKey().equals("*") && pns2.getNamespace().get(0).getValue().equals("*")){
+			// Special case-3: select all namespaces with a specific pod label
+			
 			// Select all namespaces with a specific pod label
 			for(KeyValue pod : pns2.getPod()) {
 				for(HashMap<String, List<Pod>> pods : clusterMap.values()) {
@@ -394,13 +367,14 @@ public class Utils {
 					}
 				}
 			}
-		}
-		// Normal selection: select specific pods in specific namespaces
-		for(KeyValue ns : pns2.getNamespace()) {
-			if(clusterMap.containsKey(ns.getKey() + ":" + ns.getValue())) {
-				for(KeyValue pod : pns2.getPod()) {
-					if(clusterMap.get(ns.getKey() + ":" + ns.getValue()).containsKey(pod.getKey() + ":" + pod.getValue())) {
-						pns2SelectedPods.addAll(clusterMap.get(ns.getKey() + ":" + ns.getValue()).get(pod.getKey() + ":" + pod.getValue()));
+		} else {
+			// Normal selection: select specific pods in specific namespaces
+			for(KeyValue ns : pns2.getNamespace()) {
+				if(clusterMap.containsKey(ns.getKey() + ":" + ns.getValue())) {
+					for(KeyValue pod : pns2.getPod()) {
+						if(clusterMap.get(ns.getKey() + ":" + ns.getValue()).containsKey(pod.getKey() + ":" + pod.getValue())) {
+							pns2SelectedPods.addAll(clusterMap.get(ns.getKey() + ":" + ns.getValue()).get(pod.getKey() + ":" + pod.getValue()));
+						}
 					}
 				}
 			}
@@ -478,7 +452,6 @@ public class Utils {
 	 * @param cidr2 is the second CIDR range.
 	 * @return is the resulting of first CIDR range MINUS second CIDR range (could be multiple ranges separated by a semicolon). If the difference is empty, then the function returns null.
 	 */
-	// Questa funzione calcola la differenza fra due range di indirizzi espressi con notazione CIDR
 	private static String cidrDifference(String cidr1, String cidr2) {
   		String resString = "";
 
@@ -676,22 +649,6 @@ public class Utils {
 		cr_inverse_cond.getSource().setIsHostCluster(!cr_inverse_cond.getSource().isIsHostCluster());
 		cr_inverse_cond.getDestination().setIsHostCluster(!cr_inverse_cond.getDestination().isIsHostCluster());
 
-		/*
-		ConfigurationRule cr_inverse = new ConfigurationRule();
-		cr_inverse.setName(cr.getName()+"_harmonized");
-		cr_inverse.setConfigurationRuleAction(cr.getConfigurationRuleAction());
-		KubernetesNetworkFilteringCondition cr_inverse_cond = new KubernetesNetworkFilteringCondition();
-		KubernetesNetworkFilteringCondition cr_cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
-		cr_inverse_cond.setSource(cr_cond.getSource());
-		cr_inverse_cond.setDestination(cr_cond.getDestination());
-		//Should invert the flag on both source and destination...
-		cr_inverse_cond.getDestination().setIsHostCluster(!cr_cond.getDestination().isIsHostCluster());
-		cr_inverse_cond.getSource().setIsHostCluster(!cr_cond.getSource().isIsHostCluster());
-		cr_inverse_cond.setSourcePort(cr_cond.getSourcePort());
-		cr_inverse_cond.setDestinationPort(cr_cond.getDestinationPort());
-		cr_inverse_cond.setProtocolType(cr_cond.getProtocolType());
-		cr_inverse.setConfigurationCondition(cr_inverse_cond);
-		*/
 		return cr_inverse;
 	}
 }

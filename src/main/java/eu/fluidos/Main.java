@@ -38,7 +38,7 @@ public class Main
     public static void main( String[] args )
     {    	
     	String arg_1 = "./testfile/provider_MSPL_demo.xml";
-    	String arg_2 = "./testfile/consumer_MSPL_demo.xml";
+    	String arg_2 = "./testfile/consumer_MSPL_demo_2.xml";
     	
     	System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
     	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_YELLOW + "   Harmonization Module" + ANSI_RESET + " has the scope of detecting and correcting all the discordances between consumer and provider intents.");
