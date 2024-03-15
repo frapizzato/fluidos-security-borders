@@ -6,9 +6,7 @@ metadata:
 spec:
   ingress:
   - from:
-    - namespaceSelector:
-        matchLabels:
-          name: '*'
+    - {}
     ports:
     - port: '80'
       protocol: TCP

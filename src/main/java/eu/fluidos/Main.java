@@ -58,7 +58,7 @@ public class Main
         	// User offering some resources
         	Object tmp_2 = u.unmarshal(new FileInputStream(arg_2));
         	ITResourceOrchestrationType intents_2 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_2).getValue(); 
-			Traslator intent_traslation = new Traslator(intents_2);
+			Traslator intent_traslation = new Traslator(intents_1);
 
 			
         	//HarmonizationManager res = new HarmonizationManager(intents_1, intents_2);

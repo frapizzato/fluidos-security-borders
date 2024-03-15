@@ -14,11 +14,6 @@ spec:
     ports:
     - port: '*'
       protocol: '*'
-  podSelector:
-    matchExpressions:
-    - key: PodIp
-      operator: In
-      values:
-      - 0.0.0.0/0
+  podSelector: {}
   policyTypes:
   - Ingress
