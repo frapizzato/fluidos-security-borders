@@ -9,38 +9,6 @@ import java.util.stream.Collectors;
 
 public class Utils {
 	/**
-	 * Function to create a deep copy of a ConfigurationRule.
-	 * @param it the ConfigurationRule to be copied.
-	 * @return the deep copy of the ConfigurationRule.
-	 */
-	public static ConfigurationRule deepCopyConfigurationRule(ConfigurationRule it) {
-		ConfigurationRule res = new ConfigurationRule();
-		res.setName(it.getName());
-		res.setIsCNF(it.isIsCNF());
-		res.getHSPL().addAll(it.getHSPL());
-		res.setExternalData(it.getExternalData());
-		res.setConfigurationRuleAction(it.getConfigurationRuleAction());
-		res.setConfigurationCondition(deepCopyKubernetesNetworkFilterConfigurationCondition((KubernetesNetworkFilteringCondition) it.getConfigurationCondition()));
-		return res;
-	}
-
-	/**
-	 * Function to create a deep copy of a KubernetesNetworkFilteringCondition.
-	 * @param it the KubernetesNetworkFilteringCondition to be copied.
-	 * @return the deep copy of the KubernetesNetworkFilteringCondition.
-	 */
-	private static KubernetesNetworkFilteringCondition deepCopyKubernetesNetworkFilterConfigurationCondition(KubernetesNetworkFilteringCondition it) {
-		KubernetesNetworkFilteringCondition k = new KubernetesNetworkFilteringCondition();
-		k.setIsCNF(it.isIsCNF());
-		k.setProtocolType(it.getProtocolType());
-		k.setDestination(it.getDestination());
-		k.setSource(it.getSource());
-		k.setDestinationPort(it.getDestinationPort());
-		k.setSourcePort(it.getSourcePort());
-		return k;
-	}
-
-	/**
 	 * Function to compute the difference between two port ranges.
 	 * @param portRangeX is the first port range.
 	 * @param portRangeY is the second port range.
@@ -153,24 +121,25 @@ public class Utils {
 		res = res + "ProtocolType: [" + cond.getProtocolType() + "]";
 		return res;
 	}
+	
 	/**
 	 * Function to compute the difference between two different resourceSelectors.
-	 * @param selector1 is the first resourceSelector.
-	 * @param selector2 is the second resourceSelector.
-	 * @param podsByNamespaceAndLabelsConsumer is the hashmap of pods grouped by namespace and labels for the consumer cluster.
-	 * @param podsByNamespaceAndLabelsProvider  is the hashmap of pods grouped by namespace and labels for the provider cluster.
-	 * @return the list of harmonized resourceSelector (selecting the resources that are selected by selector1 and NOT by selector2)
+	 * @param sel_1 is the first resourceSelector.
+	 * @param sel_2 is the second resourceSelector.
+	 * @param map_1 is the hashmap of pods grouped by namespace and labels for the first selector's cluster.
+	 * @param map_2  is the hashmap of pods grouped by namespace and labels for the second selector's cluster.
+	 * @return the list of harmonized resourceSelector; i.e. the set difference between them, so the selector for the resources that are selected by sel_1 and NOT by sel_2)
 	 */
-	public static List<ResourceSelector> computeHarmonizedResourceSelector(ResourceSelector selector1, ResourceSelector selector2, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer) {
+	public static List<ResourceSelector> computeHarmonizedResourceSelector(ResourceSelector sel_1, ResourceSelector sel_2, HashMap<String, HashMap<String, List<Pod>>> map_1, HashMap<String, HashMap<String, List<Pod>>> map_2) {
 		Boolean isCIDR_1 = false, isCIDR_2 = false;
 		List<ResourceSelector> res = new ArrayList<ResourceSelector>();
 
-		if(selector1.getClass().equals(PodNamespaceSelector.class)){
+		if(sel_1.getClass().equals(PodNamespaceSelector.class)){
 			isCIDR_1 = false;
 		} else {
 			isCIDR_1 = true;
 		}
-		if(selector2.getClass().equals(PodNamespaceSelector.class)){
+		if(sel_2.getClass().equals(PodNamespaceSelector.class)){
 			isCIDR_2 = false;
 		} else {
 			isCIDR_2 = true;
@@ -178,8 +147,8 @@ public class Utils {
 
 		// If both are CIDRSelectors, then we can compute the difference in this way.
 		if(isCIDR_1 && isCIDR_2){
-			CIDRSelector cidr1 = (CIDRSelector) selector1;
-			CIDRSelector cidr2 = (CIDRSelector) selector2;
+			CIDRSelector cidr1 = (CIDRSelector) sel_1;
+			CIDRSelector cidr2 = (CIDRSelector) sel_2;
 			String resCIDRHarmonization = cidrDifference(cidr1.getAddressRange(), cidr2.getAddressRange());
 			if(resCIDRHarmonization == null) {
 				return res;				
@@ -193,80 +162,22 @@ public class Utils {
 			return res;
 		} else if(!isCIDR_1 && !isCIDR_2){
 			// If both are PodNamespaceSelectors, then we can compute the difference in this way.
-			PodNamespaceSelector pns1 = (PodNamespaceSelector) selector1;
-			PodNamespaceSelector pns2 = (PodNamespaceSelector) selector2;
-			/*
-			 * STRONG ASSUMPTION HERE: the first selector is DEFINED BY CONSUMER, and the second selector is DEFINED BY PROVIDER.
-			 */
+			PodNamespaceSelector pns1 = (PodNamespaceSelector) sel_1;
+			PodNamespaceSelector pns2 = (PodNamespaceSelector) sel_2;
+
 			// First, need to check if the two selectors refer to the same cluster.
 			if(pns1.isIsHostCluster() && !pns2.isIsHostCluster()) {
-				// CONSUMER considers the host cluster, the PROVIDER considers the local one. Use the hashmap of the PROVIDER.
-				res.addAll(computeHarmonizedPodNamespaceSelector(pns1, pns2, podsByNamespaceAndLabelsProvider));
+				// sel_1 considers the host cluster, sel_2 considers the local one. Use map_2.
+				res.addAll(computeHarmonizedPodNamespaceSelector(pns1, pns2, map_2));
 			} else if(!pns1.isIsHostCluster() && pns2.isIsHostCluster()){
-				// CONSUMER considers the local cluster, the PROVIDER considers the remote one. Use the hashmap of the CONSUMER.
-				res.addAll(computeHarmonizedPodNamespaceSelector(pns1, pns2, podsByNamespaceAndLabelsConsumer));
+				// sel_1 considers the local cluster, sel_2 considers the remote one. Use map_1.
+				res.addAll(computeHarmonizedPodNamespaceSelector(pns1, pns2, map_1));
 			} else {
 				// There is not compatibility between the two selectors... they cover different clusters.
 				return null;
 			}
 		} else {
 			// If one is a CIDRSelector and the other is a PodNamespaceSelector, then we can not compute the difference (for the moment...)
-			return null;
-		}
-		
-		return res;
-	}
-
-	public static List<ResourceSelector> computeHarmonizedResourceSelector_provider(ResourceSelector selector1, ResourceSelector selector2, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer) {
-		Boolean isCIDR_1 = false, isCIDR_2 = false;
-		List<ResourceSelector> res = new ArrayList<ResourceSelector>();
-
-		if(selector1.getClass().equals(PodNamespaceSelector.class)){
-			isCIDR_1 = false;
-		} else {
-			isCIDR_1 = true;
-		}
-		if(selector2.getClass().equals(PodNamespaceSelector.class)){
-			isCIDR_2 = false;
-		} else {
-			isCIDR_2 = true;
-		}
-
-		// If both are CIDRSelectors, then we can compute the difference in this way.
-		if(isCIDR_1 && isCIDR_2){
-			CIDRSelector cidr1 = (CIDRSelector) selector1;
-			CIDRSelector cidr2 = (CIDRSelector) selector2;
-			String resCIDRHarmonization = cidrDifference(cidr1.getAddressRange(), cidr2.getAddressRange());
-			if(resCIDRHarmonization == null) {
-				return res;				
-			}
-			// Convert the resulting CIDR strings into CIDRSelectors.
-			for(String s: resCIDRHarmonization.split(";")){
-				CIDRSelector tmp = new CIDRSelector();
-				tmp.setAddressRange(s);
-				res.add(tmp);
-			}
-			return res;
-		} else if(!isCIDR_1 && !isCIDR_2){
-			// If both are PodNamespaceSelectors, then we can compute the difference in this way.
-			PodNamespaceSelector pns1 = (PodNamespaceSelector) selector1;
-			PodNamespaceSelector pns2 = (PodNamespaceSelector) selector2;
-			/*
-			 * STRONG ASSUMPTION HERE: the first selector is DEFINED BY PROVIDER, and the second selector is DEFINED BY CONSUMER.
-			 */
-			// First, need to check if the two selectors refer to the same cluster.
-			if(pns1.isIsHostCluster() && !pns2.isIsHostCluster()) {
-				res.addAll(computeHarmonizedPodNamespaceSelector(pns1, pns2, podsByNamespaceAndLabelsProvider));
-			} else if(!pns1.isIsHostCluster() && pns2.isIsHostCluster()){
-				res.addAll(computeHarmonizedPodNamespaceSelector(pns1, pns2, podsByNamespaceAndLabelsConsumer));
-			} else {
-				// There is not compatibility between the two selectors... they cover different clusters.
-				//System.out.println("Can not compute the difference between two PodNamespaceSelectors that refer to different clusters");
-				return null;
-			}
-		} else {
-			// If one is a CIDRSelector and the other is a PodNamespaceSelector, then we can not compute the difference (for the moment...)
-			//System.out.println("Can not compute the difference between a CIDRSelector and a PodNamespaceSelector");
 			return null;
 		}
 		
@@ -276,10 +187,10 @@ public class Utils {
 	
 	/**
 	 * Function to compute the difference between two different PodNamespaceSelector.
-	 * @param selector1 is the first PodNamespaceSelector.
-	 * @param selector2 is the second PodNamespaceSelector.
+	 * @param pns1 is the first PodNamespaceSelector.
+	 * @param pns22 is the second PodNamespaceSelector.
 	 * @param c is the cluster where the selectors are applied.
-	 * @return the list of harmonized PodNamespaceSelectors (selecting the resources that are selected by selector1 and NOT by selector2)
+	 * @return the list of harmonized PodNamespaceSelectors (selecting the resources that are selected by pns1 and NOT by pns2)
 	 */
 	private static List<PodNamespaceSelector> computeHarmonizedPodNamespaceSelector(PodNamespaceSelector pns1, PodNamespaceSelector pns2, HashMap<String, HashMap<String, List<Pod>>> clusterMap) {
 
@@ -292,9 +203,6 @@ public class Utils {
 		ArrayList<Pod> pns1SelectedPods = new ArrayList<Pod>();
 		ArrayList<Pod> pns2SelectedPods = new ArrayList<Pod>();
 
-		//BEWARE! Here it make the hypothesis that first selectors defined by CONSUMER, and second by PROVIDER. This allows to define the meaning of "isHostCluster" field.
-		// NOOOOOO---> to compare they should refer to same cluster, this complexity is handled by the caller (checking if both use "isHost" etc..)
-		
 		if(pns1.getNamespace().get(0).getKey().equals("*") && pns1.getNamespace().get(0).getValue().equals("*") && 
 			pns1.getPod().get(0).getKey().equals("*") && pns1.getPod().get(0).getValue().equals("*")){
 			// Special case-1: select all cluster's pods
@@ -563,10 +471,10 @@ public class Utils {
 	}
 
 	/**
-	 * Function to check equality between two different resourceSelectors.
+	 * Function to check strict equality between two different resourceSelectors.
 	 * @param rs_1 is the first resourceSelector.
 	 * @param rs_2 is the second resourceSelector.
-	 * @return true if rs_1 and rs_2 are equal, false otherwise.
+	 * @return true if rs_1 and rs_2 are strictly equal, false otherwise.
 	 */
 	public static boolean compareResourceSelector(ResourceSelector rs_1, ResourceSelector rs_2) {
 		Boolean found;
@@ -613,28 +521,40 @@ public class Utils {
 			return false;
 		}
 	}
+	
+	
+	/**
+	 * Function to create a deep copy of a ConfigurationRule.
+	 * @param it the ConfigurationRule to be copied.
+	 * @return the deep copy of the ConfigurationRule.
+	 */
+	public static ConfigurationRule deepCopyConfigurationRule(ConfigurationRule it) {
+		ConfigurationRule res = new ConfigurationRule();
+		res.setName(it.getName());
+		res.setIsCNF(it.isIsCNF());
+		res.getHSPL().addAll(it.getHSPL());
+		res.setExternalData(it.getExternalData());
+		res.setConfigurationRuleAction(it.getConfigurationRuleAction());
+		res.setConfigurationCondition(deepCopyKubernetesNetworkFilterConfigurationCondition((KubernetesNetworkFilteringCondition) it.getConfigurationCondition()));
+		return res;
+	}
 
 	/**
-	 * Function to check equality between two different ConfigurationRules.
-	 * @param cr1 is the first ConfigurationRule.
-	 * @param cr2 is the second ConfigurationRule.
-	 * @return true if cr1 and cr2 are equal, false otherwise.
+	 * Function to create a deep copy of a KubernetesNetworkFilteringCondition.
+	 * @param it the KubernetesNetworkFilteringCondition to be copied.
+	 * @return the deep copy of the KubernetesNetworkFilteringCondition.
 	 */
-	public static boolean compareConfigurationRule(ConfigurationRule cr1, ConfigurationRule cr2) {
-		if(cr1.getName().equals(cr2.getName()) 
-			&& cr1.getConfigurationRuleAction().equals(cr2.getConfigurationRuleAction())){
-			KubernetesNetworkFilteringCondition cr1_cond = (KubernetesNetworkFilteringCondition) cr1.getConfigurationCondition();
-			KubernetesNetworkFilteringCondition cr2_cond = (KubernetesNetworkFilteringCondition) cr2.getConfigurationCondition();
-			if(compareResourceSelector(cr1_cond.getSource(), cr2_cond.getSource())
-				&& compareResourceSelector(cr1_cond.getDestination(), cr2_cond.getDestination())
-				&& cr1_cond.getSourcePort().equals(cr2_cond.getSourcePort())
-				&& cr1_cond.getDestinationPort().equals(cr2_cond.getDestinationPort())
-				&& cr1_cond.getProtocolType().equals(cr2_cond.getProtocolType())){
-				return true;
-			}
-		}
-		return false;
+	private static KubernetesNetworkFilteringCondition deepCopyKubernetesNetworkFilterConfigurationCondition(KubernetesNetworkFilteringCondition it) {
+		KubernetesNetworkFilteringCondition k = new KubernetesNetworkFilteringCondition();
+		k.setIsCNF(it.isIsCNF());
+		k.setProtocolType(it.getProtocolType());
+		k.setDestination(it.getDestination());
+		k.setSource(it.getSource());
+		k.setDestinationPort(it.getDestinationPort());
+		k.setSourcePort(it.getSourcePort());
+		return k;
 	}
+
 
 	/**
 	 * Function to deepCopy a ConfigurationRule and inverting the source and destination "isHostCluster" flags.
