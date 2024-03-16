@@ -12,9 +12,6 @@ spec:
       podSelector:
         matchLabels:
           app: order_placement
-    ports:
-    - port: '*'
-      protocol: '*'
   podSelector:
     matchLabels:
       app: product_catalogue

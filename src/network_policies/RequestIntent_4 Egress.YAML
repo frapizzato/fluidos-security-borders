@@ -5,10 +5,7 @@ metadata:
   namespace: monitoring
 spec:
   egress:
-  - ports:
-    - port: '*'
-      protocol: '*'
-    to:
+  - to:
     - namespaceSelector:
         matchLabels:
           name: fluidos

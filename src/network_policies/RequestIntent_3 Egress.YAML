@@ -5,10 +5,7 @@ metadata:
   namespace: fluidos
 spec:
   egress:
-  - ports:
-    - port: '*'
-      protocol: '*'
-    to:
+  - to:
     - ipBlock:
         cidr: 0.0.0.0/0
   podSelector:

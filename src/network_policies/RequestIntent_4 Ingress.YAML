@@ -9,9 +9,7 @@ spec:
     - namespaceSelector:
         matchLabels:
           name: monitoring
-    ports:
-    - port: '*'
-      protocol: '*'
+      podSelector: {}
   podSelector:
     matchLabels:
       app: order_placement

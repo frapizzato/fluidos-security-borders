@@ -5,10 +5,7 @@ metadata:
   namespace: fluidos
 spec:
   egress:
-  - ports:
-    - port: '*'
-      protocol: '*'
-    to:
+  - to:
     - namespaceSelector:
         matchLabels:
           name: default

@@ -61,46 +61,71 @@ public class Traslator {
             .filter(it -> it.getConfiguration().getClass().equals(InterVClusterConfiguration.class))
             .map(it -> (InterVClusterConfiguration) it.getConfiguration()).findFirst().orElse(null);
                     
-            //System.out.println("Inter VCluster:");
-            for(ConfigurationRule cr: this.interVCluster.getConfigurationRule()) {
-                KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
-                Ruleinfo rule = retrieveInfo(cond);
-                
-                //Caso in cui non ho ne un indirizzo IP come source, ne come destinazione
-                if (rule.getCidrDestination().getAddressRange() == null && rule.getCidrSource() == null){
-                    V1NetworkPolicy createdEgressNetworkPolicy = createEgressAllowNetworkPolicy(cr.getName(),rule);
-                    V1NetworkPolicy createdIngressNetworkPolicy = createIngressAllowNetworkPolicy(cr.getName(),rule);
-                    networkPolicies.add(createdEgressNetworkPolicy);
-                    networkPolicies.add(createdIngressNetworkPolicy); 
-                } else if (rule.getCidrDestination().getAddressRange() == null && rule.getCidrSource() != null){
-                    V1NetworkPolicy createdIngressNetworkPolicy = createIngressAllowNetworkPolicy(cr.getName(),rule);
-                    networkPolicies.add(createdIngressNetworkPolicy); 
-                } else if (rule.getCidrDestination().getAddressRange() != null && rule.getCidrSource() == null){
-                    V1NetworkPolicy createdEgressNetworkPolicy = createEgressAllowNetworkPolicy(cr.getName(),rule);
-                    networkPolicies.add(createdEgressNetworkPolicy);
+            
+            if (this.intraVCluster != null){
+                for(ConfigurationRule cr: this.intraVCluster.getConfigurationRule()) {
+                    KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
+                    Ruleinfo rule = retrieveInfo(cond);
+                    
+                    //Caso in cui non ho ne un indirizzo IP come source, ne come destinazione
+                    if (rule.getCidrDestination().getAddressRange() == null && rule.getCidrSource().getAddressRange() == null){
+                        V1NetworkPolicy createdEgressNetworkPolicy = createEgressAllowNetworkPolicy(cr.getName(),rule);
+                        V1NetworkPolicy createdIngressNetworkPolicy = createIngressAllowNetworkPolicy(cr.getName(),rule);
+                        networkPolicies.add(createdEgressNetworkPolicy);
+                        networkPolicies.add(createdIngressNetworkPolicy); 
+                    } else if (rule.getCidrDestination().getAddressRange() == null && rule.getCidrSource().getAddressRange() != null){
+                        V1NetworkPolicy createdIngressNetworkPolicy = createIngressAllowNetworkPolicy(cr.getName(),rule);
+                        networkPolicies.add(createdIngressNetworkPolicy); 
+                    } else if (rule.getCidrDestination().getAddressRange() != null && rule.getCidrSource().getAddressRange() == null){
+                        V1NetworkPolicy createdEgressNetworkPolicy = createEgressAllowNetworkPolicy(cr.getName(),rule);
+                        networkPolicies.add(createdEgressNetworkPolicy);
+                    }
+                    
+                    
+                }               
+            }
+            if (this.interVCluster != null){
+                for(ConfigurationRule cr: this.interVCluster.getConfigurationRule()) {
+                    KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
+                    Ruleinfo rule = retrieveInfo(cond);
+                    
+                    //Caso in cui non ho ne un indirizzo IP come source, ne come destinazione
+                    if (rule.getCidrDestination().getAddressRange() == null && rule.getCidrSource().getAddressRange() == null){
+                        V1NetworkPolicy createdEgressNetworkPolicy = createEgressAllowNetworkPolicy(cr.getName(),rule);
+                        V1NetworkPolicy createdIngressNetworkPolicy = createIngressAllowNetworkPolicy(cr.getName(),rule);
+                        networkPolicies.add(createdEgressNetworkPolicy);
+                        networkPolicies.add(createdIngressNetworkPolicy); 
+                    } else if (rule.getCidrDestination().getAddressRange() == null && rule.getCidrSource().getAddressRange() != null){
+                        V1NetworkPolicy createdIngressNetworkPolicy = createIngressAllowNetworkPolicy(cr.getName(),rule);
+                        networkPolicies.add(createdIngressNetworkPolicy); 
+                    } else if (rule.getCidrDestination().getAddressRange() != null && rule.getCidrSource().getAddressRange() == null){
+                        V1NetworkPolicy createdEgressNetworkPolicy = createEgressAllowNetworkPolicy(cr.getName(),rule);
+                        networkPolicies.add(createdEgressNetworkPolicy);
+                    }
+                    
+                    
                 }
-                
-                
             }
             
-            //System.out.print("\t\t|\n");
-            //System.out.print("Mandatory List");
-            for(ConfigurationRule cr: this.authIntents.getMandatoryConnectionList()) {
-                KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
-                Ruleinfo rule = retrieveInfo(cond);
+            if (this.authIntents != null) {
+                for(ConfigurationRule cr: this.authIntents.getMandatoryConnectionList()) {
+                    KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
+                    Ruleinfo rule = retrieveInfo(cond);
 
-                //Caso in cui non ho ne un indirizzo IP come source, ne come destinazione
-                if (rule.getCidrDestination().getAddressRange() == null && rule.getCidrSource() == null){
-                    V1NetworkPolicy createdEgressNetworkPolicy = createEgressAllowNetworkPolicy(cr.getName(),rule);
-                    V1NetworkPolicy createdIngressNetworkPolicy = createIngressAllowNetworkPolicy(cr.getName(),rule);
-                    networkPolicies.add(createdEgressNetworkPolicy);
-                    networkPolicies.add(createdIngressNetworkPolicy); 
-                } else if (rule.getCidrDestination().getAddressRange() == null && rule.getCidrSource() != null){
-                    V1NetworkPolicy createdIngressNetworkPolicy = createIngressAllowNetworkPolicy(cr.getName(),rule);
-                    networkPolicies.add(createdIngressNetworkPolicy); 
-                } else if (rule.getCidrDestination().getAddressRange() != null && rule.getCidrSource() == null){
-                    V1NetworkPolicy createdEgressNetworkPolicy = createEgressAllowNetworkPolicy(cr.getName(),rule);
-                    networkPolicies.add(createdEgressNetworkPolicy);
+                    //Caso in cui non ho ne un indirizzo IP come source, ne come destinazione
+                    if (rule.getCidrDestination().getAddressRange() == null && rule.getCidrSource().getAddressRange() == null){
+                        V1NetworkPolicy createdEgressNetworkPolicy = createEgressAllowNetworkPolicy(cr.getName(),rule);
+                        V1NetworkPolicy createdIngressNetworkPolicy = createIngressAllowNetworkPolicy(cr.getName(),rule);
+                        networkPolicies.add(createdEgressNetworkPolicy);
+                        networkPolicies.add(createdIngressNetworkPolicy); 
+                        
+                    } else if (rule.getCidrDestination().getAddressRange() == null && rule.getCidrSource().getAddressRange() != null){
+                        V1NetworkPolicy createdIngressNetworkPolicy = createIngressAllowNetworkPolicy(cr.getName(),rule);
+                        networkPolicies.add(createdIngressNetworkPolicy); 
+                    } else if (rule.getCidrDestination().getAddressRange() != null && rule.getCidrSource().getAddressRange() == null){
+                        V1NetworkPolicy createdEgressNetworkPolicy = createEgressAllowNetworkPolicy(cr.getName(),rule);
+                        networkPolicies.add(createdEgressNetworkPolicy);
+                    }
                 }
             }
             
@@ -189,10 +214,20 @@ public class Traslator {
             port.setPort(new IntOrString(startPort));
             port.setEndPort(endPort);
         } else {;
-            port.setPort(new IntOrString(rule.getPort()));
+            if (rule.getPort().equals("*")){
+                port.setPort(null);
+            } else{
+                port.setPort(new IntOrString(rule.getPort()));
+            }
         }
-        port.setProtocol(rule.getProtocol());
-        egressRule.setPorts(Collections.singletonList(port)); 
+        if (rule.getProtocol().equals("*")){
+            port.setProtocol(null);
+        } else {
+            port.setProtocol(rule.getProtocol());
+        }
+        if(port.getPort() != null || port.getProtocol() != null){
+            egressRule.setPorts(Collections.singletonList(port)); 
+        }
         
         //Setting of the destination, in particoular I'm setting the name of the destinationPod or the cidrIp address and eventually the destination namespace
         V1LabelSelector destinationSelector = new V1LabelSelector();
@@ -207,7 +242,6 @@ public class Traslator {
             V1IPBlock ipBlock = new V1IPBlock();
             ipBlock.setCidr(rule.getCidrDestination().getAddressRange());
             destinationPeer.setIpBlock(ipBlock);
-            System.out.println(ipBlock.getCidr());
         }
 
         
@@ -269,16 +303,29 @@ public class Traslator {
             port.setPort(new IntOrString(startPort));
             port.setEndPort(endPort);
         } else {;
-            port.setPort(new IntOrString(rule.getPort()));
+            if (rule.getPort().equals("*")){
+                port.setPort(null);
+            } else{
+                port.setPort(new IntOrString(rule.getPort()));
+            }
         }
-        port.setProtocol(rule.getProtocol());
-        ingressRule.setPorts(Collections.singletonList(port)); 
+        if (rule.getProtocol().equals("*")){
+            port.setProtocol(null);
+        } else {
+            port.setProtocol(rule.getProtocol());
+        }
+        if(port.getPort() != null || port.getProtocol() != null){
+            ingressRule.setPorts(Collections.singletonList(port)); 
+        }
 
         //Setting of the destination, in particoular I'm setting the name of the destinationPod or the cidrIp address and eventually the destination namespace
         V1LabelSelector destinationSelector = new V1LabelSelector();
         V1NetworkPolicyPeer destinationPeer = new V1NetworkPolicyPeer();
 
-        if (!rule.getSourcePod().equals("*") && !rule.getSourcePod().isEmpty()){
+        if(rule.getSourcePod().equals("*")){
+            destinationSelector.setMatchLabels(null);
+            destinationPeer.setPodSelector(destinationSelector);
+        }else if (!rule.getSourcePod().equals("*") && !rule.getSourcePod().isEmpty()){
             destinationSelector.setMatchLabels(Collections.singletonMap("app",rule.getSourcePod()));
             destinationPeer.setPodSelector(destinationSelector);
         }
@@ -287,7 +334,6 @@ public class Traslator {
             V1IPBlock ipBlock = new V1IPBlock();
             ipBlock.setCidr(rule.getCidrSource().getAddressRange());
             destinationPeer.setIpBlock(ipBlock);
-            System.out.println(ipBlock.getCidr());
         }
 
         

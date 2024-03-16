@@ -12,8 +12,5 @@ spec:
       podSelector:
         matchLabels:
           app: bank_payment
-    ports:
-    - port: '*'
-      protocol: '*'
   policyTypes:
   - Ingress
