@@ -4,6 +4,8 @@ metadata:
   name: RequestIntent_2
   namespace: default
 spec:
+  policyTypes:
+  - Ingress
   ingress:
   - from:
     - namespaceSelector:
@@ -12,5 +14,3 @@ spec:
       podSelector:
         matchLabels:
           app: bank_payment
-  policyTypes:
-  - Ingress

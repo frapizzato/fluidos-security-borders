@@ -4,6 +4,11 @@ metadata:
   name: RequestIntent_1
   namespace: default
 spec:
+  policyTypes:
+  - Ingress
+  podSelector:
+    matchLabels:
+      app: product_catalogue
   ingress:
   - from:
     - namespaceSelector:
@@ -12,8 +17,3 @@ spec:
       podSelector:
         matchLabels:
           app: order_placement
-  podSelector:
-    matchLabels:
-      app: product_catalogue
-  policyTypes:
-  - Ingress

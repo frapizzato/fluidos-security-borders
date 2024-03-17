@@ -4,6 +4,8 @@ metadata:
   name: RequestIntent_4
   namespace: monitoring
 spec:
+  policyTypes:
+  - Egress
   egress:
   - to:
     - namespaceSelector:
@@ -12,5 +14,3 @@ spec:
       podSelector:
         matchLabels:
           app: order_placement
-  policyTypes:
-  - Egress

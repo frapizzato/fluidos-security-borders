@@ -4,14 +4,14 @@ metadata:
   name: PrivateIntent_1
   namespace: default
 spec:
+  policyTypes:
+  - Ingress
+  podSelector:
+    matchLabels:
+      app: product_catalogue
   ingress:
   - from:
     - podSelector: {}
     ports:
     - port: '80'
       protocol: TCP
-  podSelector:
-    matchLabels:
-      app: product_catalogue
-  policyTypes:
-  - Ingress

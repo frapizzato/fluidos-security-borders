@@ -4,6 +4,11 @@ metadata:
   name: AuthorizationMandatory_1
   namespace: monitoring
 spec:
+  policyTypes:
+  - Egress
+  podSelector:
+    matchLabels:
+      app: resource_monitor
   egress:
   - ports:
     - port: '43'
@@ -12,8 +17,3 @@ spec:
     - namespaceSelector:
         matchLabels:
           name: fluidos
-  podSelector:
-    matchLabels:
-      app: resource_monitor
-  policyTypes:
-  - Egress

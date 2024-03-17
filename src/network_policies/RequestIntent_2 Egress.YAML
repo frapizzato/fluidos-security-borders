@@ -4,13 +4,13 @@ metadata:
   name: RequestIntent_2
   namespace: fluidos
 spec:
+  policyTypes:
+  - Egress
+  podSelector:
+    matchLabels:
+      app: bank_payment
   egress:
   - to:
     - namespaceSelector:
         matchLabels:
           name: default
-  podSelector:
-    matchLabels:
-      app: bank_payment
-  policyTypes:
-  - Egress

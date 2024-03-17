@@ -4,14 +4,14 @@ metadata:
   name: RequestIntent_4
   namespace: fluidos
 spec:
+  policyTypes:
+  - Ingress
+  podSelector:
+    matchLabels:
+      app: order_placement
   ingress:
   - from:
     - namespaceSelector:
         matchLabels:
           name: monitoring
       podSelector: {}
-  podSelector:
-    matchLabels:
-      app: order_placement
-  policyTypes:
-  - Ingress

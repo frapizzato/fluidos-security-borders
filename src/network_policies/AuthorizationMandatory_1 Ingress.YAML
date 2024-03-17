@@ -4,6 +4,8 @@ metadata:
   name: AuthorizationMandatory_1
   namespace: fluidos
 spec:
+  policyTypes:
+  - Ingress
   ingress:
   - from:
     - namespaceSelector:
@@ -15,5 +17,3 @@ spec:
     ports:
     - port: '43'
       protocol: TCP
-  policyTypes:
-  - Ingress

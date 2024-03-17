@@ -3,6 +3,8 @@ kind: NetworkPolicy
 metadata:
   name: PrivateIntent_1
 spec:
+  policyTypes:
+  - Egress
   egress:
   - ports:
     - port: '80'
@@ -14,5 +16,3 @@ spec:
       podSelector:
         matchLabels:
           app: product_catalogue
-  policyTypes:
-  - Egress

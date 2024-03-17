@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -129,7 +130,7 @@ public class Traslator {
                 }
             }
             
-            writeNetworkPoliciesToFile(networkPolicies);
+            writeNetworkPoliciesToFile1(networkPolicies);
     }
 
     private Ruleinfo retrieveInfo (KubernetesNetworkFilteringCondition cond){
@@ -361,6 +362,51 @@ public class Traslator {
             }
     
             
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeNetworkPoliciesToFile1(List<V1NetworkPolicy> networkPolicies) {
+        try {
+            for (V1NetworkPolicy networkPolicy : networkPolicies) {
+                String fileName = "src/network_policies/" + networkPolicy.getMetadata().getName() + " " + networkPolicy.getSpec().getPolicyTypes().get(0) + ".yaml";
+                FileWriter fileWriter = new FileWriter(fileName);
+                LinkedHashMap<String, Object> yamlData = new LinkedHashMap<>();
+                yamlData.put("apiVersion", networkPolicy.getApiVersion());
+                yamlData.put("kind", networkPolicy.getKind());
+    
+                LinkedHashMap<String, Object> metadata = new LinkedHashMap<>();
+                metadata.put("name", networkPolicy.getMetadata().getName());
+                if(networkPolicy.getMetadata().getNamespace() != null){
+                    metadata.put("namespace", networkPolicy.getMetadata().getNamespace());
+                }
+                yamlData.put("metadata", metadata);
+    
+                LinkedHashMap<String, Object> spec = new LinkedHashMap<>();
+                spec.put("policyTypes", networkPolicy.getSpec().getPolicyTypes());
+    
+                if (networkPolicy.getSpec().getPodSelector() != null) {
+                    LinkedHashMap<String, Object> podSelector = new LinkedHashMap<>();
+                    LinkedHashMap<String, Object> matchLabels = new LinkedHashMap<>();
+                    matchLabels.putAll(networkPolicy.getSpec().getPodSelector().getMatchLabels());
+                    podSelector.put("matchLabels", matchLabels);
+                    spec.put("podSelector", podSelector);
+                }
+    
+                if (networkPolicy.getSpec().getEgress() != null && !networkPolicy.getSpec().getEgress().isEmpty()) {
+                    spec.put("egress", networkPolicy.getSpec().getEgress());
+                }
+                if (networkPolicy.getSpec().getIngress() != null && !networkPolicy.getSpec().getIngress().isEmpty()) {
+                    spec.put("ingress", networkPolicy.getSpec().getIngress());
+                }
+    
+                yamlData.put("spec", spec);
+    
+                Yaml yaml = new Yaml();
+                yaml.dump(yamlData, fileWriter);
+                fileWriter.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
