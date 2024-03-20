@@ -1,43 +1,48 @@
 package eu.fluidos.traslator;
 import eu.fluidos.jaxb.CIDRSelector;
+import eu.fluidos.jaxb.KeyValue;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Ruleinfo {
-    private String sourcePod;
-    private String sourceNamespace;
+    private List<KeyValue> sourcePodList;
+    //private String sourceNamespace;
     private CIDRSelector cidrSource;
-    private String destinationPod;
-    private String destinationNamespace;
+    private List<KeyValue> destinationPodList;
+    private List<KeyValue> destinationNamespaceList;
+    private List<KeyValue> sourceNamespaceList;
     private CIDRSelector cidrDestination;
     private String port;
     private String protocol;
 
-    public Ruleinfo(String sourcePod, String sourceNamespace, CIDRSelector cidrSource,
-                    String destinationPod, String destinationNamespace, CIDRSelector cidrDestination,String port,String protocol) {
-        this.sourcePod = sourcePod;
-        this.sourceNamespace = sourceNamespace;
+    public Ruleinfo(List<KeyValue> sourcePodList, List<KeyValue> sourceNamespaceList, CIDRSelector cidrSource,
+    List<KeyValue> destinationPodList, List<KeyValue> destinationNamespaceList, CIDRSelector cidrDestination,String port,String protocol) {
+        this.sourcePodList = sourcePodList;
+        this.sourceNamespaceList = sourceNamespaceList;
         this.cidrSource = cidrSource;
-        this.destinationPod = destinationPod;
-        this.destinationNamespace = destinationNamespace;
+        this.destinationPodList = destinationPodList;
+        this.destinationNamespaceList = destinationNamespaceList;
         this.cidrDestination = cidrDestination;
         this.port = port;
         this.protocol=protocol;
     }
 
-    public String getSourcePod() {
-        return sourcePod;
+    public List<KeyValue> getSourcePod() {
+        return sourcePodList;
     }
 
-    public void setSourcePod(String sourcePod) {
-        this.sourcePod = sourcePod;
+    public void setSourcePod(List<KeyValue> sourcePodList) {
+        this.sourcePodList = sourcePodList;
     }
 
-    public String getSourceNamespace() {
-        return sourceNamespace;
+    public List<KeyValue> getSourceNamespace() {
+        return sourceNamespaceList;
     }
 
-    public void setSourceNamespace(String sourceNamespace) {
-        this.sourceNamespace = sourceNamespace;
+    public void setSourceNamespace(List<KeyValue> sourceNamespaceList) {
+        this.sourceNamespaceList = sourceNamespaceList;
     }
 
     public CIDRSelector getCidrSource() {
@@ -48,20 +53,20 @@ public class Ruleinfo {
         this.cidrSource = cidrSource;
     }
 
-    public String getDestinationPod() {
-        return destinationPod;
+    public List<KeyValue> getDestinationPod() {
+        return destinationPodList;
     }
 
-    public void setDestinationPod(String destinationPod) {
-        this.destinationPod = destinationPod;
+    public void setDestinationPod(List<KeyValue> destinationPodList) {
+        this.destinationPodList = destinationPodList;
     }
 
-    public String getDestinationNamespace() {
-        return destinationNamespace;
+    public List<KeyValue> getDestinationNamespace() {
+        return destinationNamespaceList;
     }
 
-    public void setDestinationNamespace(String destinationNamespace) {
-        this.destinationNamespace = destinationNamespace;
+    public void setDestinationNamespace(List<KeyValue> destinationNamespaceList) {
+        this.destinationNamespaceList = destinationNamespaceList;
     }
 
     public CIDRSelector getCidrDestination() {
@@ -88,4 +93,35 @@ public class Ruleinfo {
         this.protocol = protocol;
     }
 
+    public Map<String,String> getLabelsSourcePod (){
+        Map<String, String> labelsSourcePod = new HashMap<>();
+        for (KeyValue keyValue : this.sourcePodList){
+            labelsSourcePod.put(keyValue.getKey(),keyValue.getValue());
+        }
+        return labelsSourcePod;
+    }
+
+    public Map<String,String> getLabelsDestinationPod (){
+        Map<String, String> labelsDestinationPod = new HashMap<>();
+        for (KeyValue keyValue : this.destinationPodList){
+            labelsDestinationPod.put(keyValue.getKey(),keyValue.getValue());
+        }
+        return labelsDestinationPod;
+    }
+
+    public Map<String,String> getLabelsDestinationNamespace(){
+        Map<String, String> labelsDestinationNamespace = new HashMap<>();
+        for (KeyValue keyValue : this.destinationNamespaceList){
+            labelsDestinationNamespace.put(keyValue.getKey(),keyValue.getValue());
+        }
+        return labelsDestinationNamespace;
+    }
+
+    public Map<String,String> getLabelsSourceNamespace(){
+        Map<String, String> labelsSourceNamespace = new HashMap<>();
+        for (KeyValue keyValue : this.sourceNamespaceList){
+            labelsSourceNamespace.put(keyValue.getKey(),keyValue.getValue());
+        }
+        return labelsSourceNamespace;
+    }
 }

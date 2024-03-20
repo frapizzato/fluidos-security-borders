@@ -7,6 +7,7 @@ import eu.fluidos.jaxb.ConfigurationRule;
 import eu.fluidos.jaxb.ITResourceOrchestrationType;
 import eu.fluidos.jaxb.InterVClusterConfiguration;
 import eu.fluidos.jaxb.IntraVClusterConfiguration;
+import eu.fluidos.jaxb.KeyValue;
 import eu.fluidos.jaxb.KubernetesNetworkFilteringCondition;
 import eu.fluidos.jaxb.PodNamespaceSelector;
 import eu.fluidos.harmonization.Utils;
@@ -40,6 +41,7 @@ import io.kubernetes.client.openapi.models.V1NetworkPolicySpec;
 import java.util.Arrays;
 import org.yaml.snakeyaml.DumperOptions;
 import eu.fluidos.traslator.Ruleinfo;
+
 
 public class Traslator {
     private ITResourceOrchestrationType intents;
@@ -134,25 +136,30 @@ public class Traslator {
     }
 
     private Ruleinfo retrieveInfo (KubernetesNetworkFilteringCondition cond){
-        String sourcePod = new String();
+        List<KeyValue> sourcePodList = new ArrayList<>();
         String sourceNamespace = new String();
         CIDRSelector cidrSource = new CIDRSelector();
-        String destinationPod = new String();
-        String destinationNamespace = new String();
+        List<KeyValue> destinationPodList = new ArrayList<>();
+        List<KeyValue> destinationNamespaceList = new ArrayList<>();
+        List<KeyValue> sourceNamespaceList = new ArrayList<>();
         CIDRSelector cidrDestination = new CIDRSelector();
 
 		if(cond.getSource().getClass().equals(PodNamespaceSelector.class)){
 			PodNamespaceSelector pns = (PodNamespaceSelector) cond.getSource();
-            sourcePod = pns.getPod().get(0).getValue();
-            sourceNamespace = pns.getNamespace().get(0).getValue();
+            //sourcePod = pns.getPod().get(0).getValue(); //Gestire meglio nel caso in cui ci sono piu pod e namespace
+            sourcePodList = pns.getPod();
+            sourceNamespaceList=pns.getNamespace();
+            //sourceNamespace = pns.getNamespace().get(0).getValue();
 		} else {
 			cidrSource = (CIDRSelector) cond.getSource();
 		}
 		
 		if(cond.getDestination().getClass().equals(PodNamespaceSelector.class)){
 			PodNamespaceSelector pns = (PodNamespaceSelector) cond.getDestination();
-            destinationPod = pns.getPod().get(0).getValue();
-            destinationNamespace = pns.getNamespace().get(0).getValue();
+            //destinationPod = pns.getPod().get(0).getValue();
+            //destinationNamespace = pns.getNamespace().get(0).getValue();
+            destinationPodList = pns.getPod();
+            destinationNamespaceList = pns.getNamespace();
 		} else {
 			cidrDestination = (CIDRSelector) cond.getDestination();
 		}
@@ -173,7 +180,7 @@ public class Traslator {
                 protocol="*";
                 break;
         }
-        return new Ruleinfo(sourcePod, sourceNamespace, cidrSource, destinationPod, destinationNamespace, cidrDestination,destPort,protocol);
+        return new Ruleinfo(sourcePodList, sourceNamespaceList, cidrSource, destinationPodList, destinationNamespaceList, cidrDestination,destPort,protocol);
     }
 
     private V1NetworkPolicy createEgressAllowNetworkPolicy (String name,Ruleinfo rule){
@@ -184,10 +191,10 @@ public class Traslator {
         networkPolicy.setKind("NetworkPolicy");
         V1ObjectMeta metadata = new V1ObjectMeta();
         metadata.setName(name);
-        if(rule.getSourceNamespace().equals("*")){
+        if(rule.getSourceNamespace().get(0).getValue().equals("*")){
             metadata.namespace(null);
         }else{
-            metadata.namespace(rule.getSourceNamespace());
+            metadata.namespace(rule.getSourceNamespace().get(0).getValue());
         }
         networkPolicy.setMetadata(metadata);
         
@@ -195,14 +202,15 @@ public class Traslator {
         V1NetworkPolicySpec spec = new V1NetworkPolicySpec();
         spec.setPolicyTypes(Collections.singletonList("Egress")); //Setting of PolicyTyèe
         V1LabelSelector podSelector = new V1LabelSelector();
+        Map<String, String> matchLabelsSourcePod = rule.getLabelsSourcePod();
         //Setting of podSelector which is involved in the policy
-        if(rule.getSourcePod().equals("*")){
+        if (matchLabelsSourcePod.containsValue("*")){
             spec.setPodSelector(null);
         }else{
-            podSelector.setMatchLabels(Collections.singletonMap("app", rule.getSourcePod()));
+            podSelector.setMatchLabels(matchLabelsSourcePod);
             spec.setPodSelector(podSelector);
         }
-
+        
         //Setting the egress rules and in particoular the destination port (protocol and number of the port)
         V1NetworkPolicyEgressRule egressRule = new V1NetworkPolicyEgressRule();
         List<V1NetworkPolicyEgressRule> egressRules = new ArrayList<>();
@@ -233,10 +241,10 @@ public class Traslator {
         //Setting of the destination, in particoular I'm setting the name of the destinationPod or the cidrIp address and eventually the destination namespace
         V1LabelSelector destinationSelector = new V1LabelSelector();
         V1NetworkPolicyPeer destinationPeer = new V1NetworkPolicyPeer();
-
-        if (!rule.getDestinationPod().equals("*") && !rule.getDestinationPod().isEmpty()){
-            destinationSelector.setMatchLabels(Collections.singletonMap("app",rule.getDestinationPod()));
-            destinationPeer.setPodSelector(destinationSelector);
+        Map<String, String> matchLabelsDestinationPod = rule.getLabelsDestinationPod();
+        if (!matchLabelsDestinationPod.containsValue("*") && !matchLabelsDestinationPod.isEmpty()){
+            destinationSelector.setMatchLabels(matchLabelsDestinationPod);
+            destinationPeer.setPodSelector(destinationSelector);            
         }
         
         if (rule.getCidrDestination().getAddressRange() != null){
@@ -244,13 +252,13 @@ public class Traslator {
             ipBlock.setCidr(rule.getCidrDestination().getAddressRange());
             destinationPeer.setIpBlock(ipBlock);
         }
-
-        
-        if(!rule.getDestinationNamespace().isEmpty() && !rule.getDestinationNamespace().equals("*")){
+        Map<String, String> matchLabelsDestinationNamespace = rule.getLabelsDestinationNamespace();
+        if(!matchLabelsDestinationNamespace.containsValue("*") && !matchLabelsDestinationNamespace.isEmpty()){
             V1LabelSelector namespace = new V1LabelSelector();
-            namespace.setMatchLabels(Collections.singletonMap("name",rule.getDestinationNamespace()));
-            destinationPeer.setNamespaceSelector(namespace);
+            namespace.setMatchLabels(matchLabelsDestinationNamespace);
+            destinationPeer.setNamespaceSelector(namespace);            
         }
+
         egressRule.setTo(Collections.singletonList(destinationPeer));
         egressRules.add(egressRule);
         spec.egress(egressRules);//Here the egress rules are applied to the spec field
@@ -269,10 +277,10 @@ public class Traslator {
         networkPolicy.setKind("NetworkPolicy");
         V1ObjectMeta metadata = new V1ObjectMeta();
         metadata.setName(name);
-        if(rule.getDestinationNamespace().equals("*") || rule.getDestinationNamespace().isEmpty()){
+        if(rule.getDestinationNamespace().get(0).getValue().equals("*") || rule.getDestinationNamespace().isEmpty()){
             metadata.namespace(null);
         }else{
-            metadata.namespace(rule.getDestinationNamespace());
+            metadata.namespace(rule.getDestinationNamespace().get(0).getValue()); //Questo è da aggiornare in uno step successivo
         }
         networkPolicy.setMetadata(metadata);
         
@@ -280,15 +288,16 @@ public class Traslator {
         V1NetworkPolicySpec spec = new V1NetworkPolicySpec();
         spec.setPolicyTypes(Collections.singletonList("Ingress")); //Setting of PolicyTyèe
         V1LabelSelector podSelector = new V1LabelSelector();
+        Map<String, String> matchLabelsDestinationPod = rule.getLabelsDestinationPod();
         //Setting of podSelector which is involved in the policy
-        if(rule.getDestinationPod().equals("*")){
+        if (matchLabelsDestinationPod.containsValue("*")){
             spec.setPodSelector(null);
-        }else{
-            if(rule.getDestinationPod().isEmpty()){
+        }else {
+            if(matchLabelsDestinationPod.isEmpty()){
                 spec.setPodSelector(podSelector);
             }else{
-                podSelector.setMatchLabels(Collections.singletonMap("app", rule.getDestinationPod()));
-                spec.setPodSelector(podSelector);
+                podSelector.setMatchLabels(matchLabelsDestinationPod);
+                spec.setPodSelector(podSelector);               
             }
         }
 
@@ -322,25 +331,26 @@ public class Traslator {
         //Setting of the destination, in particoular I'm setting the name of the destinationPod or the cidrIp address and eventually the destination namespace
         V1LabelSelector destinationSelector = new V1LabelSelector();
         V1NetworkPolicyPeer destinationPeer = new V1NetworkPolicyPeer();
-
-        if(rule.getSourcePod().equals("*")){
+        Map<String, String> matchLabelsSourcePod = rule.getLabelsSourcePod();
+        if(matchLabelsSourcePod.containsValue("*")){
             destinationSelector.setMatchLabels(null);
-            destinationPeer.setPodSelector(destinationSelector);
-        }else if (!rule.getSourcePod().equals("*") && !rule.getSourcePod().isEmpty()){
-            destinationSelector.setMatchLabels(Collections.singletonMap("app",rule.getSourcePod()));
-            destinationPeer.setPodSelector(destinationSelector);
+            destinationPeer.setPodSelector(destinationSelector);            
+        } else if (!matchLabelsSourcePod.containsValue("*") && !matchLabelsSourcePod.isEmpty()){
+            destinationSelector.setMatchLabels(matchLabelsSourcePod);
+            destinationPeer.setPodSelector(destinationSelector);            
         }
-        
+
         if (rule.getCidrSource().getAddressRange() != null){
             V1IPBlock ipBlock = new V1IPBlock();
             ipBlock.setCidr(rule.getCidrSource().getAddressRange());
             destinationPeer.setIpBlock(ipBlock);
         }
 
-        
-        if(!rule.getSourceNamespace().isEmpty() && !rule.getSourceNamespace().equals("*")){
+        //Vedere meglio la questione del SourceNamespace
+        Map<String, String> matchLabelsSourceNamespace = rule.getLabelsSourceNamespace();
+        if(!matchLabelsSourceNamespace.containsValue("*") && !matchLabelsSourceNamespace.isEmpty()){
             V1LabelSelector namespace = new V1LabelSelector();
-            namespace.setMatchLabels(Collections.singletonMap("name",rule.getSourceNamespace()));
+            namespace.setMatchLabels(matchLabelsSourceNamespace);
             destinationPeer.setNamespaceSelector(namespace);
         }
 
