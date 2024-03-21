@@ -190,7 +190,7 @@ public class Traslator {
         networkPolicy.setApiVersion("networking.k8s.io/v1");
         networkPolicy.setKind("NetworkPolicy");
         V1ObjectMeta metadata = new V1ObjectMeta();
-        metadata.setName(name);
+        metadata.setName(name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase());
         if(rule.getSourceNamespace().get(0).getValue().equals("*")){
             metadata.namespace(null);
         }else{
@@ -226,7 +226,8 @@ public class Traslator {
             if (rule.getPort().equals("*")){
                 port.setPort(null);
             } else{
-                port.setPort(new IntOrString(rule.getPort()));
+                int portValue = Integer.parseInt(rule.getPort());
+                port.setPort(new IntOrString(portValue));
             }
         }
         if (rule.getProtocol().equals("*")){
@@ -276,7 +277,7 @@ public class Traslator {
         networkPolicy.setApiVersion("networking.k8s.io/v1");
         networkPolicy.setKind("NetworkPolicy");
         V1ObjectMeta metadata = new V1ObjectMeta();
-        metadata.setName(name);
+        metadata.setName(name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase());
         if(rule.getDestinationNamespace().get(0).getValue().equals("*") || rule.getDestinationNamespace().isEmpty()){
             metadata.namespace(null);
         }else{
@@ -291,7 +292,7 @@ public class Traslator {
         Map<String, String> matchLabelsDestinationPod = rule.getLabelsDestinationPod();
         //Setting of podSelector which is involved in the policy
         if (matchLabelsDestinationPod.containsValue("*")){
-            spec.setPodSelector(null);
+            spec.setPodSelector(null); // gestire il caso in cui devo gestire tutti i POD in quanto kubernetes non va se non specifico PodSelector
         }else {
             if(matchLabelsDestinationPod.isEmpty()){
                 spec.setPodSelector(podSelector);
@@ -300,7 +301,6 @@ public class Traslator {
                 spec.setPodSelector(podSelector);               
             }
         }
-
         //Setting the egress rules and in particoular the destination port (protocol and number of the port)
         V1NetworkPolicyIngressRule ingressRule = new V1NetworkPolicyIngressRule();
         List<V1NetworkPolicyIngressRule> ingressRules = new ArrayList<>();
@@ -316,7 +316,8 @@ public class Traslator {
             if (rule.getPort().equals("*")){
                 port.setPort(null);
             } else{
-                port.setPort(new IntOrString(rule.getPort()));
+                int portValue = Integer.parseInt(rule.getPort());
+                port.setPort(new IntOrString(portValue));
             }
         }
         if (rule.getProtocol().equals("*")){
@@ -395,13 +396,15 @@ public class Traslator {
     
                 LinkedHashMap<String, Object> spec = new LinkedHashMap<>();
                 spec.put("policyTypes", networkPolicy.getSpec().getPolicyTypes());
-    
+                
+                LinkedHashMap<String, Object> podSelector = new LinkedHashMap<>();
+                LinkedHashMap<String, Object> matchLabels = new LinkedHashMap<>();
                 if (networkPolicy.getSpec().getPodSelector() != null) {
-                    LinkedHashMap<String, Object> podSelector = new LinkedHashMap<>();
-                    LinkedHashMap<String, Object> matchLabels = new LinkedHashMap<>();
                     matchLabels.putAll(networkPolicy.getSpec().getPodSelector().getMatchLabels());
                     podSelector.put("matchLabels", matchLabels);
                     spec.put("podSelector", podSelector);
+                }else{
+                    spec.put("podSelector",podSelector);
                 }
     
                 if (networkPolicy.getSpec().getEgress() != null && !networkPolicy.getSpec().getEgress().isEmpty()) {
