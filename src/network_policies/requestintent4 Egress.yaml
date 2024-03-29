@@ -14,4 +14,4 @@ spec:
           name: fluidos
       podSelector:
         matchLabels:
-          app: order_placement
+          app: order-placement

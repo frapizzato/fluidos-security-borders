@@ -8,7 +8,7 @@ spec:
   - Ingress
   podSelector:
     matchLabels:
-      app: product_catalogue
+      app: product-catalogue
   ingress:
   - from:
     - namespaceSelector:
@@ -16,4 +16,4 @@ spec:
           name: fluidos
       podSelector:
         matchLabels:
-          app: order_placement
+          app: order-placement

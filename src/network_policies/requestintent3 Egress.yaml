@@ -8,7 +8,7 @@ spec:
   - Egress
   podSelector:
     matchLabels:
-      app: bank_payment
+      app: bank-payment
   egress:
   - to:
     - ipBlock:

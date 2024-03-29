@@ -16,4 +16,4 @@ spec:
           name: default
       podSelector:
         matchLabels:
-          app: product_catalogue
+          app: product-catalogue

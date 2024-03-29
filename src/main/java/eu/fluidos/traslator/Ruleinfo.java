@@ -96,7 +96,7 @@ public class Ruleinfo {
     public Map<String,String> getLabelsSourcePod (){
         Map<String, String> labelsSourcePod = new HashMap<>();
         for (KeyValue keyValue : this.sourcePodList){
-            labelsSourcePod.put(keyValue.getKey(),keyValue.getValue());
+            labelsSourcePod.put(keyValue.getKey(),keyValue.getValue().replaceAll("_", "-"));
         }
         return labelsSourcePod;
     }
@@ -104,7 +104,7 @@ public class Ruleinfo {
     public Map<String,String> getLabelsDestinationPod (){
         Map<String, String> labelsDestinationPod = new HashMap<>();
         for (KeyValue keyValue : this.destinationPodList){
-            labelsDestinationPod.put(keyValue.getKey(),keyValue.getValue());
+            labelsDestinationPod.put(keyValue.getKey(),keyValue.getValue().replaceAll("_", "-"));
         }
         return labelsDestinationPod;
     }

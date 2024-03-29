@@ -8,7 +8,7 @@ spec:
   - Egress
   podSelector:
     matchLabels:
-      app: resource_monitor
+      app: resource-monitor
   egress:
   - ports:
     - port: 43

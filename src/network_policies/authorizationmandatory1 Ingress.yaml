@@ -14,7 +14,7 @@ spec:
           name: monitoring
       podSelector:
         matchLabels:
-          app: resource_monitor
+          app: resource-monitor
     ports:
     - port: 43
       protocol: TCP

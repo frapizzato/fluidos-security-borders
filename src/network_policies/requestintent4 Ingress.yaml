@@ -8,7 +8,7 @@ spec:
   - Ingress
   podSelector:
     matchLabels:
-      app: order_placement
+      app: order-placement
   ingress:
   - from:
     - namespaceSelector:

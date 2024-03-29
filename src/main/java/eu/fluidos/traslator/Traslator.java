@@ -363,7 +363,6 @@ public class Traslator {
         return networkPolicy;
         
     }
-
     private void writeNetworkPoliciesToFile(List<V1NetworkPolicy> networkPolicies) {
         try{
             for (V1NetworkPolicy networkPolicy : networkPolicies) {
