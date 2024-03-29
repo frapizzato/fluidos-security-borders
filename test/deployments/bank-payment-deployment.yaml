@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bank-payment
+  namespace: fluidos
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bank-payment
+  template:
+    metadata:
+      labels:
+        app: bank-payment
+    spec:
+      containers:
+      - name: busybox
+        image: busybox
+        command: ["/bin/sh", "-c", "while true; do echo hello; sleep 10; done"]

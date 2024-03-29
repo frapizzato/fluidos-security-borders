@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: requestintent3
+  namespace: fluidos
+spec:
+  policyTypes:
+  - Egress
+  podSelector:
+    matchLabels:
+      app: bank-payment
+  egress:
+  - to:
+    - ipBlock:
+        cidr: 0.0.0.0/0
