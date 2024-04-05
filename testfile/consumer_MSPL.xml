@@ -7,6 +7,8 @@
       <capability>
         <Name>KubernetesNetworkFiltering</Name>
       </capability>
+      <acceptMonitoring>true</acceptMonitoring>
+      
       <configurationRule>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
           <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>

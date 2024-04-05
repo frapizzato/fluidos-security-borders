@@ -17,6 +17,8 @@
       <capability>
         <Name>KubernetesNetworkFiltering</Name>
       </capability>
+	  <acceptMonitoring>true</acceptMonitoring>
+      
       <!-- from ANY to "app:product_catalogue", TCP:80 -->
       <configurationRule>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">

@@ -15,6 +15,7 @@
       <capability>
         <Name>KubernetesNetworkFiltering</Name>
       </capability>
+      <acceptMonitoring>false</acceptMonitoring>
     </configuration>
   </ITResource>
   

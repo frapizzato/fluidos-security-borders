@@ -9,7 +9,8 @@
       <capability>
         <Name>KubernetesNetworkFiltering</Name>
       </capability>
-
+	  <acceptMonitoring>true</acceptMonitoring>
+	  
       <!-- from "app:order_placement" to ANY, ALL protocols -->
       <configurationRule>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
