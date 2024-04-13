@@ -7,9 +7,10 @@ kubectl label namespace default name=default
 ------------------------------------------------------------------------------------------
 Deployments creation:
 kubectl apply -f bank-payment-deployment.yaml
-kubectl apply -f order-payment-deployment.yaml
+kubectl apply -f order-placement-deployment.yaml
 kubectl apply -f resource-monitor-deployment.yaml
 kubectl apply -f test-authorizationmandatory-deployment.yaml
+kubectl apply -f product-catalogue-deployment.yaml
 -----------------------------------------------------------------------------
 To see the ClusterIP type:
 kubectl get services -n "namespace"

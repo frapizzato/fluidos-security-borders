@@ -46,15 +46,19 @@
 		<artifactId>client-java</artifactId>
 		<version>14.0.0</version>
 	</dependency>
-
 	<dependency>
 		<groupId>ch.qos.logback</groupId>
 		<artifactId>logback-classic</artifactId>
 		<version>1.2.3</version>
 	</dependency>
+
+	<dependency>
+		<groupId>io.fabric8</groupId>
+		<artifactId>kubernetes-client</artifactId>
+		<version>6.11.0</version>
+	</dependency>
   </dependencies>
   
-    
   <!-- Code to generae Java code starting from XSD schema -->
   <build>
 

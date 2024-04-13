@@ -1,16 +1,17 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: requestintent2
+  name: requestintent4fluidos
   namespace: fluidos
 spec:
   policyTypes:
-  - Egress
+  - Ingress
   podSelector:
     matchLabels:
-      app: bank-payment
-  egress:
-  - to:
+      app: order-placement
+  ingress:
+  - from:
     - namespaceSelector:
         matchLabels:
-          name: default
+          name: monitoring
+      podSelector: {}

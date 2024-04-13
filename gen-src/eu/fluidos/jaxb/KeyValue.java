@@ -70,6 +70,7 @@ public class KeyValue {
         this.key = value;
     }
 
+    
     /**
      * Recupera il valore della proprietà value.
      * 

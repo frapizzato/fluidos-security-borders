@@ -19,6 +19,7 @@ import eu.fluidos.harmonization.HarmonizationManager;
 import eu.fluidos.jaxb.*;
 import eu.fluidos.harmonization.Utils;
 import eu.fluidos.traslator.Traslator;
+import eu.fluidos.Module;
 public class Main 
 {
 	public static Logger loggerInfo = LogManager.getLogger(Main.class);
@@ -58,8 +59,8 @@ public class Main
         	// User offering some resources
         	Object tmp_2 = u.unmarshal(new FileInputStream(arg_2));
         	ITResourceOrchestrationType intents_2 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_2).getValue(); 
-			Traslator intent_traslation = new Traslator(intents_1);
-
+			//Traslator intent_traslation = new Traslator(intents_1);
+			Module module = new Module(intents_2);
 			
         	//HarmonizationManager res = new HarmonizationManager(intents_1, intents_2);
         	// //Here output the "Harmonized" set of intents
