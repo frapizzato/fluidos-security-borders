@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: privateintent1
+  name: privateintent1default0
   namespace: default
 spec:
   policyTypes:
@@ -11,7 +11,10 @@ spec:
       app: product-catalogue
   ingress:
   - from:
-    - podSelector: {}
+    - namespaceSelector:
+        matchLabels:
+          name: default
+      podSelector: {}
     ports:
     - port: 80
       protocol: TCP

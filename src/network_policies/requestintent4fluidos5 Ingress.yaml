@@ -1,19 +1,17 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: requestintent1default
-  namespace: default
+  name: requestintent4fluidos5
+  namespace: fluidos
 spec:
   policyTypes:
   - Ingress
   podSelector:
     matchLabels:
-      app: product-catalogue
+      app: order-placement
   ingress:
   - from:
     - namespaceSelector:
         matchLabels:
-          name: fluidos
-      podSelector:
-        matchLabels:
-          app: order-placement
+          name: monitoring
+      podSelector: {}

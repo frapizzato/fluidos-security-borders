@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: requestintent1fluidos
+  name: requestintent1fluidos1
   namespace: fluidos
 spec:
   policyTypes:

@@ -79,7 +79,7 @@ public class Module {
             }
             List<String> namePods = new ArrayList<>();
             List<LabelsKeyValue> labels = new ArrayList<>();
-            
+            Map <LabelsKeyValue,String> availablePodsMap = new HashMap();
             for (String namespace : namespaces){
                 V1PodList podList = api.listNamespacedPod(namespace, null, null, null, null, null, null, null, null, null, null);
                 for (V1Pod pod : podList.getItems()) {
@@ -87,10 +87,11 @@ public class Module {
                     namePods.add(pod.getMetadata().getName());
                     String key = pod.getMetadata().getLabels().keySet().iterator().next();
                     String value = pod.getMetadata().getLabels().values().iterator().next();
-                    labels.add(new LabelsKeyValue(key,value));
+                    availablePodsMap.put(new LabelsKeyValue(key,value), namespace);
+                    //labels.add(new LabelsKeyValue(key,value));
                 }
             }
-            Traslator intent_traslation = new Traslator(intentsToTraslate,namespaces,labels);
+            Traslator intent_traslation = new Traslator(intentsToTraslate,namespaces,availablePodsMap);
             for (LabelsKeyValue keyValue : labels) {
                 //System.out.println("Chiave: " + keyValue.getKey() + ", Valore: " + keyValue.getValue());
             }

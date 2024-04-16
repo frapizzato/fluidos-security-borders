@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: requestintent2default
+  name: requestintent2default2
   namespace: default
 spec:
   policyTypes:

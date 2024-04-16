@@ -1,20 +1,17 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: privateintent1fluidos
-  namespace: fluidos
+  name: requestintent4monitoring6
+  namespace: monitoring
 spec:
   policyTypes:
   - Egress
   podSelector: {}
   egress:
-  - ports:
-    - port: 80
-      protocol: TCP
-    to:
+  - to:
     - namespaceSelector:
         matchLabels:
-          name: default
+          name: fluidos
       podSelector:
         matchLabels:
-          app: product-catalogue
+          app: order-placement

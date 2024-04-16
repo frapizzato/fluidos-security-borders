@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: privateintent1default
-  namespace: default
+  name: privateintent1monitoring5
+  namespace: monitoring
 spec:
   policyTypes:
   - Egress
