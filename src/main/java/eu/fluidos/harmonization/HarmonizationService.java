@@ -120,6 +120,7 @@ private Scanner scan = new Scanner(System.in);
 		HarmonizationModel.printHarmonizedRules(harmonizedRules, "harmonized REQUEST intents", " after type-1 discordances resolution:");
 		
 		return harmonizedRules;
+		
 	}
 	
 	private List<ConfigurationRule> solverTypeTwoDiscordances(List<ConfigurationRule> harmonizedRequestConsumerRules) {
@@ -129,8 +130,13 @@ private Scanner scan = new Scanner(System.in);
 		
 		scan.nextLine();
 		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
-
-		harmonizedRules.addAll(harmonizedRequestConsumerRules);
+		
+		/* Monitoring */
+		
+		if(this.requestIntentsConsumer.isAcceptMonitoring() == false)
+			return null;
+		else {
+			harmonizedRules.addAll(harmonizedRequestConsumerRules);
 
 		/*
 		 * Like TYPE-1 but computing the difference between the mandatoryConnectionList of the provider and the harmonizedRequestIntents of the consumer.
@@ -145,6 +151,7 @@ private Scanner scan = new Scanner(System.in);
 		HarmonizationModel.printHarmonizedRules(harmonizedRules, "harmonized CONSUMER intents", " after type-2 discordances resolution:");
 		
 		return harmonizedRules;
+		}
 	}
 	
 	private List<ConfigurationRule> solverTypeThreeDiscordances(List<ConfigurationRule> harmonizedRequestConsumerRules) {
@@ -275,7 +282,6 @@ private Scanner scan = new Scanner(System.in);
 				// Partial overlap, but no need to break the port range into two.
 				ConfigurationRule res3 = HarmonizationModel.addHarmonizedRules(res, resCond, sourcePortList[0], loggerInfo, "sourcePort", null);
 				resList.addAll(harmonizeConfigurationRule(res3, connList, map_conn, map_connList));
-
 			}
 			// Repeat the process for the destinationPort range.
 			if (destinationPortList[0].isEmpty()) {
