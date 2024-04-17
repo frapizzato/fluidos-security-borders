@@ -90,4 +90,69 @@ public class HarmonizationModel {
 		overlap + " {" + Utils.kubernetesNetworkFilteringConditionToString(resCond) + "} --> {" + Utils.kubernetesNetworkFilteringConditionToString(resCond1)+"}");
 		return res1;
 	}
+
+	public boolean verify(ConfigurationRule conn, List<ConfigurationRule> connList,
+			HashMap<String, HashMap<String, List<Pod>>> map_conn,
+			HashMap<String, HashMap<String, List<Pod>>> map_connList) {
+		
+		for (ConfigurationRule confRule : connList) {
+			ConfigurationRule res = Utils.deepCopyConfigurationRule(conn);
+			KubernetesNetworkFilteringCondition resCond = (KubernetesNetworkFilteringCondition) res
+					.getConfigurationCondition();
+			KubernetesNetworkFilteringCondition tmp = (KubernetesNetworkFilteringCondition) confRule
+					.getConfigurationCondition();
+			// Step-1.1: starts with the simplest case, that is protocol type. Detect if
+			// protocol types of res are overlapping with tmp.
+			String[] protocolList = Utils.computeHarmonizedProtocolType(resCond.getProtocolType().value(),
+					tmp.getProtocolType().value());
+
+			if (protocolList.length == 1 && protocolList[0].equals(resCond.getProtocolType().value())) {
+				// No overlap with the current rule (tmp), continue and check next one.
+				continue;
+			}
+
+			// Step-1.2: check the ports. Detect if the port ranges of res are overlapping
+			// with tmp.
+			String[] sourcePortList = Utils.computeHarmonizedPortRange(resCond.getSourcePort(), tmp.getSourcePort())
+					.split(";");
+			String[] destinationPortList = Utils
+					.computeHarmonizedPortRange(resCond.getDestinationPort(), tmp.getDestinationPort()).split(";");
+			if (sourcePortList[0].equals(resCond.getSourcePort())
+					|| destinationPortList[0].equals(resCond.getDestinationPort())) {
+				// No overlap with the current rule (tmp), continue and check next one.
+				continue;
+			}
+			// Step-1.3: check the source and destination.s
+			List<ResourceSelector> source = Utils.computeHarmonizedResourceSelector(resCond.getSource(),
+					tmp.getSource(), map_conn, map_connList);
+//								List<ResourceSelector> source = Utils.computeHarmonizedResourceSelector(resCond.getSource(), tmp.getSource(), this.podsByNamespaceAndLabelsConsumer, this.podsByNamespaceAndLabelsProvider);
+			if (source == null) {
+				// There was a comparison problem...likely trying to perform a CIDR/PodNamespace
+				// comparison
+				continue;
+			}
+			if (source.size() != 0 && Utils.compareResourceSelector(source.get(0), resCond.getSource())) {
+				// No overlap with the current authorization rule (tmp), continue and check next
+				// one.
+				continue;
+			}
+
+			List<ResourceSelector> destination = Utils.computeHarmonizedResourceSelector(resCond.getDestination(),
+					tmp.getDestination(), map_conn, map_connList);
+//								List<ResourceSelector> destination = Utils.computeHarmonizedResourceSelector(resCond.getDestination(), tmp.getDestination(), this.podsByNamespaceAndLabelsConsumer, this.podsByNamespaceAndLabelsProvider);
+			if (destination == null) {
+				// There was a comparison problem...likely trying to perform a CIDR/PodNamespace
+				// comparison
+				continue;
+			}
+			if (destination.size() != 0
+					&& Utils.compareResourceSelector(destination.get(0), resCond.getDestination())) {
+				// No overlap with the current authorization rule (tmp), continue and check next
+				// one.
+				continue;
+			}
+			return false;
+		}
+		return true;
+	}
 }

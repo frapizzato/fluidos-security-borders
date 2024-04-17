@@ -16,170 +16,210 @@ import eu.fluidos.jaxb.*;
 
 public class HarmonizationService {
 
-private HarmonizationModel HarmonizationModel;
-private ClusterService ClusterService;
-private Cluster consumer, provider;
-private ITResourceOrchestrationType providerIntents, consumerIntents;
-private AuthorizationIntents authIntentsProvider, authIntentsConsumer;
-private PrivateIntents privateIntentsProvider, privateIntentsConsumer;
-private RequestIntents requestIntentsProvider, requestIntentsConsumer;
-private HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider = new HashMap();
-private HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer = new HashMap();
-private Logger loggerInfo = LogManager.getLogger("harmonizationManager");
-private Scanner scan = new Scanner(System.in);
+	private HarmonizationModel HarmonizationModel;
+	private ClusterService ClusterService;
+	private Cluster consumer, provider;
+	private ITResourceOrchestrationType providerIntents, consumerIntents;
+	private AuthorizationIntents authIntentsProvider, authIntentsConsumer;
+	private PrivateIntents privateIntentsProvider, privateIntentsConsumer;
+	private RequestIntents requestIntentsProvider, requestIntentsConsumer;
+	private HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider = new HashMap();
+	private HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer = new HashMap();
+	private Logger loggerInfo = LogManager.getLogger("harmonizationManager");
+	private Scanner scan = new Scanner(System.in);
 
 	public List<ConfigurationRule> harmonize(ITResourceOrchestrationType provider,
 			ITResourceOrchestrationType consumer) {
 		this.providerIntents = provider;
 		this.consumerIntents = consumer;
-		
-		/**
-		 * In the current version, all the data about the cluster is hard-coded here (temporary solution).
-		 * TODO: final version should retrieve these data from the API server of peered clusters.
-		 * 		 need to understand which data is needed.
-		 */
-		ClusterService.initializeClusterData(); 
-		//getClusterConsumer() and getClusterProvider() if needed
-		//
-		/**
-		 *  This function constructs HashMaps to associated pods with labels and namespaces.
-		 */
-		ClusterService.initializeHashMaps(podsByNamespaceAndLabelsProvider, podsByNamespaceAndLabelsConsumer );
 
 		/**
-		 *  First, the intents are extracted from the given data structure into three different lists (for both provider and consumer):
-		 *  	- "AuthorizationIntents"
-		 *  	- "PrivateIntents"
-		 *  	- "RequestIntents"
+		 * In the current version, all the data about the cluster is hard-coded here
+		 * (temporary solution). TODO: final version should retrieve these data from the
+		 * API server of peered clusters. need to understand which data is needed.
 		 */
-		
-		loggerInfo.debug("[harmonization] - parse the received ITResourceOrchestration types to extract the CONSUMER/PROVIDER intent sets.");
+		ClusterService.initializeClusterData();
+		// getClusterConsumer() and getClusterProvider() if needed
+		//
+		/**
+		 * This function constructs HashMaps to associated pods with labels and
+		 * namespaces.
+		 */
+		ClusterService.initializeHashMaps(podsByNamespaceAndLabelsProvider, podsByNamespaceAndLabelsConsumer);
+
+		/**
+		 * First, the intents are extracted from the given data structure into three
+		 * different lists (for both provider and consumer): - "AuthorizationIntents" -
+		 * "PrivateIntents" - "RequestIntents"
+		 */
+
+		loggerInfo.debug(
+				"[harmonization] - parse the received ITResourceOrchestration types to extract the CONSUMER/PROVIDER intent sets.");
 		this.authIntentsProvider = HarmonizationModel.extractAuthorizationIntents(providerIntents);
 		this.privateIntentsProvider = HarmonizationModel.extractPrivateIntents(providerIntents);
 		this.requestIntentsProvider = HarmonizationModel.extractRequestIntents(providerIntents);
-		
+
 		this.authIntentsProvider = HarmonizationModel.extractAuthorizationIntents(consumerIntents);
 		this.privateIntentsProvider = HarmonizationModel.extractPrivateIntents(consumerIntents);
 		this.requestIntentsProvider = HarmonizationModel.extractRequestIntents(consumerIntents);
-		
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
-		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET +"Received the following " + Main.ANSI_YELLOW + "Request intents" + Main.ANSI_RESET + " (CONSUMER):");
+
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100) + Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + "Received the following "
+				+ Main.ANSI_YELLOW + "Request intents" + Main.ANSI_RESET + " (CONSUMER):");
 		HarmonizationModel.printRequestIntents(this.requestIntentsProvider);
-		
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
-		
-		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET +"Local cluster defined the following " + Main.ANSI_YELLOW + "Request intents" + Main.ANSI_RESET + " (PROVIDER):");
+
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100) + Main.ANSI_RESET);
+
+		System.out
+				.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + "Local cluster defined the following "
+						+ Main.ANSI_YELLOW + "Request intents" + Main.ANSI_RESET + " (PROVIDER):");
 		HarmonizationModel.printRequestIntents(this.requestIntentsConsumer);
-		
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
-		
-		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET +"Local cluster defined the following " + Main.ANSI_YELLOW + "Authorization Intents" + Main.ANSI_RESET +" (PROVIDER):");
+
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100) + Main.ANSI_RESET);
+
+		System.out
+				.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + "Local cluster defined the following "
+						+ Main.ANSI_YELLOW + "Authorization Intents" + Main.ANSI_RESET + " (PROVIDER):");
 		System.out.print("   |\n");
-		System.out.print("   .-> " + Main.ANSI_YELLOW + "ForbiddenConnectionList"+ Main.ANSI_RESET + ":\n");
-		
+		System.out.print("   .-> " + Main.ANSI_YELLOW + "ForbiddenConnectionList" + Main.ANSI_RESET + ":\n");
+
 		HarmonizationModel.printAuthorizationIntents(this.authIntentsConsumer, "forbidden");
 		System.out.print("   |\n");
 		System.out.print("   .-> " + Main.ANSI_YELLOW + "MandatoryConnectionList" + Main.ANSI_RESET + ":\n");
 		HarmonizationModel.printAuthorizationIntents(this.authIntentsConsumer, "mandatory");
-		
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
-		
+
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100) + Main.ANSI_RESET);
+
 		/**
-		 * Then, the lists are processed to resolve any possible discordances:
-		 * 		1) consumer asks for a connection not permitted by the provider -> these are removed from the final set of "Consumer" intents
-		 * 		2) provider asks for a mandatory connection not asked by the provider -> these are forced into the final set of "Consumer" intents
-		 * 		3) consumer asks for a connection TO a service in the provider space and this is not forbidden by host -> these are forced into the final set of "Provider" intents
+		 * Then, the lists are processed to resolve any possible discordances: 1)
+		 * consumer asks for a connection not permitted by the provider -> these are
+		 * removed from the final set of "Consumer" intents 2) provider asks for a
+		 * mandatory connection not asked by the provider -> these are forced into the
+		 * final set of "Consumer" intents 3) consumer asks for a connection TO a
+		 * service in the provider space and this is not forbidden by host -> these are
+		 * forced into the final set of "Provider" intents
 		 */
-		List <ConfigurationRule> harmonizedRequest_Consumer = solveTypeOneDiscordances();
+		List<ConfigurationRule> harmonizedRequest_Consumer = solveTypeOneDiscordances();
 		harmonizedRequest_Consumer = solverTypeTwoDiscordances(harmonizedRequest_Consumer);
-		List <ConfigurationRule> harmonizedRequest_Provider = solverTypeThreeDiscordances(harmonizedRequest_Consumer);
-		
+		List<ConfigurationRule> harmonizedRequest_Provider = solverTypeThreeDiscordances(harmonizedRequest_Consumer);
+
 		/**
-		 * Finally, write the resulting Intents in the original data structures so that they can be retrieved
+		 * Finally, write the resulting Intents in the original data structures so that
+		 * they can be retrieved
 		 */
 		HarmonizationModel.writeRequestIntents(this.consumerIntents, harmonizedRequest_Consumer);
 		HarmonizationModel.writeRequestIntents(this.providerIntents, harmonizedRequest_Provider);
-		
+
 		return null;
 	}
-	
+
 	private List<ConfigurationRule> solveTypeOneDiscordances() {
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
-		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW + "TYPE-1 DISCORDANCES"+ Main.ANSI_RESET +/*" = when Requested intents (CONSUMER) are not authorized by the Authorization intents (PROVIDER)"*/"...press ENTER to continue.");
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100) + Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW
+				+ "TYPE-1 DISCORDANCES" + Main.ANSI_RESET + /*
+															 * " = when Requested intents (CONSUMER) are not authorized by the Authorization intents (PROVIDER)"
+															 */"...press ENTER to continue.");
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100) + Main.ANSI_RESET);
 		scan.nextLine();
-		
+
 		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
-		
+
 		// External loop over the consumer's Request Intents.
-		for(ConfigurationRule cr: this.requestIntentsConsumer.getConfigurationRule()) {
-			loggerInfo.debug("[harmonization/harmonizeForbiddenConnectionIntent] - processing rule { [" + cr.getName() +"]" + Utils.kubernetesNetworkFilteringConditionToString((KubernetesNetworkFilteringCondition) cr.getConfigurationCondition()) + "}");
-			harmonizedRules.addAll(harmonizeConfigurationRule(cr,this.authIntentsProvider.getForbiddenConnectionList(),this.podsByNamespaceAndLabelsConsumer, this.podsByNamespaceAndLabelsProvider));
-		}	
-		
-		HarmonizationModel.printHarmonizedRules(harmonizedRules, "harmonized REQUEST intents", " after type-1 discordances resolution:");
-		
+		for (ConfigurationRule cr : this.requestIntentsConsumer.getConfigurationRule()) {
+			loggerInfo.debug("[harmonization/harmonizeForbiddenConnectionIntent] - processing rule { [" + cr.getName()
+					+ "]" + Utils.kubernetesNetworkFilteringConditionToString(
+							(KubernetesNetworkFilteringCondition) cr.getConfigurationCondition())
+					+ "}");
+			harmonizedRules.addAll(harmonizeConfigurationRule(cr, this.authIntentsProvider.getForbiddenConnectionList(),
+					this.podsByNamespaceAndLabelsConsumer, this.podsByNamespaceAndLabelsProvider));
+		}
+
+		HarmonizationModel.printHarmonizedRules(harmonizedRules, "harmonized REQUEST intents",
+				" after type-1 discordances resolution:");
+
 		return harmonizedRules;
-		
+
 	}
-	
+
 	private List<ConfigurationRule> solverTypeTwoDiscordances(List<ConfigurationRule> harmonizedRequestConsumerRules) {
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
-		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW + "TYPE-2 DISCORDANCES"+ Main.ANSI_RESET + /*" = when elements in the \"MandatoryConnectionsList\" (PROVIDER) are not completely satisfied by the set of Request Intents (CONSUMER)*/"...press ENTER to continue.");
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
-		
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100) + Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW
+				+ "TYPE-2 DISCORDANCES" + Main.ANSI_RESET
+				+ /*
+					 * " = when elements in the \"MandatoryConnectionsList\" (PROVIDER) are not
+					 * completely satisfied by the set of Request Intents (CONSUMER)
+					 */"...press ENTER to continue.");
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100) + Main.ANSI_RESET);
+
 		scan.nextLine();
 		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
-		
+
 		/* Monitoring */
-		
-		if(this.requestIntentsConsumer.isAcceptMonitoring() == false)
+
+		if (this.requestIntentsConsumer.isAcceptMonitoring() == false)
 			return null;
 		else {
 			harmonizedRules.addAll(harmonizedRequestConsumerRules);
 
-		/*
-		 * Like TYPE-1 but computing the difference between the mandatoryConnectionList of the provider and the harmonizedRequestIntents of the consumer.
-		 * Then, the resulting harmonizedRequestIntents = harmonizedRequestIntents + (mandatoryConnectionList - harmonizedRequestIntents).
-		 */
-		for(ConfigurationRule cr_provider: this.authIntentsProvider.getMandatoryConnectionList()) {
-			List<ConfigurationRule> tmp = harmonizeConfigurationRule(cr_provider, harmonizedRules, podsByNamespaceAndLabelsProvider, podsByNamespaceAndLabelsConsumer);
-			for (ConfigurationRule cr : tmp)
-				harmonizedRules.add(Utils.deepCopyConfigurationRule(cr));
-		}
-		
-		HarmonizationModel.printHarmonizedRules(harmonizedRules, "harmonized CONSUMER intents", " after type-2 discordances resolution:");
-		
-		return harmonizedRules;
+			/*
+			 * Like TYPE-1 but computing the difference between the mandatoryConnectionList
+			 * of the provider and the harmonizedRequestIntents of the consumer. Then, the
+			 * resulting harmonizedRequestIntents = harmonizedRequestIntents +
+			 * (mandatoryConnectionList - harmonizedRequestIntents).
+			 */
+			for (ConfigurationRule cr_provider : this.authIntentsProvider.getMandatoryConnectionList()) {
+				List<ConfigurationRule> tmp = harmonizeConfigurationRule(cr_provider, harmonizedRules,
+						podsByNamespaceAndLabelsProvider, podsByNamespaceAndLabelsConsumer);
+				for (ConfigurationRule cr : tmp)
+					harmonizedRules.add(Utils.deepCopyConfigurationRule(cr));
+			}
+
+			HarmonizationModel.printHarmonizedRules(harmonizedRules, "harmonized CONSUMER intents",
+					" after type-2 discordances resolution:");
+
+			return harmonizedRules;
 		}
 	}
-	
-	private List<ConfigurationRule> solverTypeThreeDiscordances(List<ConfigurationRule> harmonizedRequestConsumerRules) {
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
-		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW + "TYPE-3 DISCORDANCES"+ Main.ANSI_RESET + /*" = when elements in the Requested set of intents (CONSUMER), that have already been authorized, don't have a specular intent on the PROVIDER's Requested set (which is needed to open the \"hole\" in the protected border)*/"...press ENTER to continue.");
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
+
+	private List<ConfigurationRule> solverTypeThreeDiscordances(
+			List<ConfigurationRule> harmonizedRequestConsumerRules) {
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100) + Main.ANSI_RESET);
+		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW
+				+ "TYPE-3 DISCORDANCES" + Main.ANSI_RESET + /*
+															 * " = when elements in the Requested set of intents (CONSUMER), that have already been authorized, don't have a specular intent on the PROVIDER's Requested set (which is needed to open the \"hole\"
+															 * in the protected border)
+															 */"...press ENTER to continue.");
+		System.out.println(Main.ANSI_PURPLE + "-".repeat(100) + Main.ANSI_RESET);
 		scan.nextLine();
-		
+
 		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
 
 		harmonizedRules.addAll(this.requestIntentsProvider.getConfigurationRule());
 		/*
-		 *  Loops over each elements of the harmonized Request intents of the Consumer and checks if the same connection is opened also in the Provider side.
-		 *  To do so, it computes the set difference between a single (consumer) Request and the current list of (provider) Request(s).
+		 * Loops over each elements of the harmonized Request intents of the Consumer
+		 * and checks if the same connection is opened also in the Provider side. To do
+		 * so, it computes the set difference between a single (consumer) Request and
+		 * the current list of (provider) Request(s).
 		 */
-		for(ConfigurationRule cr_cons: harmonizedRequestConsumerRules) {
+		for (ConfigurationRule cr_cons : harmonizedRequestConsumerRules) {
 //			ConfigurationRule cr_inverted = Utils.deepCopyConfigurationRule(cr_cons);
-			List<ConfigurationRule> tmp = harmonizeConfigurationRule(cr_cons, harmonizedRules, this.podsByNamespaceAndLabelsConsumer, this.podsByNamespaceAndLabelsProvider);
-			// If there are "harmonized" connections that are not already in the provider's set, here they are reversed and added to it.
+			List<ConfigurationRule> tmp = harmonizeConfigurationRule(cr_cons, harmonizedRules,
+					this.podsByNamespaceAndLabelsConsumer, this.podsByNamespaceAndLabelsProvider);
+			// If there are "harmonized" connections that are not already in the provider's
+			// set, here they are reversed and added to it.
 			for (ConfigurationRule cr : tmp)
 				harmonizedRules.add(Utils.deepCopyConfigurationAndInvertVCluster(cr));
 		}
-		
-		HarmonizationModel.printHarmonizedRules(harmonizedRules, "harmonized PROVIDER intents", "harmonized PROVIDER intents"+ Main.ANSI_RESET+" after type-3 discordances resolution:");
-		
+
+		HarmonizationModel.printHarmonizedRules(harmonizedRules, "harmonized PROVIDER intents",
+				"harmonized PROVIDER intents" + Main.ANSI_RESET + " after type-3 discordances resolution:");
+
 		return harmonizedRules;
 	}
-	private List<ConfigurationRule> harmonizeConfigurationRule(ConfigurationRule conn, List<ConfigurationRule> connList, HashMap<String, HashMap<String, List<Pod>>> map_conn, HashMap<String, HashMap<String, List<Pod>>> map_connList) {
+
+	private List<ConfigurationRule> harmonizeConfigurationRule(ConfigurationRule conn, List<ConfigurationRule> connList,
+			HashMap<String, HashMap<String, List<Pod>>> map_conn,
+			HashMap<String, HashMap<String, List<Pod>>> map_connList) {
 		// Initialize the resulting list.
 		List<ConfigurationRule> resList = new ArrayList<>();
 		// Create a deep copy of the current ConfigurationRule to be modified and
@@ -238,6 +278,7 @@ private Scanner scan = new Scanner(System.in);
 				// one.
 				continue;
 			}
+
 			List<ResourceSelector> destination = Utils.computeHarmonizedResourceSelector(resCond.getDestination(),
 					tmp.getDestination(), map_conn, map_connList);
 //					List<ResourceSelector> destination = Utils.computeHarmonizedResourceSelector(resCond.getDestination(), tmp.getDestination(), this.podsByNamespaceAndLabelsConsumer, this.podsByNamespaceAndLabelsProvider);
@@ -270,31 +311,37 @@ private Scanner scan = new Scanner(System.in);
 				// Partial overlap causing the port range to be broke into two ranges. First,
 				// create a new ConfigurationRule, assign one of the two ranges and recursively
 				// call the function...
-				ConfigurationRule res2 = HarmonizationModel.addHarmonizedRules(res, resCond, sourcePortList[1], loggerInfo, "sourcePort", null);
+				ConfigurationRule res2 = HarmonizationModel.addHarmonizedRules(res, resCond, sourcePortList[1],
+						loggerInfo, "sourcePort", null);
 				resList.addAll(harmonizeConfigurationRule(res2, connList, map_conn, map_connList));
 
 				// ... then modify the local ConfigurationRule with the other range and
 				// continue.
-				ConfigurationRule res3 = HarmonizationModel.addHarmonizedRules(res, resCond, sourcePortList[0], loggerInfo, "sourcePort", null);
+				ConfigurationRule res3 = HarmonizationModel.addHarmonizedRules(res, resCond, sourcePortList[0],
+						loggerInfo, "sourcePort", null);
 				resList.addAll(harmonizeConfigurationRule(res3, connList, map_conn, map_connList));
 
 			} else {
 				// Partial overlap, but no need to break the port range into two.
-				ConfigurationRule res3 = HarmonizationModel.addHarmonizedRules(res, resCond, sourcePortList[0], loggerInfo, "sourcePort", null);
+				ConfigurationRule res3 = HarmonizationModel.addHarmonizedRules(res, resCond, sourcePortList[0],
+						loggerInfo, "sourcePort", null);
 				resList.addAll(harmonizeConfigurationRule(res3, connList, map_conn, map_connList));
 			}
 			// Repeat the process for the destinationPort range.
 			if (destinationPortList[0].isEmpty()) {
 				flag++;
 			} else if (destinationPortList.length > 1) {
-				ConfigurationRule res2 = HarmonizationModel.addHarmonizedRules(res, resCond, destinationPortList[1], loggerInfo, "destinationPort", null);
+				ConfigurationRule res2 = HarmonizationModel.addHarmonizedRules(res, resCond, destinationPortList[1],
+						loggerInfo, "destinationPort", null);
 				resList.addAll(harmonizeConfigurationRule(res2, connList, map_conn, map_connList));
-				
-				ConfigurationRule res3 = HarmonizationModel.addHarmonizedRules(res, resCond, destinationPortList[0], loggerInfo, "destinationPort", null);
+
+				ConfigurationRule res3 = HarmonizationModel.addHarmonizedRules(res, resCond, destinationPortList[0],
+						loggerInfo, "destinationPort", null);
 				resList.addAll(harmonizeConfigurationRule(res3, connList, map_conn, map_connList));
 
 			} else {
-				ConfigurationRule res3 = HarmonizationModel.addHarmonizedRules(res, resCond, destinationPortList[0], loggerInfo, "destinationPort", null);
+				ConfigurationRule res3 = HarmonizationModel.addHarmonizedRules(res, resCond, destinationPortList[0],
+						loggerInfo, "destinationPort", null);
 				resList.addAll(harmonizeConfigurationRule(res3, connList, map_conn, map_connList));
 			}
 
@@ -307,14 +354,17 @@ private Scanner scan = new Scanner(System.in);
 				// rule's one)... just update the flag for the moment.
 				flag++;
 			} else if (protocolList.length > 1) {
-				ConfigurationRule res1 = HarmonizationModel.addHarmonizedRules(res, resCond, protocolList[1], loggerInfo, "transportProtocol", null);
+				ConfigurationRule res1 = HarmonizationModel.addHarmonizedRules(res, resCond, protocolList[1],
+						loggerInfo, "transportProtocol", null);
 				resList.addAll(harmonizeConfigurationRule(res1, connList, map_conn, map_connList));
 
-				ConfigurationRule res2 = HarmonizationModel.addHarmonizedRules(res, resCond, protocolList[0], loggerInfo, "transportProtocol", null);
+				ConfigurationRule res2 = HarmonizationModel.addHarmonizedRules(res, resCond, protocolList[0],
+						loggerInfo, "transportProtocol", null);
 				resList.addAll(harmonizeConfigurationRule(res2, connList, map_conn, map_connList));
 
 			} else {
-				ConfigurationRule res2 = HarmonizationModel.addHarmonizedRules(res, resCond, protocolList[0], loggerInfo, "transportProtocol", null);
+				ConfigurationRule res2 = HarmonizationModel.addHarmonizedRules(res, resCond, protocolList[0],
+						loggerInfo, "transportProtocol", null);
 				resList.addAll(harmonizeConfigurationRule(res2, connList, map_conn, map_connList));
 			}
 
@@ -324,7 +374,8 @@ private Scanner scan = new Scanner(System.in);
 				flag++;
 			} else {
 				for (ResourceSelector rs : source) {
-					ConfigurationRule res1 = HarmonizationModel.addHarmonizedRules(res, resCond, "", loggerInfo, "sourceSelector", rs);
+					ConfigurationRule res1 = HarmonizationModel.addHarmonizedRules(res, resCond, "", loggerInfo,
+							"sourceSelector", rs);
 					resList.addAll(harmonizeConfigurationRule(res1, connList, map_conn, map_connList));
 				}
 			}
@@ -332,7 +383,8 @@ private Scanner scan = new Scanner(System.in);
 				flag++;
 			} else {
 				for (ResourceSelector rs : destination) {
-					ConfigurationRule res1 = HarmonizationModel.addHarmonizedRules(res, resCond, "", loggerInfo, "destinationSelector", rs);
+					ConfigurationRule res1 = HarmonizationModel.addHarmonizedRules(res, resCond, "", loggerInfo,
+							"destinationSelector", rs);
 					resList.addAll(harmonizeConfigurationRule(res1, connList, map_conn, map_connList));
 				}
 			}
@@ -360,9 +412,28 @@ private Scanner scan = new Scanner(System.in);
 
 		return resList;
 	}
-	
-	public boolean verify(ITResourceOrchestrationType provider,
-			ITResourceOrchestrationType consumer) {
+
+	public boolean verify(ITResourceOrchestrationType provider, ITResourceOrchestrationType consumer) {
+		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
+		boolean verify = true;
+		this.providerIntents = provider;
+		this.consumerIntents = consumer;
+
+		ClusterService.initializeClusterData();
+		ClusterService.initializeHashMaps(podsByNamespaceAndLabelsProvider, podsByNamespaceAndLabelsConsumer);
+
+		this.authIntentsProvider = HarmonizationModel.extractAuthorizationIntents(providerIntents);
+		this.requestIntentsProvider = HarmonizationModel.extractRequestIntents(consumerIntents);
+
+		harmonizedRules.addAll(this.requestIntentsProvider.getConfigurationRule());
+
+		for (ConfigurationRule cr_provider : this.authIntentsProvider.getMandatoryConnectionList()) {
+			verify = HarmonizationModel.verify(cr_provider, harmonizedRules, podsByNamespaceAndLabelsProvider,
+					podsByNamespaceAndLabelsConsumer);
+			if(verify == false)
+				return false;
+		}
 		return true;
 	}
+
 }
