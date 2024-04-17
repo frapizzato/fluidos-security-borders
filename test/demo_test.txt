@@ -5,6 +5,21 @@ kubectl label namespace fluidos name=fluidos
 kubectl label namespace monitoring name=monitoring
 kubectl label namespace default name=default
 ------------------------------------------------------------------------------------------
+Service account creation
+kubectl create service-account traslator-service-account
+
+We have to apply all the file in the Service Account folder:
+kubectl apply -f secret.yaml
+kubectl apply -f create-networkpolicies-clusterrole.yaml
+kubectl apply -f create-networkpolicies-clusterrolebinding.yaml
+kubectl apply -f list-namespaces-cluster-role.yaml
+kubectl apply -f list-namespaces-cluster-role-binding.yaml
+kubectl apply -f list-pods-cluster-role.yaml
+kubectl apply -f list-pods-cluster-role-binding.yaml
+
+Extraction of the token:
+kubectl get secret traslator-service-account -o jsonpath='{.data.token}' | base64 --decode
+------------------------------------------------------------------------------------------
 Deployments creation:
 kubectl apply -f bank-payment-deployment.yaml
 kubectl apply -f order-placement-deployment.yaml

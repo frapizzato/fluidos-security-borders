@@ -1,5 +1,7 @@
 package eu.fluidos;
 import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,9 +15,11 @@ import eu.fluidos.traslator.Traslator;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
+import io.kubernetes.client.openapi.apis.NetworkingV1Api;
 import io.kubernetes.client.openapi.auth.ApiKeyAuth;
 import io.kubernetes.client.openapi.Configuration;
 import io.kubernetes.client.util.KubeConfig;
+import io.kubernetes.client.util.Yaml;
 import io.fabric8.kubernetes.api.model.ConfigBuilder;
 import io.kubernetes.client.util.ClientBuilder;
 import io.kubernetes.client.util.Config;
@@ -25,12 +29,15 @@ import java.io.FileReader;
 import io.kubernetes.client.openapi.apis.AuthenticationV1Api;
 import io.kubernetes.client.openapi.auth.*;
 import io.kubernetes.client.openapi.models.*;
+import io.kubernetes.client.proto.V1Networking.NetworkPolicy;
 import io.kubernetes.client.openapi.Configuration;
 import io.kubernetes.client.openapi.ApiException;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
 import eu.fluidos.LabelsKeyValue;
+
+import java.io.File;
 public class Module {
     private ITResourceOrchestrationType intents;
 
@@ -77,6 +84,7 @@ public class Module {
             for (String n : namespaces){
                 //System.out.println(n);
             }
+            
             List<String> namePods = new ArrayList<>();
             List<LabelsKeyValue> labels = new ArrayList<>();
             Map <LabelsKeyValue,String> availablePodsMap = new HashMap();
@@ -95,15 +103,19 @@ public class Module {
             for (LabelsKeyValue keyValue : labels) {
                 //System.out.println("Chiave: " + keyValue.getKey() + ", Valore: " + keyValue.getValue());
             }
-            
+
+            CreateNetworkPolicies(client);
+
+                
         } catch (ApiException e) {
-            System.err.println("Errore");
+            System.err.println("Errore: ");
+            e.printStackTrace();
         }
     
     }
 
 
-    public List<String> Epurate(V1NamespaceList namespaceList){
+    private List<String> Epurate(V1NamespaceList namespaceList){
         List<String> namespacesToExclude = new ArrayList<>(Arrays.asList(
             "calico-apiserver",
             "calico-system",
@@ -121,5 +133,39 @@ public class Module {
         }
         
         return namespaces;
+    }
+
+    private void CreateNetworkPolicies (ApiClient client){
+        NetworkingV1Api api = new NetworkingV1Api(client);
+        List<File> files = getFilesInFolder("C:/Users/salva/Desktop/traslator/fluidos-security-orchestrator/fluidos-security-orchestrator/src/network_policies");
+        for (File file : files) {
+            try {
+            String yamlContent = new String(Files.readAllBytes(file.toPath()));
+            V1NetworkPolicy networkPolicy = Yaml.loadAs(yamlContent, V1NetworkPolicy.class);
+                try {
+                api.createNamespacedNetworkPolicy(networkPolicy.getMetadata().getNamespace(), networkPolicy, null, null, null);
+                } catch (ApiException e){
+                    System.err.println("Errore API");
+                }
+            } catch (IOException e) {
+                System.err.println("Errore");
+            }
+        }
+    }
+
+    public List<File> getFilesInFolder(String folderPath) {
+        List<File> files = new ArrayList<>();
+        File folder = new File(folderPath);
+        
+        if (folder.exists() && folder.isDirectory()) {
+            File[] fileList = folder.listFiles();
+            for (File file : fileList) {
+                if (file.isFile()) {
+                    files.add(file);
+                }
+            }
+        }
+        
+        return files;
     }
 }
