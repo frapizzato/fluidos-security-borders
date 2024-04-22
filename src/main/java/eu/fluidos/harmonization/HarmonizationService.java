@@ -16,8 +16,8 @@ import eu.fluidos.jaxb.*;
 
 public class HarmonizationService {
 
-	private HarmonizationModel HarmonizationModel;
-	private ClusterService ClusterService;
+	private HarmonizationModel HarmonizationModel = new HarmonizationModel();
+	private ClusterService ClusterService = new ClusterService();
 	private Cluster consumer, provider;
 	private ITResourceOrchestrationType providerIntents, consumerIntents;
 	private AuthorizationIntents authIntentsProvider, authIntentsConsumer;
@@ -59,9 +59,9 @@ public class HarmonizationService {
 		this.privateIntentsProvider = HarmonizationModel.extractPrivateIntents(providerIntents);
 		this.requestIntentsProvider = HarmonizationModel.extractRequestIntents(providerIntents);
 
-		this.authIntentsProvider = HarmonizationModel.extractAuthorizationIntents(consumerIntents);
-		this.privateIntentsProvider = HarmonizationModel.extractPrivateIntents(consumerIntents);
-		this.requestIntentsProvider = HarmonizationModel.extractRequestIntents(consumerIntents);
+		this.authIntentsConsumer = HarmonizationModel.extractAuthorizationIntents(consumerIntents);
+		this.privateIntentsConsumer = HarmonizationModel.extractPrivateIntents(consumerIntents);
+		this.requestIntentsConsumer = HarmonizationModel.extractRequestIntents(consumerIntents);
 
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100) + Main.ANSI_RESET);
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + "Received the following "
@@ -435,5 +435,23 @@ public class HarmonizationService {
 		}
 		return true;
 	}
+	
+	/* Temporary */
+	
+	 public ITResourceOrchestrationType getProviderIntents() {
+			return providerIntents;
+		}
+
+		public void setProviderIntents(ITResourceOrchestrationType intents) {
+			this.providerIntents = intents;
+		}
+		
+		public ITResourceOrchestrationType getConsumerIntents() {
+			return consumerIntents;
+		}
+
+		public void setConsumerIntents(ITResourceOrchestrationType consumerIntents) {
+			this.consumerIntents = consumerIntents;
+		}
 
 }

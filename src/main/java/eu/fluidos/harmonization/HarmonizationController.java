@@ -8,11 +8,12 @@ import eu.fluidos.jaxb.*;
 
 //REST API Interface missing
 public class HarmonizationController {
-
+	private ITResourceOrchestrationType providerIntents, consumerIntents;
+	
 	private final HarmonizationService HarmonizationService;
 
-	public HarmonizationController(HarmonizationService harmonizationService) {
-        this.HarmonizationService = harmonizationService;
+	public HarmonizationController() {
+        this.HarmonizationService = new HarmonizationService();
     }
 	
 	/* @RequestParam("provider")
@@ -25,6 +26,21 @@ public class HarmonizationController {
     public boolean verify(ITResourceOrchestrationType provider, ITResourceOrchestrationType consumer) {
     	return HarmonizationService.verify(provider, consumer);
     }
+    /* Temporary */ 
     
-    
+    public ITResourceOrchestrationType getProviderIntents() {
+		return HarmonizationService.getProviderIntents();
+	}
+
+	public void setProviderIntents(ITResourceOrchestrationType intents) {
+		HarmonizationService.setProviderIntents(intents);
+	}
+	
+	public ITResourceOrchestrationType getConsumerIntents() {
+		return HarmonizationService.getConsumerIntents();
+	}
+
+	public void setConsumerIntents(ITResourceOrchestrationType consumerIntents) {
+		HarmonizationService.setConsumerIntents(consumerIntents);
+	}
 }

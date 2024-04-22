@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 public class ClusterService {
 	Logger loggerInfo = LogManager.getLogger("harmonizationManager");
 	private Cluster consumer, provider;
-	private ClusterModel ClusterModel;
+	private ClusterModel ClusterModel = new ClusterModel();
 
 	
 	public void initializeClusterData() {

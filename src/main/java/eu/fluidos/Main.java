@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Scanner;
 
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +19,9 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import jakarta.xml.bind.*;
+import eu.fluidos.harmonization.HarmonizationController;
 import eu.fluidos.harmonization.HarmonizationManager;
+import eu.fluidos.harmonization.HarmonizationService;
 import eu.fluidos.jaxb.*;
 
 
@@ -39,6 +42,7 @@ public class Main
     {    	
     	String arg_1 = "./testfile/provider_MSPL_demo.xml";
     	String arg_2 = "./testfile/consumer_MSPL_demo.xml";
+    	HarmonizationController controller = new HarmonizationController();
     	
     	System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
     	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_YELLOW + "   Harmonization Module" + ANSI_RESET + " has the scope of detecting and correcting all the discordances between consumer and provider intents.");
@@ -76,7 +80,7 @@ public class Main
         	loggerInfo.debug("Successfull unmarshalling of second input file ["+arg_2+"].");
         	
         	loggerInfo.debug("Start of the harmonization process.");
-        	HarmonizationManager res = new HarmonizationManager(intents_1, intents_2);
+        	List<ConfigurationRule> res = controller.harmonize(intents_1, intents_2);
         	
         	//Here output the "Harmonized" set of intents
         	Scanner scan = new Scanner(System.in);
@@ -84,7 +88,7 @@ public class Main
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 			m.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "./xsd/mspl.xsd");
 			QName qName = new QName("eu.fluidos.jaxb.ITResourceOrchestrationType", "ITResourceOrchestrationType");
-			JAXBElement<ITResourceOrchestrationType> root = new JAXBElement<>(qName, ITResourceOrchestrationType.class, res.getConsumerIntents());
+			JAXBElement<ITResourceOrchestrationType> root = new JAXBElement<>(qName, ITResourceOrchestrationType.class, controller.getConsumerIntents());
 	    	System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
 	    	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_RESET + "Press ENTER to output " + ANSI_YELLOW + "Consumer" + ANSI_RESET + " MSPL intent...");
 			scan.nextLine();
@@ -95,7 +99,7 @@ public class Main
 	    	System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
 	    	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_RESET + "Press ENTER to output " + ANSI_YELLOW + "Provider" + ANSI_RESET + " MSPL intent...");
 			scan.nextLine();
-			root = new JAXBElement<>(qName, ITResourceOrchestrationType.class, res.getProviderIntents());
+			root = new JAXBElement<>(qName, ITResourceOrchestrationType.class, controller.getProviderIntents());
 			loggerInfo.info(" [harmonization] Provider MSPL OUTPUT");
 			StringWriter stringWriter_2 = new StringWriter();
 			m.marshal(root, stringWriter_2);
