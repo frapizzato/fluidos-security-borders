@@ -1,19 +1,20 @@
 package eu.fluidos.harmonization;
 
-
-
 import java.util.List;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import eu.fluidos.jaxb.*;
 
-//REST API Interface missing
+@RestController
 public class HarmonizationController {
+	private final HarmonizationService HarmonizationService;
 	private ITResourceOrchestrationType providerIntents, consumerIntents;
 	
-	private final HarmonizationService HarmonizationService;
-
-	public HarmonizationController() {
-        this.HarmonizationService = new HarmonizationService();
+	public HarmonizationController(HarmonizationService HarmonizationService) {
+        this.HarmonizationService = HarmonizationService;
     }
 	
 	/* @RequestParam("provider")
