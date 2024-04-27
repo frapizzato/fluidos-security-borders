@@ -127,13 +127,15 @@ public class HarmonizationService {
 		this.requestIntentsProvider = extractRequestIntents(consumerIntents);
 
 		harmonizedRules.addAll(this.requestIntentsProvider.getConfigurationRule());
-
-		for (ConfigurationRule cr_provider : this.authIntentsProvider.getMandatoryConnectionList()) {
-			verify = HarmonizationData.verify(cr_provider, harmonizedRules, podsByNamespaceAndLabelsProvider,
-					podsByNamespaceAndLabelsConsumer);
-			if (verify == false)
-				return false;
-		}
+		if (requestIntentsProvider.isAcceptMonitoring()) {
+			for (ConfigurationRule cr_provider : this.authIntentsProvider.getMandatoryConnectionList()) {
+				verify = HarmonizationData.verify(cr_provider, harmonizedRules, podsByNamespaceAndLabelsProvider,
+						podsByNamespaceAndLabelsConsumer);
+				if (verify == false)
+					return false;
+			}
+		} else
+			return false;
 		return true;
 	}
 

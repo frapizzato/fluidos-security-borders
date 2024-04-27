@@ -13,9 +13,10 @@ import eu.fluidos.Pod;
 import eu.fluidos.jaxb.*;
 
 public class HarmonizationData {
-	
+
 	private Logger loggerInfo = LogManager.getLogger("harmonizationManager");
 	private Scanner scan = new Scanner(System.in);
+
 	public void printDash() {
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100) + Main.ANSI_RESET);
 	}
@@ -62,8 +63,10 @@ public class HarmonizationData {
 		}
 	}
 
-	public List<ConfigurationRule> solveTypeOneDiscordances(RequestIntents requestIntent, AuthorizationIntents authIntent,
-			HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer) {
+	public List<ConfigurationRule> solveTypeOneDiscordances(RequestIntents requestIntent,
+			AuthorizationIntents authIntent,
+			HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider,
+			HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer) {
 		printDash();
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW
 				+ "TYPE-1 DISCORDANCES" + Main.ANSI_RESET + /*
@@ -84,14 +87,16 @@ public class HarmonizationData {
 					podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider));
 		}
 
-		printHarmonizedRules(harmonizedRules, "harmonized REQUEST intents",
-				" after type-1 discordances resolution:");
+		printHarmonizedRules(harmonizedRules, "harmonized REQUEST intents", " after type-1 discordances resolution:");
 
 		return harmonizedRules;
 
 	}
-	public List<ConfigurationRule> solverTypeTwoDiscordances(List<ConfigurationRule> harmonizedRequestConsumerRules, RequestIntents requestIntent, AuthorizationIntents authIntent, 
-			HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer) {
+
+	public List<ConfigurationRule> solverTypeTwoDiscordances(List<ConfigurationRule> harmonizedRequestConsumerRules,
+			RequestIntents requestIntent, AuthorizationIntents authIntent,
+			HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider,
+			HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer) {
 		printDash();
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW
 				+ "TYPE-2 DISCORDANCES" + Main.ANSI_RESET
@@ -130,8 +135,10 @@ public class HarmonizationData {
 			return harmonizedRules;
 		}
 	}
-	public List<ConfigurationRule> solverTypeThreeDiscordances(List<ConfigurationRule> harmonizedRequestConsumerRules, RequestIntents requestIntent,
-			HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer) {
+
+	public List<ConfigurationRule> solverTypeThreeDiscordances(List<ConfigurationRule> harmonizedRequestConsumerRules,
+			RequestIntents requestIntent, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider,
+			HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer) {
 		printDash();
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW
 				+ "TYPE-3 DISCORDANCES" + Main.ANSI_RESET + /*
@@ -165,7 +172,7 @@ public class HarmonizationData {
 
 		return harmonizedRules;
 	}
-	
+
 	private List<ConfigurationRule> harmonizeConfigurationRule(ConfigurationRule conn, List<ConfigurationRule> connList,
 			HashMap<String, HashMap<String, List<Pod>>> map_conn,
 			HashMap<String, HashMap<String, List<Pod>>> map_connList) {
@@ -260,37 +267,37 @@ public class HarmonizationData {
 				// Partial overlap causing the port range to be broke into two ranges. First,
 				// create a new ConfigurationRule, assign one of the two ranges and recursively
 				// call the function...
-				ConfigurationRule res2 = addHarmonizedRules(res, resCond, sourcePortList[1],
-						loggerInfo, "sourcePort", null);
+				ConfigurationRule res2 = addHarmonizedRules(res, resCond, sourcePortList[1], loggerInfo, "sourcePort",
+						null);
 				resList.addAll(harmonizeConfigurationRule(res2, connList, map_conn, map_connList));
 
 				// ... then modify the local ConfigurationRule with the other range and
 				// continue.
-				ConfigurationRule res3 = addHarmonizedRules(res, resCond, sourcePortList[0],
-						loggerInfo, "sourcePort", null);
+				ConfigurationRule res3 = addHarmonizedRules(res, resCond, sourcePortList[0], loggerInfo, "sourcePort",
+						null);
 				resList.addAll(harmonizeConfigurationRule(res3, connList, map_conn, map_connList));
 
 			} else {
 				// Partial overlap, but no need to break the port range into two.
-				ConfigurationRule res3 = addHarmonizedRules(res, resCond, sourcePortList[0],
-						loggerInfo, "sourcePort", null);
+				ConfigurationRule res3 = addHarmonizedRules(res, resCond, sourcePortList[0], loggerInfo, "sourcePort",
+						null);
 				resList.addAll(harmonizeConfigurationRule(res3, connList, map_conn, map_connList));
 			}
 			// Repeat the process for the destinationPort range.
 			if (destinationPortList[0].isEmpty()) {
 				flag++;
 			} else if (destinationPortList.length > 1) {
-				ConfigurationRule res2 = addHarmonizedRules(res, resCond, destinationPortList[1],
-						loggerInfo, "destinationPort", null);
+				ConfigurationRule res2 = addHarmonizedRules(res, resCond, destinationPortList[1], loggerInfo,
+						"destinationPort", null);
 				resList.addAll(harmonizeConfigurationRule(res2, connList, map_conn, map_connList));
 
-				ConfigurationRule res3 = addHarmonizedRules(res, resCond, destinationPortList[0],
-						loggerInfo, "destinationPort", null);
+				ConfigurationRule res3 = addHarmonizedRules(res, resCond, destinationPortList[0], loggerInfo,
+						"destinationPort", null);
 				resList.addAll(harmonizeConfigurationRule(res3, connList, map_conn, map_connList));
 
 			} else {
-				ConfigurationRule res3 = addHarmonizedRules(res, resCond, destinationPortList[0],
-						loggerInfo, "destinationPort", null);
+				ConfigurationRule res3 = addHarmonizedRules(res, resCond, destinationPortList[0], loggerInfo,
+						"destinationPort", null);
 				resList.addAll(harmonizeConfigurationRule(res3, connList, map_conn, map_connList));
 			}
 
@@ -323,8 +330,7 @@ public class HarmonizationData {
 				flag++;
 			} else {
 				for (ResourceSelector rs : source) {
-					ConfigurationRule res1 = addHarmonizedRules(res, resCond, "", loggerInfo,
-							"sourceSelector", rs);
+					ConfigurationRule res1 = addHarmonizedRules(res, resCond, "", loggerInfo, "sourceSelector", rs);
 					resList.addAll(harmonizeConfigurationRule(res1, connList, map_conn, map_connList));
 				}
 			}
@@ -332,8 +338,8 @@ public class HarmonizationData {
 				flag++;
 			} else {
 				for (ResourceSelector rs : destination) {
-					ConfigurationRule res1 = addHarmonizedRules(res, resCond, "", loggerInfo,
-							"destinationSelector", rs);
+					ConfigurationRule res1 = addHarmonizedRules(res, resCond, "", loggerInfo, "destinationSelector",
+							rs);
 					resList.addAll(harmonizeConfigurationRule(res1, connList, map_conn, map_connList));
 				}
 			}
@@ -361,6 +367,7 @@ public class HarmonizationData {
 
 		return resList;
 	}
+
 	private ConfigurationRule addHarmonizedRules(ConfigurationRule res, KubernetesNetworkFilteringCondition resCond,
 			String protocolList, Logger loggerInfo, String overlap, ResourceSelector rs) {
 		ConfigurationRule res1 = Utils.deepCopyConfigurationRule(res);
@@ -382,6 +389,7 @@ public class HarmonizationData {
 				+ Utils.kubernetesNetworkFilteringConditionToString(resCond1) + "}");
 		return res1;
 	}
+
 	public void writeRequestIntents(ITResourceOrchestrationType intent, List<ConfigurationRule> harmonizedRequest) {
 		for (ITResourceType IT_rt : intent.getITResource()) {
 			if (IT_rt.getConfiguration().getClass().equals(RequestIntents.class)) {
@@ -405,11 +413,10 @@ public class HarmonizationData {
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100) + Main.ANSI_RESET);
 	}
 
-
 	public boolean verify(ConfigurationRule conn, List<ConfigurationRule> connList,
 			HashMap<String, HashMap<String, List<Pod>>> map_conn,
 			HashMap<String, HashMap<String, List<Pod>>> map_connList) {
-		/* Aggiungere Monitoring */
+
 		for (ConfigurationRule confRule : connList) {
 			ConfigurationRule res = Utils.deepCopyConfigurationRule(conn);
 			KubernetesNetworkFilteringCondition resCond = (KubernetesNetworkFilteringCondition) res
@@ -470,5 +477,6 @@ public class HarmonizationData {
 			return false;
 		}
 		return true;
+
 	}
 }
