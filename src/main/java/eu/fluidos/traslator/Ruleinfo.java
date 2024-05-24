@@ -16,9 +16,11 @@ public class Ruleinfo {
     private CIDRSelector cidrDestination;
     private String port;
     private String protocol;
+    private boolean isSourceHost;
+    private boolean isDestinationHost;
 
     public Ruleinfo(List<KeyValue> sourcePodList, List<KeyValue> sourceNamespaceList, CIDRSelector cidrSource,
-    List<KeyValue> destinationPodList, List<KeyValue> destinationNamespaceList, CIDRSelector cidrDestination,String port,String protocol) {
+    List<KeyValue> destinationPodList, List<KeyValue> destinationNamespaceList, CIDRSelector cidrDestination,String port,String protocol,boolean isSourceHost,boolean isDestinationHost) {
         this.sourcePodList = sourcePodList;
         this.sourceNamespaceList = sourceNamespaceList;
         this.cidrSource = cidrSource;
@@ -27,6 +29,8 @@ public class Ruleinfo {
         this.cidrDestination = cidrDestination;
         this.port = port;
         this.protocol=protocol;
+        this.isSourceHost=isSourceHost;
+        this.isDestinationHost=isDestinationHost;
     }
 
     public List<KeyValue> getSourcePod() {
@@ -124,4 +128,20 @@ public class Ruleinfo {
         }
         return labelsSourceNamespace;
     }
+    public void setIsSourceHost(boolean isSourceHost) {
+        this.isSourceHost = isSourceHost;
+    }
+
+    public boolean isSourceHost() {
+        return isSourceHost;
+    }
+
+    public void setIsDestinationHost(boolean isDestinationHost) {
+        this.isDestinationHost = isDestinationHost;
+    }
+
+    public boolean isDestinationHost() {
+        return isDestinationHost;
+    }
 }
+

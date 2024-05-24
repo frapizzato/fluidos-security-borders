@@ -34,8 +34,9 @@ public class Main
 	
     public static void main( String[] args )
     {    	
-    	String arg_1 = "./testfile/provider_MSPL_demo.xml";
+    	//String arg_1 = "./testfile/provider_MSPL_demo.xml";
     	String arg_2 = "./testfile/consumer_MSPL_demo.xml";
+		String arg_1 = "./testfile/My_test2.xml";
     	
     	System.out.println(ANSI_PURPLE + "-".repeat(150)+ ANSI_RESET);
     	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_YELLOW + "   Harmonization Module" + ANSI_RESET + " has the scope of detecting and correcting all the discordances between consumer and provider intents.");
@@ -60,7 +61,7 @@ public class Main
         	Object tmp_2 = u.unmarshal(new FileInputStream(arg_2));
         	ITResourceOrchestrationType intents_2 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_2).getValue(); 
 			//Traslator intent_traslation = new Traslator(intents_1);
-			Module module = new Module(intents_2);
+			Module module = new Module(intents_1);
 			
         	//HarmonizationManager res = new HarmonizationManager(intents_1, intents_2);
         	// //Here output the "Harmonized" set of intents

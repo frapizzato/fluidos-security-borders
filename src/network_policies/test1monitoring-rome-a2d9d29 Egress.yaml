@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: privateintent1default3
-  namespace: default
+  name: test1monitoring-rome-a2d9d29
+  namespace: monitoring-rome-a2d9d2
 spec:
   policyTypes:
   - Egress
@@ -14,7 +14,7 @@ spec:
     to:
     - namespaceSelector:
         matchLabels:
-          name: default
+          name: default-rome-a2d9d2
       podSelector:
         matchLabels:
           app: product-catalogue

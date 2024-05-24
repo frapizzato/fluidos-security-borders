@@ -1,17 +1,18 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: requestintent4fluidos5
-  namespace: fluidos
+  name: prova-rome-a2d9d20
+  namespace: prova-rome-a2d9d2
 spec:
   policyTypes:
   - Ingress
-  podSelector:
-    matchLabels:
-      app: order-placement
+  podSelector: {}
   ingress:
   - from:
     - namespaceSelector:
         matchLabels:
-          name: monitoring
+          name: default
       podSelector: {}
+    ports:
+    - port: 80
+      protocol: TCP

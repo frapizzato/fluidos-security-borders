@@ -1,20 +1,17 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: authorizationmandatory1fluidos7
+  name: fluidos-allow-kubedns
   namespace: fluidos
 spec:
-  policyTypes:
-  - Ingress
   podSelector: {}
-  ingress:
-  - from:
+  policyTypes:  
+  - Egress
+  egress:
+  - to:
     - namespaceSelector:
         matchLabels:
-          name: monitoring
+          kubernetes.io/metadata.name: kube-system
       podSelector:
         matchLabels:
-          app: resource-monitor
-    ports:
-    - port: 43
-      protocol: TCP
+          k8s-app: kube-dns

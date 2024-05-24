@@ -1,19 +1,16 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: requestintent1fluidos1
-  namespace: fluidos
+  name: default-allow-kubedns
 spec:
-  policyTypes:
+  podSelector: {}
+  policyTypes:  
   - Egress
-  podSelector:
-    matchLabels:
-      app: order-placement
   egress:
   - to:
     - namespaceSelector:
         matchLabels:
-          name: default
+          kubernetes.io/metadata.name: kube-system
       podSelector:
         matchLabels:
-          app: product-catalogue
+          k8s-app: kube-dns

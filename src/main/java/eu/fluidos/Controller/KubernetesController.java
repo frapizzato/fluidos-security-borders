@@ -1,0 +1,124 @@
+package eu.fluidos.Controller;
+
+import io.kubernetes.client.openapi.ApiClient;
+import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.Configuration;
+import io.kubernetes.client.openapi.apis.CoreV1Api;
+import io.kubernetes.client.openapi.apis.NetworkingV1Api;
+import io.kubernetes.client.openapi.models.V1Namespace;
+import io.kubernetes.client.openapi.models.V1NamespaceList;
+import io.kubernetes.client.openapi.models.V1NetworkPolicy;
+import io.kubernetes.client.util.ClientBuilder;
+import io.kubernetes.client.util.Config;
+import io.kubernetes.client.util.Watch;
+import io.kubernetes.client.util.Yaml;
+import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import com.google.gson.reflect.TypeToken;
+
+public class KubernetesController {
+
+    private final String clusterToken;
+    private final String clusterApiServerUrl;
+
+    public KubernetesController() {
+        this.clusterToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6ImlXNHJCSm5sckt3YnRCOTRtd0dFRmpPTy1DT0NEMGZYa1hXUklvUEYzeUkifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImNvc3R1bS1jb250cm9sbGVyIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImNvc3R1bS1jb250cm9sbGVyIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiODVkOWVhMWEtNTBkNC00OTI1LWFjZjgtOWQ2M2ViNzA5OGQzIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OmRlZmF1bHQ6Y29zdHVtLWNvbnRyb2xsZXIifQ.Dvn857fLQ-09XvcF94XDEInZ6HqZ2wczaALyitbYJvmrJnGT7McvM-Rc6SIuuzu6fnVlwEWHGLxPMMifQxi41nQG_XOzLQW3UxxVoqNkAMXYdjs5dMg2A477mQtEcrMQpg9oR0qVh4c_iiMAVsGOOTARSgOy4cm8i33_AWLbseJeJF9DwjL_G5skLdt-B11rPoWldBYkQbwW02YiKq-S_LOdyjmb5hc-HRNfTIbnzDBnA6Br3VCd04rKxh8cDIfmLYVNUQzuKErFZ1DsANwSdDRixeJ0hlai0Lsg2lTNztC9TI3Gbx3p-9dEWNSvgLtH8xe9XNFTzpiwbesmM_UU3A";
+        this.clusterApiServerUrl = "https://127.0.0.1:34459";
+    }
+
+    public void start() {
+        ApiClient client = new ApiClient();
+        try{
+            AccessTokenAuthentication authentication = new AccessTokenAuthentication(clusterToken);
+            client = ClientBuilder
+                        .standard()
+                        .setBasePath(clusterApiServerUrl)
+                        .setAuthentication(authentication)
+                        .setVerifyingSsl(false)
+                        .build();
+        }catch(Exception e){
+            
+        }
+        CoreV1Api api = new CoreV1Api(client);
+        try {
+            Watch<V1Namespace> watch = Watch.createWatch(
+                client,
+                api.listNamespaceCall(null, null, null, null, null, null, null, null, null, Boolean.TRUE, null),
+                new TypeToken<Watch.Response<V1Namespace>>() {}.getType()
+            );
+    
+            for (Watch.Response<V1Namespace> item : watch) {
+                V1Namespace namespace = item.object;
+    
+                if (item.type.equals("ADDED") && isNamespaceOffloaded(namespace)) {
+                    System.out.println("Nuovo Namespace offloadato: " + namespace.getMetadata().getName());
+                    CreateNetworkPolicies (client,namespace.getMetadata().getName());
+                } else if (item.type.equals("DELETED") && isNamespaceOffloaded(namespace)){
+                    System.out.println("Namespace offloadato cancellato: " + namespace.getMetadata().getName());
+                }
+            }
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private boolean isNamespaceOffloaded(V1Namespace namespace) {
+        if (namespace.getMetadata().getAnnotations() != null) {
+            String remoteClusterId = namespace.getMetadata().getLabels().get("liqo.io/remote-cluster-id");
+            if (remoteClusterId != null && !remoteClusterId.isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void CreateNetworkPolicies (ApiClient client,String Namespace){
+        NetworkingV1Api api = new NetworkingV1Api(client);
+        List<File> files = getFilesInFolder("C:/Users/salva/Desktop/traslator/fluidos-security-orchestrator/fluidos-security-orchestrator/src/network_policies");
+        for (File file : files) {
+            try {
+            String yamlContent = new String(Files.readAllBytes(file.toPath()));
+            V1NetworkPolicy networkPolicy = Yaml.loadAs(yamlContent, V1NetworkPolicy.class);
+                try {
+                    System.out.println("File: "+networkPolicy.getMetadata().getNamespace());
+                    System.out.println("Namespace Offlaodato: "+Namespace);
+                    System.out.println("");
+                if (networkPolicy.getMetadata().getNamespace().equals(Namespace)){
+                    System.out.println("ok");
+                    api.createNamespacedNetworkPolicy(networkPolicy.getMetadata().getNamespace(), networkPolicy, null, null, null);
+                    System.out.println("NetworkPolicy: "+networkPolicy.getMetadata().getName()+" applicata per il namespace "+ Namespace);
+                }
+                } catch (ApiException e){
+                    System.err.println("Errore: "+e.getResponseBody());
+                }
+            } catch (IOException e) {
+                System.err.println("Errore");
+            }
+        }
+    }
+
+        public List<File> getFilesInFolder(String folderPath) {
+        List<File> files = new ArrayList<>();
+        File folder = new File(folderPath);
+        
+        if (folder.exists() && folder.isDirectory()) {
+            File[] fileList = folder.listFiles();
+            for (File file : fileList) {
+                if (file.isFile()) {
+                    files.add(file);
+                }
+            }
+        }
+        
+        return files;
+    }
+}

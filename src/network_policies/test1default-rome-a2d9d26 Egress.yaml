@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: test1default-rome-a2d9d26
+  namespace: default-rome-a2d9d2
+spec:
+  policyTypes:
+  - Egress
+  podSelector: {}
+  egress:
+  - ports:
+    - port: 80
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          name: default-rome-a2d9d2
+      podSelector:
+        matchLabels:
+          app: product-catalogue

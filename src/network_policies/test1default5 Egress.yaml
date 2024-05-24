@@ -1,20 +1,20 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: authorizationmandatory1monitoring6
-  namespace: monitoring
+  name: test1default5
+  namespace: default
 spec:
   policyTypes:
   - Egress
-  podSelector:
-    matchLabels:
-      app: resource-monitor
+  podSelector: {}
   egress:
   - ports:
-    - port: 43
+    - port: 80
       protocol: TCP
     to:
     - namespaceSelector:
         matchLabels:
-          name: fluidos
-      podSelector: {}
+          name: default-rome-a2d9d2
+      podSelector:
+        matchLabels:
+          app: product-catalogue

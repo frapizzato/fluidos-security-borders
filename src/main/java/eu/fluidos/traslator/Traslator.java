@@ -50,16 +50,18 @@ public class Traslator {
 	private IntraVClusterConfiguration intraVCluster;
 	private InterVClusterConfiguration interVCluster;
     private List<V1NetworkPolicy> networkPolicies;
-    private List<String> namespaces;
+    private Map<String,String> namespaces;
     private Map <LabelsKeyValue,String> availablePodsMap;
     private int index;
+    private boolean isLocal;
 
-    public Traslator(ITResourceOrchestrationType intentsToTraslate, List<String> namespaces,Map <LabelsKeyValue,String> availablePodsMap ) {
+    public Traslator(ITResourceOrchestrationType intentsToTraslate, Map<String,String> namespaces,Map <LabelsKeyValue,String> availablePodsMap,boolean isLocal ) {
         this.index=0;
         this.intents = intentsToTraslate;
         this.networkPolicies = new ArrayList<>();
         this.namespaces=namespaces;
         this.availablePodsMap = availablePodsMap;
+        this.isLocal=isLocal;
         this.authIntents = intents.getITResource().stream()
             .filter(it -> it.getConfiguration().getClass().equals(AuthorizationIntents.class))
             .map(it -> (AuthorizationIntents) it.getConfiguration()).findFirst().orElse(null);
@@ -190,12 +192,11 @@ public class Traslator {
         List<KeyValue> destinationNamespaceList = new ArrayList<>();
         List<KeyValue> sourceNamespaceList = new ArrayList<>();
         CIDRSelector cidrDestination = new CIDRSelector();
-
 		if(cond.getSource().getClass().equals(PodNamespaceSelector.class)){
 			PodNamespaceSelector pns = (PodNamespaceSelector) cond.getSource();
             //sourcePod = pns.getPod().get(0).getValue(); //Gestire meglio nel caso in cui ci sono piu pod e namespace
             sourcePodList = pns.getPod();
-            sourceNamespaceList=pns.getNamespace();
+            sourceNamespaceList=addRemoteTagNamespace (pns.getNamespace(),cond.getSource().isIsHostCluster());
             //sourceNamespace = pns.getNamespace().get(0).getValue();
 		} else {
 			cidrSource = (CIDRSelector) cond.getSource();
@@ -206,7 +207,7 @@ public class Traslator {
             //destinationPod = pns.getPod().get(0).getValue();
             //destinationNamespace = pns.getNamespace().get(0).getValue();
             destinationPodList = pns.getPod();
-            destinationNamespaceList = pns.getNamespace();
+            destinationNamespaceList = addRemoteTagNamespace (pns.getNamespace(),cond.getDestination().isIsHostCluster());
 		} else {
 			cidrDestination = (CIDRSelector) cond.getDestination();
 		}
@@ -227,19 +228,37 @@ public class Traslator {
                 protocol="*";
                 break;
         }
-        return new Ruleinfo(sourcePodList, sourceNamespaceList, cidrSource, destinationPodList, destinationNamespaceList, cidrDestination,destPort,protocol);
+        return new Ruleinfo(sourcePodList, sourceNamespaceList, cidrSource, destinationPodList, destinationNamespaceList, cidrDestination,destPort,protocol,cond.getSource().isIsHostCluster(),cond.getDestination().isIsHostCluster());
+    }
+
+    private List<KeyValue> addRemoteTagNamespace (List<KeyValue> ruleNamespaces,boolean isHost){
+        List<KeyValue> namespaceList = new ArrayList<>();
+        for (KeyValue keyValue : ruleNamespaces){
+            if (isHost == !this.isLocal){
+                for (Map.Entry<String, String> entry : namespaces.entrySet()){
+                    if (entry.getValue().equals("remote") && entry.getKey().contains(keyValue.getValue())){
+                        keyValue.setValue(entry.getKey());;
+                    }
+                }
+            }
+            namespaceList.add(keyValue);
+        }
+        return namespaceList;
     }
     private List<V1NetworkPolicy> createEgressAllowPolicyForNamespace(String name,Ruleinfo rule){
 
         List<V1NetworkPolicy> netPolicyList = new ArrayList<>();
-        for (KeyValue value : rule.getSourceNamespace()){
-            //System.out.println(value.getValue());
-            if(value.getValue().equals("*")){
-                for(String namespace : namespaces){ 
-                    netPolicyList.addAll(createEgressAllowNetworkPolicyHeader(namespace,name,rule));
+        if (rule.isSourceHost() == !this.isLocal){
+            for (KeyValue value : rule.getSourceNamespace()){
+                //System.out.println(value.getValue());
+                if(value.getValue().equals("*")){
+                    for(Map.Entry<String, String> entry : namespaces.entrySet()){ 
+                        String namespace = entry.getKey();
+                        netPolicyList.addAll(createEgressAllowNetworkPolicyHeader(namespace,name,rule));
+                    }
+                }else{
+                    netPolicyList.addAll(createEgressAllowNetworkPolicyHeader(value.getValue(),name,rule));
                 }
-            }else{
-                netPolicyList.addAll(createEgressAllowNetworkPolicyHeader(value.getValue(),name,rule));
             }
         }
         return netPolicyList;
@@ -327,7 +346,8 @@ public class Traslator {
                 String key = entry.getKey();
                 String value = entry.getValue();
                 if (key.equals("*") && value.equals("*")){
-                    for (String namespaceNameAvailable : namespaces){
+                    for (Map.Entry<String, String> entry1 : namespaces.entrySet()){
+                        String namespaceNameAvailable = entry1.getKey();
                         V1NetworkPolicyEgressRule egressRule = new V1NetworkPolicyEgressRule();
                         V1NetworkPolicyPeer destinationPeer1 = new V1NetworkPolicyPeer();
                         V1LabelSelector namespace = new V1LabelSelector();
@@ -362,7 +382,8 @@ public class Traslator {
             String key = entry.getKey();
             String value = entry.getValue();
             if (key.equals("*") && value.equals("*")){
-                for (String namespaceNameAvailable : namespaces){
+                for (Map.Entry<String, String> entry2 : namespaces.entrySet()){
+                    String namespaceNameAvailable = entry2.getKey();
                     V1NetworkPolicyPeer destinationPeer = new V1NetworkPolicyPeer();
                     destinationPeer.setPodSelector(destinationSelector);
                     for (Map.Entry<LabelsKeyValue, String> entry1 : availablePodsMap.entrySet()) {
@@ -511,14 +532,17 @@ public class Traslator {
     private List<V1NetworkPolicy> createHeaderIngressAllowPolicyForNamespace(String name,Ruleinfo rule){
 
         List<V1NetworkPolicy> netPolicyList = new ArrayList<>();
-        for (KeyValue value : rule.getDestinationNamespace()){
-            //System.out.println(value.getValue());
-            if(value.getValue().equals("*")){
-                for(String namespace : namespaces){ 
-                    netPolicyList.addAll(createIngressAllowNetworkPolicyHeader(namespace,name,rule));
+        if (rule.isSourceHost() == !this.isLocal){
+            for (KeyValue value : rule.getDestinationNamespace()){
+                //System.out.println(value.getValue());
+                if(value.getValue().equals("*")){
+                    for(Map.Entry<String, String> entry : namespaces.entrySet()){ 
+                        String namespace = entry.getKey();
+                        netPolicyList.addAll(createIngressAllowNetworkPolicyHeader(namespace,name,rule));
+                    }
+                }else{
+                    netPolicyList.addAll(createIngressAllowNetworkPolicyHeader(value.getValue(),name,rule));
                 }
-            }else{
-                netPolicyList.addAll(createIngressAllowNetworkPolicyHeader(value.getValue(),name,rule));
             }
         }
         return netPolicyList;
@@ -652,7 +676,8 @@ public class Traslator {
             String key = entry.getKey();
             String value = entry.getValue();
             if (key.equals("*") && value.equals("*")){
-                for (String namespaceNameAvailable : namespaces){
+                for (Map.Entry<String, String> entry2 : namespaces.entrySet()){
+                    String namespaceNameAvailable = entry2.getKey();
                     V1NetworkPolicyPeer sourcePeer = new V1NetworkPolicyPeer();
                     sourcePeer.setPodSelector(sourceSelector);
                     for (Map.Entry<LabelsKeyValue, String> entry1 : availablePodsMap.entrySet()) {

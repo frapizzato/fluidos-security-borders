@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: privateintent1default1
-  namespace: default
+  name: test1default-rome-a2d9d22
+  namespace: default-rome-a2d9d2
 spec:
   policyTypes:
   - Ingress
@@ -13,7 +13,7 @@ spec:
   - from:
     - namespaceSelector:
         matchLabels:
-          name: fluidos
+          name: milan
       podSelector: {}
     ports:
     - port: 80
