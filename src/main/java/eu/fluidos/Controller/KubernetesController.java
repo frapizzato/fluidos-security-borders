@@ -89,9 +89,6 @@ public class KubernetesController {
             String yamlContent = new String(Files.readAllBytes(file.toPath()));
             V1NetworkPolicy networkPolicy = Yaml.loadAs(yamlContent, V1NetworkPolicy.class);
                 try {
-                    System.out.println("File: "+networkPolicy.getMetadata().getNamespace());
-                    System.out.println("Namespace Offlaodato: "+Namespace);
-                    System.out.println("");
                 if (networkPolicy.getMetadata().getNamespace().equals(Namespace)){
                     System.out.println("ok");
                     api.createNamespacedNetworkPolicy(networkPolicy.getMetadata().getNamespace(), networkPolicy, null, null, null);
