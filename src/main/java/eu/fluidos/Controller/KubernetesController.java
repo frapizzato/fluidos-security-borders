@@ -5,9 +5,14 @@ import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.apis.NetworkingV1Api;
+import io.kubernetes.client.openapi.models.V1LabelSelector;
 import io.kubernetes.client.openapi.models.V1Namespace;
 import io.kubernetes.client.openapi.models.V1NamespaceList;
 import io.kubernetes.client.openapi.models.V1NetworkPolicy;
+import io.kubernetes.client.openapi.models.V1NetworkPolicyEgressRule;
+import io.kubernetes.client.openapi.models.V1NetworkPolicyIngressRule;
+import io.kubernetes.client.openapi.models.V1NetworkPolicySpec;
+import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import io.kubernetes.client.util.ClientBuilder;
 import io.kubernetes.client.util.Config;
 import io.kubernetes.client.util.Watch;
@@ -18,9 +23,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import io.kubernetes.client.util.Yaml;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -61,6 +69,7 @@ public class KubernetesController {
                 if (item.type.equals("ADDED") && isNamespaceOffloaded(namespace)) {
                     System.out.println("Nuovo Namespace offloadato: " + namespace.getMetadata().getName());
                     CreateNetworkPolicies (client,namespace.getMetadata().getName());
+                    CreateDefaultDenyNetworkPolicies(client,namespace.getMetadata().getName());
                 } else if (item.type.equals("DELETED") && isNamespaceOffloaded(namespace)){
                     System.out.println("Namespace offloadato cancellato: " + namespace.getMetadata().getName());
                 }
@@ -118,4 +127,34 @@ public class KubernetesController {
         
         return files;
     }
+
+private void CreateDefaultDenyNetworkPolicies(ApiClient client, String Namespace) {
+    NetworkingV1Api api = new NetworkingV1Api(client);
+
+    V1NetworkPolicy egressPolicy = new V1NetworkPolicy();
+    V1NetworkPolicySpec egressPolicySpec = new V1NetworkPolicySpec();
+    egressPolicySpec.setPodSelector(new V1LabelSelector());
+    egressPolicySpec.setPolicyTypes(Arrays.asList("Egress"));
+    egressPolicySpec.setEgress(Collections.emptyList());
+    egressPolicy.setMetadata(new V1ObjectMeta().name(Namespace + "-deny-egress").namespace(Namespace));
+    egressPolicy.setSpec(egressPolicySpec);
+
+    V1NetworkPolicy ingressPolicy = new V1NetworkPolicy();
+    V1NetworkPolicySpec ingressPolicySpec = new V1NetworkPolicySpec();
+    ingressPolicySpec.setPodSelector(new V1LabelSelector());
+    ingressPolicySpec.setPolicyTypes(Arrays.asList("Ingress"));
+    ingressPolicySpec.setIngress(Collections.emptyList()); 
+    ingressPolicy.setMetadata(new V1ObjectMeta().name(Namespace + "-deny-ingress").namespace(Namespace));
+    ingressPolicy.setSpec(ingressPolicySpec);
+
+    try {
+        api.createNamespacedNetworkPolicy(Namespace, egressPolicy, null, null, null);
+        api.createNamespacedNetworkPolicy(Namespace, ingressPolicy, null, null, null);
+        System.out.println("Network Policies create per il namespace " + Namespace);
+    } catch (ApiException e) {
+        System.err.println("Errore durante la creazione delle network policies: " + e.getResponseBody());
+    }
+}
+
+
 }

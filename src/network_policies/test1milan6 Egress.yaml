@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: test1monitoring-rome-a2d9d29
-  namespace: monitoring-rome-a2d9d2
+  name: test1milan6
+  namespace: milan
 spec:
   policyTypes:
   - Egress

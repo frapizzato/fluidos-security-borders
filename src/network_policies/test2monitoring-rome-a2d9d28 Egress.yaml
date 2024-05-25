@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: test2monitoring-rome-a2d9d210
+  name: test2monitoring-rome-a2d9d28
   namespace: monitoring-rome-a2d9d2
 spec:
   policyTypes:

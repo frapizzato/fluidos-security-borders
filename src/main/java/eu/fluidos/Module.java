@@ -188,7 +188,7 @@ public class Module {
             "liqo-storage",
             "liqo-tenant-milan-b685e7",
             "local-path-storage",
-            "liqo-tenant-rome-d160cb"
+            "liqo-tenant-rome-a2d9d2"
 
         ));
 
