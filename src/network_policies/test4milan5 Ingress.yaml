@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: test4milan9
+  name: test4milan5
   namespace: milan
 spec:
   policyTypes:
@@ -14,4 +14,6 @@ spec:
     - namespaceSelector:
         matchLabels:
           name: monitoring-rome-a2d9d2
-      podSelector: {}
+      podSelector:
+        matchLabels:
+          app: resource-monitor

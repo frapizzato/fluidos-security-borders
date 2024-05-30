@@ -25,7 +25,7 @@
         <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
           <isCNF>false</isCNF>
           <source xsi:type="PodNamespaceSelector">
-          	<isHostCluster>true</isHostCluster>
+          	<isHostCluster>false</isHostCluster>
           	<pod>
           		<key>*</key>
           		<value>*</value>
@@ -37,7 +37,7 @@
           </source>
           <sourcePort>*</sourcePort>
           <destination xsi:type="PodNamespaceSelector">
-            <isHostCluster>true</isHostCluster>
+            <isHostCluster>false</isHostCluster>
           	<pod>
           		<key>app</key>
           		<value>product_catalogue</value>
@@ -66,7 +66,7 @@
         <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
           <isCNF>false</isCNF>
           <source xsi:type="PodNamespaceSelector">
-          	<isHostCluster>true</isHostCluster>
+          	<isHostCluster>false</isHostCluster>
           	<pod>
           		<key>app</key>
           		<value>resource_monitor</value>
@@ -99,14 +99,14 @@
         <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
           <isCNF>false</isCNF>
           <source xsi:type="PodNamespaceSelector">
-          	<isHostCluster>true</isHostCluster>
+          	<isHostCluster>false</isHostCluster>
           	<pod>
-          		<key>*</key>
-          		<value>*</value>
+          		<key>app</key>
+          		<value>resource_monitor</value>
           	</pod>
           	<namespace>
-          		<key>name</key>
-          		<value>monitoring</value>
+          		<key>*</key>
+          		<value>*</value>
           	</namespace>
           </source>
           <sourcePort>*</sourcePort>
@@ -117,8 +117,8 @@
           		<value>milan-payment</value>
           	</pod>
           	<namespace>
-          		<key>name</key>
-          		<value>milan</value>
+          		<key>*</key>
+          		<value>*</value>
           	</namespace>
           </destination>
           <destinationPort>*</destinationPort>

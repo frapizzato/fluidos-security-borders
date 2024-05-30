@@ -29,6 +29,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import io.kubernetes.client.util.Yaml;
+import eu.fluidos.Module;
+import eu.fluidos.jaxb.ITResourceOrchestrationType;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -36,13 +38,15 @@ public class KubernetesController {
 
     private final String clusterToken;
     private final String clusterApiServerUrl;
+    private final ITResourceOrchestrationType intents;
 
-    public KubernetesController() {
+    public KubernetesController(ITResourceOrchestrationType intents) {
         this.clusterToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6ImlXNHJCSm5sckt3YnRCOTRtd0dFRmpPTy1DT0NEMGZYa1hXUklvUEYzeUkifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImNvc3R1bS1jb250cm9sbGVyIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImNvc3R1bS1jb250cm9sbGVyIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiODVkOWVhMWEtNTBkNC00OTI1LWFjZjgtOWQ2M2ViNzA5OGQzIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OmRlZmF1bHQ6Y29zdHVtLWNvbnRyb2xsZXIifQ.Dvn857fLQ-09XvcF94XDEInZ6HqZ2wczaALyitbYJvmrJnGT7McvM-Rc6SIuuzu6fnVlwEWHGLxPMMifQxi41nQG_XOzLQW3UxxVoqNkAMXYdjs5dMg2A477mQtEcrMQpg9oR0qVh4c_iiMAVsGOOTARSgOy4cm8i33_AWLbseJeJF9DwjL_G5skLdt-B11rPoWldBYkQbwW02YiKq-S_LOdyjmb5hc-HRNfTIbnzDBnA6Br3VCd04rKxh8cDIfmLYVNUQzuKErFZ1DsANwSdDRixeJ0hlai0Lsg2lTNztC9TI3Gbx3p-9dEWNSvgLtH8xe9XNFTzpiwbesmM_UU3A";
         this.clusterApiServerUrl = "https://127.0.0.1:34459";
+        this.intents=intents;
     }
 
-    public void start() {
+    public void start() throws Exception {
         ApiClient client = new ApiClient();
         try{
             AccessTokenAuthentication authentication = new AccessTokenAuthentication(clusterToken);
@@ -68,6 +72,7 @@ public class KubernetesController {
     
                 if (item.type.equals("ADDED") && isNamespaceOffloaded(namespace)) {
                     System.out.println("Nuovo Namespace offloadato: " + namespace.getMetadata().getName());
+                    Module module = new Module(this.intents,client);
                     CreateNetworkPolicies (client,namespace.getMetadata().getName());
                     CreateDefaultDenyNetworkPolicies(client,namespace.getMetadata().getName());
                 } else if (item.type.equals("DELETED") && isNamespaceOffloaded(namespace)){
@@ -158,3 +163,31 @@ private void CreateDefaultDenyNetworkPolicies(ApiClient client, String Namespace
 
 
 }
+
+/* Questa è la versione del controllore da implementare per rendere automatica e generale l' autenticazione del controllore.
+ public class KubernetesController {
+    private static final Logger LOGGER = Logger.getLogger(KubernetesController.class.getName());
+    private ApiClient client;
+
+    public KubernetesController() {
+
+        try {
+            String token = new String(Files.readAllBytes(Paths.get("/var/run/secrets/kubernetes.io/serviceaccount/token"))); //Path per accedere al token assocaito al pod a cui ho associato il service account
+            this.client = Config.fromToken("https://kubernetes.default.svc", token, false); //URL all' interno del namespace default per accedere all API server ed autenticarsi
+            Configuration.setDefaultApiClient(this.client);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Errore durante l'inizializzazione del client Kubernetes", e);
+            throw new RuntimeException("Errore durante l'inizializzazione del client Kubernetes", e);
+        }
+    }
+
+    public void start() throws Exception {
+        try {
+            LOGGER.info("Connesso al cluster: " + this.client.getBasePath());
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Errore durante la connessione al cluster Kubernetes", e);
+            throw e;
+        }
+    }
+}
+ */

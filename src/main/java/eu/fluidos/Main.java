@@ -13,6 +13,7 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import eu.fluidos.Controller.KubernetesController;
 
 import jakarta.xml.bind.*;
 import eu.fluidos.harmonization.HarmonizationManager;
@@ -61,7 +62,11 @@ public class Main
         	Object tmp_2 = u.unmarshal(new FileInputStream(arg_2));
         	ITResourceOrchestrationType intents_2 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_2).getValue(); 
 			//Traslator intent_traslation = new Traslator(intents_1);
-			Module module = new Module(intents_1);
+			//Module module = new Module(intents_1);
+
+			//Qui richiamo il controllore che poi va a richiamare al suo interno il modulo che effettua la traduzione appena un namespace viene offloadato
+			KubernetesController controller = new KubernetesController(intents_1);
+			controller.start();
 			
         	//HarmonizationManager res = new HarmonizationManager(intents_1, intents_2);
         	// //Here output the "Harmonized" set of intents

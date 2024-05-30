@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: test1default-rome-a2d9d25
+  name: test1default-rome-a2d9d22
   namespace: default-rome-a2d9d2
 spec:
   policyTypes:
