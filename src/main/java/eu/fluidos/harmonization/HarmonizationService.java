@@ -1,17 +1,15 @@
 package eu.fluidos.harmonization;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import eu.fluidos.Cluster;
 import eu.fluidos.Pod;
 import eu.fluidos.cluster.ClusterService;
 import eu.fluidos.jaxb.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class HarmonizationService {
 	private final HarmonizationData HarmonizationData;
@@ -23,8 +21,8 @@ public class HarmonizationService {
 	private RequestIntents requestIntentsProvider, requestIntentsConsumer;
 	private HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider = new HashMap();
 	private HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer = new HashMap();
-	private Logger loggerInfo = LogManager.getLogger("harmonizationManager");
-	private Scanner scan = new Scanner(System.in);
+	private final Logger loggerInfo = LogManager.getLogger("harmonizationManager");
+
 
 	public HarmonizationService(HarmonizationData HarmonizationData, ClusterService ClusterService) {
 		this.HarmonizationData = HarmonizationData;
@@ -67,19 +65,19 @@ public class HarmonizationService {
 
 		HarmonizationData.printDash();
 
-		HarmonizationData.printRequestIntents(this.requestIntentsProvider, "consumer");
+		HarmonizationData.printRequestIntents(this.requestIntentsConsumer, "consumer");
 
 		HarmonizationData.printDash();
 
-		HarmonizationData.printRequestIntents(this.requestIntentsConsumer, "provider");
+		HarmonizationData.printRequestIntents(this.requestIntentsProvider, "provider");
 
 		HarmonizationData.printDash();
 
 		HarmonizationData.printAuth();
 
-		HarmonizationData.printAuthorizationIntents(this.authIntentsConsumer, "forbidden");
+		HarmonizationData.printAuthorizationIntents(this.authIntentsProvider, "forbidden");
 
-		HarmonizationData.printAuthorizationIntents(this.authIntentsConsumer, "mandatory");
+		HarmonizationData.printAuthorizationIntents(this.authIntentsProvider, "mandatory");
 
 		HarmonizationData.printDash();
 
@@ -131,7 +129,7 @@ public class HarmonizationService {
 			for (ConfigurationRule cr_provider : this.authIntentsProvider.getMandatoryConnectionList()) {
 				verify = HarmonizationData.verify(cr_provider, harmonizedRules, podsByNamespaceAndLabelsProvider,
 						podsByNamespaceAndLabelsConsumer);
-				if (verify == false)
+				if (!verify)
 					return false;
 			}
 		} else
