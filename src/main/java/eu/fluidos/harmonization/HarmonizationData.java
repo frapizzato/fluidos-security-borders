@@ -207,20 +207,34 @@ public class HarmonizationData {
 		// Extract and cast the condition.
 		KubernetesNetworkFilteringCondition resCond = (KubernetesNetworkFilteringCondition) res
 				.getConfigurationCondition();
-
+		boolean flag = true;
 		for (ConfigurationRule confRule : connList) {
             KubernetesNetworkFilteringCondition tmp = (KubernetesNetworkFilteringCondition) confRule
 					.getConfigurationCondition();
 
+			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr
+					.getConfigurationCondition();
+			System.out.print("  (*) " + cr.getName() + " - ");
+			System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
+
+			printDash();
+
+			KubernetesNetworkFilteringCondition cond2 = (KubernetesNetworkFilteringCondition) confRule.getConfigurationCondition();
+			System.out.print("   | (*) " + confRule.getName() + " - ");
+			System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond2) + "\n");
 			// Step-1.1: starts with the simplest case, that is protocol type. Detect if
 			// protocol types of res are overlapping with tmp.
 			String[] protocolList = Utils.computeHarmonizedProtocolType(resCond.getProtocolType().value(),
 					tmp.getProtocolType().value());
+			System.out.println("Length: " + protocolList.length);
+			/* Considerare solo il caso dei forbiddenList*/
 
 			if (protocolList.length == 0) {
-				System.out.println("Protocol List is empty, Exit");
-
-				return false;
+				System.out.println("Protocol List is empty, Exit  "+ resCond.getProtocolType().value() + " " + tmp.getProtocolType().value());
+				flag = false;
+			}
+			else {
+				flag = true;
 			}
 
 			// Step-1.2: check the ports. Detect if the port ranges of res are overlapping
@@ -232,20 +246,21 @@ public class HarmonizationData {
 
 			if (sourcePortList[0].equals(resCond.getSourcePort())
 					|| destinationPortList[0].equals(resCond.getDestinationPort())) {
-				return false;
+				flag = false;
+			}
+			else {
+				flag = true;
 			}
 
 			/* Da completare */
 			List<ResourceSelector> source = Utils.computeHarmonizedResourceSelector(resCond.getSource(),
 					tmp.getSource(),map_conn,map_connList);
 
-//					List<ResourceSelector> source = Utils.computeHarmonizedResourceSelector(resCond.getSource(), tmp.getSource(), this.podsByNamespaceAndLabelsConsumer, this.podsByNamespaceAndLabelsProvider);
+//			List<ResourceSelector> source = Utils.computeHarmonizedResourceSelector(resCond.getSource(), tmp.getSource(), this.podsByNamespaceAndLabelsConsumer, this.podsByNamespaceAndLabelsProvider);
 			if (source == null) {
-				System.out.println("Source is null");
-				// There was a comparison problem...likely trying to perform a CIDR/PodNamespace
-				// comparison
-				return false;
+				continue;
 			}
+			System.out.println("Flag:  " + flag);
 			/*if(source.size() != 0 && Utils.compareResourceSelector(source.get(0), resCond.getSource())){
 				System.out.println("ok");
 			}
@@ -265,17 +280,17 @@ public class HarmonizationData {
 			}*/
 
 			List<ResourceSelector> destination = Utils.computeHarmonizedResourceSelector(resCond.getDestination(),
-					tmp.getDestination(), map_conn,map_connList);
-//					List<ResourceSelector> destination = Utils.computeHarmonizedResourceSelector(resCond.getDestination(), tmp.getDestination(), this.podsByNamespaceAndLabelsConsumer, this.podsByNamespaceAndLabelsProvider);
+					tmp.getDestination(), map_conn, map_connList);
 			if (destination == null) {
 				// There was a comparison problem...likely trying to perform a CIDR/PodNamespace
 				// comparison
-
-				return false;
+				continue;
 			}
+
+			/*
 			if(destination.isEmpty()){
 				return false;
-			}
+			}*/
 			/*
 			if(Utils.compareResourceSelector(destination.get(0), resCond.getDestination())){
 				return false;
@@ -287,7 +302,9 @@ public class HarmonizationData {
 				System.out.println("Destination selector are equal");
 				return false;
             }*/
-
+			System.out.println("Flag:  " + flag);
+			if(!flag)
+				return false;
 		}
 
 		return true;

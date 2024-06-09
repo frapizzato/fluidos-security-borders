@@ -134,7 +134,6 @@ public class Utils {
 
 		Boolean isCIDR_1 = false, isCIDR_2 = false;
 		List<ResourceSelector> res = new ArrayList<ResourceSelector>();
-
 		if(sel_1.getClass().equals(PodNamespaceSelector.class)){
 			isCIDR_1 = false;
 		} else {
@@ -171,11 +170,16 @@ public class Utils {
 			// First, need to check if the two selectors refer to the same cluster.
 			if(pns1.isIsHostCluster() && !pns2.isIsHostCluster()) {
 				// sel_1 considers the host cluster, sel_2 considers the local one. Use map_2.
+				System.out.println("This is the first case");
 				res.addAll(computeHarmonizedPodNamespaceSelector(pns1, pns2, map_2));
+				System.out.println("res:"+res);
 			} else if(!pns1.isIsHostCluster() && pns2.isIsHostCluster()){
 				// sel_1 considers the local cluster, sel_2 considers the remote one. Use map_1.
+				System.out.println("This is the second case");
 				res.addAll(computeHarmonizedPodNamespaceSelector(pns1, pns2, map_1));
+				System.out.println("res:"+res);
 			} else {
+				System.out.println("This is the third case");
 				// There is not compatibility between the two selectors... they cover different clusters.
 				return null;
 			}

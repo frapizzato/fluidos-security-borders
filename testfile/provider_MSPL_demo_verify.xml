@@ -99,7 +99,7 @@
                             <value>*</value>
                         </namespace>
                     </destination>
-                    <destinationPort>40</destinationPort>
+                    <destinationPort>*</destinationPort>
                     <protocolType>UDP</protocolType>
                 </configurationCondition>
                 <externalData xsi:type="Priority">
