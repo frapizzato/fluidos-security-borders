@@ -7,7 +7,6 @@ import eu.fluidos.jaxb.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,15 +37,19 @@ public class HarmonizationService {
 		 * (temporary solution). TODO: final version should retrieve these data from the
 		 * API server of peered clusters. need to understand which data is needed.
 		 */
-		ClusterService.initializeClusterData();
+		ClusterService.createProviderCluster("harmonize");
+		ClusterService.createConsumerCluster("harmonize");
 		// getClusterConsumer() and getClusterProvider() if needed
 		//
 		/**
 		 * This function constructs HashMaps to associated pods with labels and
 		 * namespaces.
 		 */
-		ClusterService.initializeHashMaps(podsByNamespaceAndLabelsProvider, podsByNamespaceAndLabelsConsumer);
+		ClusterService.initializeHashMapsProvider(podsByNamespaceAndLabelsProvider);
+		ClusterService.initializeHashMapsConsumer(podsByNamespaceAndLabelsConsumer);
+		//ClusterService.initializeHashMaps(podsByNamespaceAndLabelsProvider, podsByNamespaceAndLabelsConsumer);
 
+		//System.out.println("Provider:" + podsByNamespaceAndLabelsProvider);
 		/**
 		 * First, the intents are extracted from the given data structure into three
 		 * different lists (for both provider and consumer): - "AuthorizationIntents" -
@@ -63,22 +66,19 @@ public class HarmonizationService {
 		this.privateIntentsConsumer = extractPrivateIntents(consumerIntents);
 		this.requestIntentsConsumer = extractRequestIntents(consumerIntents);
 
-		HarmonizationData.printDash();
+		if (this.requestIntentsConsumer == null) {
+			System.err.println("Error: requestIntentsConsumer is null");
 
+		}
+
+		HarmonizationData.printDash();
 		HarmonizationData.printRequestIntents(this.requestIntentsConsumer, "consumer");
-
 		HarmonizationData.printDash();
-
 		HarmonizationData.printRequestIntents(this.requestIntentsProvider, "provider");
-
 		HarmonizationData.printDash();
-
 		HarmonizationData.printAuth();
-
 		HarmonizationData.printAuthorizationIntents(this.authIntentsProvider, "forbidden");
-
 		HarmonizationData.printAuthorizationIntents(this.authIntentsProvider, "mandatory");
-
 		HarmonizationData.printDash();
 
 		/**
@@ -113,28 +113,36 @@ public class HarmonizationService {
 	
 
 	public boolean verify(ITResourceOrchestrationType provider, ITResourceOrchestrationType consumer) {
-		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
 		boolean verify = true;
 		this.providerIntents = provider;
 		this.consumerIntents = consumer;
 
-		ClusterService.initializeClusterData();
-		ClusterService.initializeHashMaps(podsByNamespaceAndLabelsProvider, podsByNamespaceAndLabelsConsumer);
+		ClusterService.createProviderCluster("verify");
+		ClusterService.createConsumerCluster("verify");
+		//ClusterService.createProviderCluster();
+		ClusterService.initializeHashMapsConsumer(podsByNamespaceAndLabelsConsumer);
+		ClusterService.initializeHashMapsProvider(podsByNamespaceAndLabelsProvider);
+		//System.out.println("Provider:" + podsByNamespaceAndLabelsConsumer);
 
 		this.authIntentsProvider = extractAuthorizationIntents(providerIntents);
-		this.requestIntentsProvider = extractRequestIntents(consumerIntents);
+		this.privateIntentsProvider = extractPrivateIntents(providerIntents);
+		this.requestIntentsProvider = extractRequestIntents(providerIntents);
 
-		harmonizedRules.addAll(this.requestIntentsProvider.getConfigurationRule());
-		if (requestIntentsProvider.isAcceptMonitoring()) {
-			for (ConfigurationRule cr_provider : this.authIntentsProvider.getMandatoryConnectionList()) {
-				verify = HarmonizationData.verify(cr_provider, harmonizedRules, podsByNamespaceAndLabelsProvider,
-						podsByNamespaceAndLabelsConsumer);
-				if (!verify)
-					return false;
-			}
-		} else
-			return false;
-		return true;
+		this.authIntentsConsumer = extractAuthorizationIntents(consumerIntents);
+		this.privateIntentsConsumer = extractPrivateIntents(consumerIntents);
+		this.requestIntentsConsumer = extractRequestIntents(consumerIntents);
+
+		HarmonizationData.printRequestIntents(this.requestIntentsConsumer, "consumer");
+		HarmonizationData.printDash();
+		HarmonizationData.printAuth();
+		HarmonizationData.printAuthorizationIntents(this.authIntentsProvider, "forbidden");
+		HarmonizationData.printDash();
+		//Verifica monitoring in sospeso if (requestIntentsProvider.isAcceptMonitoring())
+
+		verify = HarmonizationData.verify(this.requestIntentsConsumer, this.authIntentsProvider,
+						podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider);
+		System.out.println("[harmonization] - verify: " + verify);
+		return verify;
 	}
 
 	private AuthorizationIntents extractAuthorizationIntents(ITResourceOrchestrationType intent) {

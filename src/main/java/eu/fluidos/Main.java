@@ -1,34 +1,32 @@
 package eu.fluidos;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.StringWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Scanner;
-
+import eu.fluidos.cluster.ClusterService;
+import eu.fluidos.harmonization.HarmonizationController;
+import eu.fluidos.harmonization.HarmonizationData;
+import eu.fluidos.harmonization.HarmonizationService;
+import eu.fluidos.jaxb.ConfigurationRule;
+import eu.fluidos.jaxb.ITResourceOrchestrationType;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-
-import jakarta.xml.bind.*;
-import eu.fluidos.cluster.ClusterService;
-import eu.fluidos.harmonization.HarmonizationController;
-import eu.fluidos.harmonization.HarmonizationManager;
-import eu.fluidos.harmonization.HarmonizationData;
-import eu.fluidos.harmonization.HarmonizationService;
-import eu.fluidos.jaxb.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Scanner;
 
 
 
-public class Main 
+public class Main
 {
 	public static Logger loggerInfo = LogManager.getLogger(Main.class);
 	
@@ -41,9 +39,17 @@ public class Main
 	public static final String ANSI_PURPLE = "\u001B[35m";
 	
     public static void main( String[] args )
-    {    	
-    	String arg_1 = "./testfile/provider_MSPL_demo.xml";
-    	String arg_2 = "./testfile/consumer_MSPL_demo.xml";
+    {
+		/* VERIFY */
+
+		//String arg_1 = "./testfile/provider_MSPL_demo_verify.xml";
+    	//String arg_2 = "./testfile/consumer_MSPL_demo_verify.xml";
+
+		/* HARMONIZE */
+
+		String arg_1 = "./testfile/provider_MSPL_demo_harmonize.xml";
+		String arg_2 = "./testfile/consumer_MSPL_demo_harmonize.xml";
+
     	ClusterService ClusterService = new ClusterService();
     	HarmonizationData HarmonizationData = new HarmonizationData();
     	HarmonizationService HarmonizationService = new HarmonizationService(HarmonizationData, ClusterService);
@@ -64,28 +70,37 @@ public class Main
         	u.setSchema(sc);
         	loggerInfo.debug("Added MSPL schema to the unmarshaller.");
         	// Printing received MSPL intents
-        	System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
-	    	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_YELLOW + "Consumer" + ANSI_RESET + " MSPL intent");
+        	//System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
+
+	    	//System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_YELLOW + "Consumer" + ANSI_RESET + " MSPL intent");
 	    	Path filePath_1 = Paths.get(arg_1);
-			loggerInfo.info("\n" + Files.readString(filePath_1));
-	    	System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
-        	System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
-	    	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_YELLOW + "Provider" + ANSI_RESET + " MSPL intent");
+			//loggerInfo.info("\n" + Files.readString(filePath_1));
+	    	//System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
+        	//System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
+	    	//System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_YELLOW + "Provider" + ANSI_RESET + " MSPL intent");
 	    	Path filePath_2 = Paths.get(arg_2);
-			loggerInfo.info("\n" + Files.readString(filePath_2));
-	    	System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
+			//loggerInfo.info("\n" + Files.readString(filePath_2));
+	    	//System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
         	// User requesting the offloading
         	Object tmp_1 = u.unmarshal(new FileInputStream(arg_1));
         	ITResourceOrchestrationType intents_1 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_1).getValue();
-        	loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_1+"].");
+        	//loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_1+"].");
         	// User offering some resources
         	Object tmp_2 = u.unmarshal(new FileInputStream(arg_2));
         	ITResourceOrchestrationType intents_2 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_2).getValue(); 
-        	loggerInfo.debug("Successfull unmarshalling of second input file ["+arg_2+"].");
-        	
+        	//loggerInfo.debug("Successfull unmarshalling of second input file ["+arg_2+"].");
+
+			// HARMONIZATION
+
         	loggerInfo.debug("Start of the harmonization process.");
         	List<ConfigurationRule> res = HarmonizationController.harmonize(intents_1, intents_2);
-        	
+
+			// VERIFY
+
+			//boolean verify = HarmonizationController.verify(intents_1, intents_2);
+			//System.out.println("Verify result:" + verify);
+
+
         	//Here output the "Harmonized" set of intents
         	Scanner scan = new Scanner(System.in);
         	Marshaller m = jc.createMarshaller();
@@ -94,6 +109,7 @@ public class Main
 			QName qName = new QName("eu.fluidos.jaxb.ITResourceOrchestrationType", "ITResourceOrchestrationType");
 			JAXBElement<ITResourceOrchestrationType> root = new JAXBElement<>(qName, ITResourceOrchestrationType.class, HarmonizationController.getConsumerIntents());
 	    	System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
+			/*
 	    	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_RESET + "Press ENTER to output " + ANSI_YELLOW + "Consumer" + ANSI_RESET + " MSPL intent...");
 			scan.nextLine();
 			loggerInfo.info("[harmonization] Consumer MSPL OUTPUT");
@@ -108,7 +124,7 @@ public class Main
 			StringWriter stringWriter_2 = new StringWriter();
 			m.marshal(root, stringWriter_2);
 			loggerInfo.info("\n" + stringWriter_2.toString());
-
+*/
 
         	
         	

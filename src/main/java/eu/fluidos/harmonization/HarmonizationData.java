@@ -1,16 +1,15 @@
 package eu.fluidos.harmonization;
 
+import eu.fluidos.Main;
+import eu.fluidos.Pod;
+import eu.fluidos.jaxb.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import eu.fluidos.Main;
-import eu.fluidos.Pod;
-import eu.fluidos.jaxb.*;
 
 public class HarmonizationData {
 
@@ -63,6 +62,13 @@ public class HarmonizationData {
 		}
 	}
 
+	/**
+	 * Discordances of Type-1 happens when the Requested Intents of the consumer are not all authorized by the provider.
+	 * This function gets all the consumer.Requested connections and perform the set operation:
+	 * 		(consumer.Requested) - (provider.AuthorizationIntents.deniedConnectionsList)
+	 * i.e., remove from the requested connections those overlapping with the forbidden ones.
+	 */
+
 	public List<ConfigurationRule> solveTypeOneDiscordances(RequestIntents requestIntent,
 			AuthorizationIntents authIntent,
 			HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider,
@@ -76,7 +82,7 @@ public class HarmonizationData {
 		scan.nextLine();
 
 		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
-
+		System.out.println(requestIntent);
 		// External loop over the consumer's Request Intents.
 		for (ConfigurationRule cr : requestIntent.getConfigurationRule()) {
 			loggerInfo.debug("[harmonization/harmonizeForbiddenConnectionIntent] - processing rule { [" + cr.getName()
@@ -92,6 +98,11 @@ public class HarmonizationData {
 		return harmonizedRules;
 
 	}
+
+	/**
+	 * Discordances of Type-2 happens when the "mandatoryConnectionList" of the provider is not completely satisfied by the consumer.
+	 * If this happens, additional rules are added to the Harmonized-Request set of the consumer.
+	 */
 
 	public List<ConfigurationRule> solverTypeTwoDiscordances(List<ConfigurationRule> harmonizedRequestConsumerRules,
 			RequestIntents requestIntent, AuthorizationIntents authIntent,
@@ -136,6 +147,11 @@ public class HarmonizationData {
 		}
 	}
 
+	/**
+	 * Discordances of Type-3 happens when the Requested intents of the consumer, already AUTHORIZED by the provider, do not have a corresponding rule in the hosting cluster.
+	 * If this happens, additional rules are added to the harmonized-Request set of the provider in order to create the "hole".
+	 */
+
 	public List<ConfigurationRule> solverTypeThreeDiscordances(List<ConfigurationRule> harmonizedRequestConsumerRules,
 			RequestIntents requestIntent, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider,
 			HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer) {
@@ -167,10 +183,114 @@ public class HarmonizationData {
 				harmonizedRules.add(Utils.deepCopyConfigurationAndInvertVCluster(cr));
 		}
 
-		printHarmonizedRules(harmonizedRules, "harmonized PROVIDER intents",
-				"harmonized PROVIDER intents" + Main.ANSI_RESET + " after type-3 discordances resolution:");
+		printHarmonizedRules(harmonizedRules, "harmonized PROVIDER intents"," after type-3 discordances resolution:");
 
 		return harmonizedRules;
+	}
+
+	public boolean verify(RequestIntents requestIntent,
+						  AuthorizationIntents authIntent,
+						  HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer,
+						  HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider) {
+		for (ConfigurationRule cr : requestIntent.getConfigurationRule()) {
+			if(!verifyConfigurationRule(cr, authIntent.getForbiddenConnectionList(),
+					podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider)){
+				return false;
+			}
+		}
+			return true;
+	}
+
+	private boolean verifyConfigurationRule(ConfigurationRule cr, List<ConfigurationRule> connList,HashMap<String, HashMap<String, List<Pod>>> map_conn, HashMap<String, HashMap<String, List<Pod>>> map_connList){
+
+		ConfigurationRule res = Utils.deepCopyConfigurationRule(cr);
+		// Extract and cast the condition.
+		KubernetesNetworkFilteringCondition resCond = (KubernetesNetworkFilteringCondition) res
+				.getConfigurationCondition();
+
+		for (ConfigurationRule confRule : connList) {
+            KubernetesNetworkFilteringCondition tmp = (KubernetesNetworkFilteringCondition) confRule
+					.getConfigurationCondition();
+
+			// Step-1.1: starts with the simplest case, that is protocol type. Detect if
+			// protocol types of res are overlapping with tmp.
+			String[] protocolList = Utils.computeHarmonizedProtocolType(resCond.getProtocolType().value(),
+					tmp.getProtocolType().value());
+
+			if (protocolList.length == 0) {
+				System.out.println("Protocol List is empty, Exit");
+
+				return false;
+			}
+
+			// Step-1.2: check the ports. Detect if the port ranges of res are overlapping
+			// with tmp.
+			String[] sourcePortList = Utils.computeHarmonizedPortRange(resCond.getSourcePort(), tmp.getSourcePort())
+					.split(";");
+			String[] destinationPortList = Utils
+					.computeHarmonizedPortRange(resCond.getDestinationPort(), tmp.getDestinationPort()).split(";");
+
+			if (sourcePortList[0].equals(resCond.getSourcePort())
+					|| destinationPortList[0].equals(resCond.getDestinationPort())) {
+				return false;
+			}
+
+			/* Da completare */
+			List<ResourceSelector> source = Utils.computeHarmonizedResourceSelector(resCond.getSource(),
+					tmp.getSource(),map_conn,map_connList);
+
+//					List<ResourceSelector> source = Utils.computeHarmonizedResourceSelector(resCond.getSource(), tmp.getSource(), this.podsByNamespaceAndLabelsConsumer, this.podsByNamespaceAndLabelsProvider);
+			if (source == null) {
+				System.out.println("Source is null");
+				// There was a comparison problem...likely trying to perform a CIDR/PodNamespace
+				// comparison
+				return false;
+			}
+			/*if(source.size() != 0 && Utils.compareResourceSelector(source.get(0), resCond.getSource())){
+				System.out.println("ok");
+			}
+			System.out.println(source.isEmpty());
+			if(source.isEmpty()){
+
+			}
+
+			if(Utils.compareResourceSelector(source.get(0), resCond.getSource())){
+				return false;
+			};*/
+			/*
+			if (source.isEmpty() || Utils.compareResourceSelector(source.get(0), resCond.getSource())) {
+				// No overlap with the current authorization rule (tmp), continue and check next
+				// one.
+				return false;
+			}*/
+
+			List<ResourceSelector> destination = Utils.computeHarmonizedResourceSelector(resCond.getDestination(),
+					tmp.getDestination(), map_conn,map_connList);
+//					List<ResourceSelector> destination = Utils.computeHarmonizedResourceSelector(resCond.getDestination(), tmp.getDestination(), this.podsByNamespaceAndLabelsConsumer, this.podsByNamespaceAndLabelsProvider);
+			if (destination == null) {
+				// There was a comparison problem...likely trying to perform a CIDR/PodNamespace
+				// comparison
+
+				return false;
+			}
+			if(destination.isEmpty()){
+				return false;
+			}
+			/*
+			if(Utils.compareResourceSelector(destination.get(0), resCond.getDestination())){
+				return false;
+			}*/
+			/*if (destination.isEmpty()
+					|| Utils.compareResourceSelector(destination.get(0), resCond.getDestination())) {
+				// No overlap with the current authorization rule (tmp), continue and check next
+				// one.
+				System.out.println("Destination selector are equal");
+				return false;
+            }*/
+
+		}
+
+		return true;
 	}
 
 	private List<ConfigurationRule> harmonizeConfigurationRule(ConfigurationRule conn, List<ConfigurationRule> connList,
@@ -190,7 +310,6 @@ public class HarmonizationData {
 
 		// Loop over the forbiddenConnectionList.
 		for (ConfigurationRule confRule : connList) {
-
 			flag = 0;
 			KubernetesNetworkFilteringCondition tmp = (KubernetesNetworkFilteringCondition) confRule
 					.getConfigurationCondition();
@@ -221,8 +340,10 @@ public class HarmonizationData {
 			}
 
 			// Step-1.3: check the source and destination.s
+
 			List<ResourceSelector> source = Utils.computeHarmonizedResourceSelector(resCond.getSource(),
 					tmp.getSource(), map_conn, map_connList);
+
 //					List<ResourceSelector> source = Utils.computeHarmonizedResourceSelector(resCond.getSource(), tmp.getSource(), this.podsByNamespaceAndLabelsConsumer, this.podsByNamespaceAndLabelsProvider);
 			if (source == null) {
 				// There was a comparison problem...likely trying to perform a CIDR/PodNamespace
@@ -243,7 +364,7 @@ public class HarmonizationData {
 				// comparison
 				continue;
 			}
-			if (destination.size() != 0
+			if (!destination.isEmpty()
 					&& Utils.compareResourceSelector(destination.get(0), resCond.getDestination())) {
 				// No overlap with the current authorization rule (tmp), continue and check next
 				// one.
@@ -325,7 +446,7 @@ public class HarmonizationData {
 			}
 
 			// Step-2.3: solve possible problems with the source and destination selectors.
-			if (source.size() == 0) {
+			if (source.isEmpty()) {
 				// This means that it was not possible to harmonized current intent.
 				flag++;
 			} else {
@@ -334,7 +455,7 @@ public class HarmonizationData {
 					resList.addAll(harmonizeConfigurationRule(res1, connList, map_conn, map_connList));
 				}
 			}
-			if (destination.size() == 0) {
+			if (destination.isEmpty()) {
 				flag++;
 			} else {
 				for (ResourceSelector rs : destination) {
@@ -413,70 +534,5 @@ public class HarmonizationData {
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100) + Main.ANSI_RESET);
 	}
 
-	public boolean verify(ConfigurationRule conn, List<ConfigurationRule> connList,
-			HashMap<String, HashMap<String, List<Pod>>> map_conn,
-			HashMap<String, HashMap<String, List<Pod>>> map_connList) {
 
-		for (ConfigurationRule confRule : connList) {
-			ConfigurationRule res = Utils.deepCopyConfigurationRule(conn);
-			KubernetesNetworkFilteringCondition resCond = (KubernetesNetworkFilteringCondition) res
-					.getConfigurationCondition();
-			KubernetesNetworkFilteringCondition tmp = (KubernetesNetworkFilteringCondition) confRule
-					.getConfigurationCondition();
-			// Step-1.1: starts with the simplest case, that is protocol type. Detect if
-			// protocol types of res are overlapping with tmp.
-			String[] protocolList = Utils.computeHarmonizedProtocolType(resCond.getProtocolType().value(),
-					tmp.getProtocolType().value());
-
-			if (protocolList.length == 1 && protocolList[0].equals(resCond.getProtocolType().value())) {
-				// No overlap with the current rule (tmp), continue and check next one.
-				continue;
-			}
-
-			// Step-1.2: check the ports. Detect if the port ranges of res are overlapping
-			// with tmp.
-			String[] sourcePortList = Utils.computeHarmonizedPortRange(resCond.getSourcePort(), tmp.getSourcePort())
-					.split(";");
-			String[] destinationPortList = Utils
-					.computeHarmonizedPortRange(resCond.getDestinationPort(), tmp.getDestinationPort()).split(";");
-			if (sourcePortList[0].equals(resCond.getSourcePort())
-					|| destinationPortList[0].equals(resCond.getDestinationPort())) {
-				// No overlap with the current rule (tmp), continue and check next one.
-				continue;
-			}
-			// Step-1.3: check the source and destination.s
-			List<ResourceSelector> source = Utils.computeHarmonizedResourceSelector(resCond.getSource(),
-					tmp.getSource(), map_conn, map_connList);
-//								List<ResourceSelector> source = Utils.computeHarmonizedResourceSelector(resCond.getSource(), tmp.getSource(), this.podsByNamespaceAndLabelsConsumer, this.podsByNamespaceAndLabelsProvider);
-			if (source == null) {
-				// There was a comparison problem...likely trying to perform a CIDR/PodNamespace
-				// comparison
-				continue;
-			}
-
-			if (source.size() != 0 && Utils.compareResourceSelector(source.get(0), resCond.getSource())) {
-				// No overlap with the current authorization rule (tmp), continue and check next
-				// one.
-				continue;
-			}
-
-			List<ResourceSelector> destination = Utils.computeHarmonizedResourceSelector(resCond.getDestination(),
-					tmp.getDestination(), map_conn, map_connList);
-//								List<ResourceSelector> destination = Utils.computeHarmonizedResourceSelector(resCond.getDestination(), tmp.getDestination(), this.podsByNamespaceAndLabelsConsumer, this.podsByNamespaceAndLabelsProvider);
-			if (destination == null) {
-				// There was a comparison problem...likely trying to perform a CIDR/PodNamespace
-				// comparison
-				continue;
-			}
-			if (destination.size() != 0
-					&& Utils.compareResourceSelector(destination.get(0), resCond.getDestination())) {
-				// No overlap with the current authorization rule (tmp), continue and check next
-				// one.
-				continue;
-			}
-			return false;
-		}
-		return true;
-
-	}
 }

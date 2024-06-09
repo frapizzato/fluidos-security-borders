@@ -121,7 +121,7 @@ public class Utils {
 		res = res + "ProtocolType: [" + cond.getProtocolType() + "]";
 		return res;
 	}
-	
+
 	/**
 	 * Function to compute the difference between two different resourceSelectors.
 	 * @param sel_1 is the first resourceSelector.
@@ -131,6 +131,7 @@ public class Utils {
 	 * @return the list of harmonized resourceSelector; i.e. the set difference between them, so the selector for the resources that are selected by sel_1 and NOT by sel_2)
 	 */
 	public static List<ResourceSelector> computeHarmonizedResourceSelector(ResourceSelector sel_1, ResourceSelector sel_2, HashMap<String, HashMap<String, List<Pod>>> map_1, HashMap<String, HashMap<String, List<Pod>>> map_2) {
+
 		Boolean isCIDR_1 = false, isCIDR_2 = false;
 		List<ResourceSelector> res = new ArrayList<ResourceSelector>();
 
@@ -149,6 +150,7 @@ public class Utils {
 		if(isCIDR_1 && isCIDR_2){
 			CIDRSelector cidr1 = (CIDRSelector) sel_1;
 			CIDRSelector cidr2 = (CIDRSelector) sel_2;
+
 			String resCIDRHarmonization = cidrDifference(cidr1.getAddressRange(), cidr2.getAddressRange());
 			if(resCIDRHarmonization == null) {
 				return res;				
@@ -161,6 +163,7 @@ public class Utils {
 			}
 			return res;
 		} else if(!isCIDR_1 && !isCIDR_2){
+
 			// If both are PodNamespaceSelectors, then we can compute the difference in this way.
 			PodNamespaceSelector pns1 = (PodNamespaceSelector) sel_1;
 			PodNamespaceSelector pns2 = (PodNamespaceSelector) sel_2;
@@ -180,22 +183,21 @@ public class Utils {
 			// If one is a CIDRSelector and the other is a PodNamespaceSelector, then we can not compute the difference (for the moment...)
 			return null;
 		}
-		
 		return res;
 	}
 
-	
 	/**
 	 * Function to compute the difference between two different PodNamespaceSelector.
 	 * @param pns1 is the first PodNamespaceSelector.
-	 * @param pns22 is the second PodNamespaceSelector.
-	 * @param c is the cluster where the selectors are applied.
+	 * @param pns2 is the second PodNamespaceSelector.
+	 * @param clusterMap is the cluster where the selectors are applied.
 	 * @return the list of harmonized PodNamespaceSelectors (selecting the resources that are selected by pns1 and NOT by pns2)
 	 */
 	private static List<PodNamespaceSelector> computeHarmonizedPodNamespaceSelector(PodNamespaceSelector pns1, PodNamespaceSelector pns2, HashMap<String, HashMap<String, List<Pod>>> clusterMap) {
 
 		//Case-1: pns2 selects all pods and namespaces, so pns1 - pns2 = 0
 		if(pns2.getNamespace().get(0).getKey().equals("*") && pns2.getPod().get(0).getValue().equals("*")) {
+
 			return new ArrayList<PodNamespaceSelector>();
 		}
 

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ITResourceOrchestration xmlns="http://modeliosoft/xsddesigner/a22bd60b-ee3d-425c-8618-beb6a854051a/ITResource.xsd"
+                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                         id="omspl_5b0fd7359a5e40fe92399710c1152ed9"
+                         xsi:schemaLocation="http://modeliosoft/xsddesigner/a22bd60b-ee3d-425c-8618-beb6a854051a/ITResource.xsd ../xsd/mspl.xsd">
+
+    <!-- Private Intents -->
+    <ITResource>
+        <configuration xsi:type="PrivateIntents">
+            <capability>
+                <Name>KubernetesNetworkFiltering</Name>
+            </capability>
+        </configuration>
+    </ITResource>
+
+    <!-- Request Intents -->
+    <ITResource>
+        <configuration xsi:type="RequestIntents">
+            <capability>
+                <Name>KubernetesNetworkFiltering</Name>
+            </capability>
+            <acceptMonitoring>true</acceptMonitoring>
+            <!-- Generic rule to allow communication to any resource on TCP port 80 -->
+            <configurationRule>
+                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+                    <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
+                </configurationRuleAction>
+                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+                    <isCNF>false</isCNF>
+                    <source xsi:type="PodNamespaceSelector">
+                        <isHostCluster>true</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>*</key>
+                            <value>*</value>
+                        </namespace>
+                    </source>
+                    <sourcePort>*</sourcePort>
+                    <destination xsi:type="PodNamespaceSelector">
+                        <isHostCluster>false</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>*</key>
+                            <value>*</value>
+                        </namespace>
+                    </destination>
+                    <destinationPort>80</destinationPort>
+                    <protocolType>TCP</protocolType>
+                </configurationCondition>
+                <externalData xsi:type="Priority">
+                    <value>60000</value>
+                </externalData>
+                <Name>PrivateIntent_</Name>
+                <isCNF>false</isCNF>
+            </configurationRule>
+        </configuration>
+    </ITResource>
+    <!-- Authorization Intents -->
+
+    <ITResource>
+        <configuration xsi:type="AuthorizationIntents">
+            <capability>
+                <Name>KubernetesNetworkFiltering</Name>
+            </capability>
+            <!-- ForbiddenConnectionList (action = DENY) -->
+            <!-- from "app:bank_payment" to ANY, ALL protocols -->
+            <forbiddenConnectionList>
+                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+                    <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
+                </configurationRuleAction>
+                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+                    <isCNF>false</isCNF>
+                    <source xsi:type="PodNamespaceSelector">
+                        <isHostCluster>true</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>*</key>
+                            <value>*</value>
+                        </namespace>
+                    </source>
+                    <sourcePort>*</sourcePort>
+                    <destination xsi:type="PodNamespaceSelector">
+                        <isHostCluster>false</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>*</key>
+                            <value>*</value>
+                        </namespace>
+                    </destination>
+                    <destinationPort>40</destinationPort>
+                    <protocolType>UDP</protocolType>
+                </configurationCondition>
+                <externalData xsi:type="Priority">
+                    <value>60000</value>
+                </externalData>
+                <Name>AuthorizationDeny_1</Name>
+                <isCNF>false</isCNF>
+            </forbiddenConnectionList>
+            <forbiddenConnectionList>
+                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+                    <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
+                </configurationRuleAction>
+                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+                    <isCNF>false</isCNF>
+                    <source xsi:type="PodNamespaceSelector">
+                        <isHostCluster>true</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>*</key>
+                            <value>*</value>
+                        </namespace>
+                    </source>
+                    <sourcePort>*</sourcePort>
+                    <destination xsi:type="CIDRSelector">
+                        <isHostCluster>false</isHostCluster>
+                        <addressRange>0.0.0.0/4</addressRange>
+                    </destination>
+                    <destinationPort>*</destinationPort>
+                    <protocolType>ALL</protocolType>
+                </configurationCondition>
+                <externalData xsi:type="Priority">
+                    <value>60000</value>
+                </externalData>
+                <Name>AuthorizationDeny_2</Name>
+                <isCNF>false</isCNF>
+            </forbiddenConnectionList>
+        </configuration>
+    </ITResource>
+</ITResourceOrchestration>
