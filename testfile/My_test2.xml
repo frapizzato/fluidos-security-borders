@@ -40,7 +40,7 @@
             <isHostCluster>false</isHostCluster>
           	<pod>
           		<key>app</key>
-          		<value>product_catalogue</value>
+          		<value>*</value>
           	</pod>
           	<namespace>
           		<key>name</key>

@@ -38,6 +38,7 @@ public class Main
     	//String arg_1 = "./testfile/provider_MSPL_demo.xml";
     	String arg_2 = "./testfile/consumer_MSPL_demo.xml";
 		String arg_1 = "./testfile/My_test2.xml";
+		//String arg_docker_1 = "/app/testfile/My_test2.xml";
     	
     	System.out.println(ANSI_PURPLE + "-".repeat(150)+ ANSI_RESET);
     	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_YELLOW + "   Harmonization Module" + ANSI_RESET + " has the scope of detecting and correcting all the discordances between consumer and provider intents.");
@@ -52,6 +53,7 @@ public class Main
         	loggerInfo.debug("Unmarshaller created.");
         	SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         	Schema sc = sf.newSchema(new File("./xsd/mspl.xsd"));
+			//Schema sc = sf.newSchema(new File("/app/xsd/mspl.xsd"));
         	u.setSchema(sc);
         	loggerInfo.debug("Added MSPL schema to the unmarshaller.");
         	// User requesting the offloading
@@ -59,8 +61,8 @@ public class Main
         	ITResourceOrchestrationType intents_1 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_1).getValue();
         	loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_1+"].");
         	// User offering some resources
-        	Object tmp_2 = u.unmarshal(new FileInputStream(arg_2));
-        	ITResourceOrchestrationType intents_2 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_2).getValue(); 
+        	//Object tmp_2 = u.unmarshal(new FileInputStream(arg_2));
+        	//ITResourceOrchestrationType intents_2 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_2).getValue(); 
 			//Traslator intent_traslation = new Traslator(intents_1);
 			//Module module = new Module(intents_1);
 

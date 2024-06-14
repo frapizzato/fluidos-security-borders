@@ -115,7 +115,7 @@ public class Module {
                     System.out.println("Si lo contniene");
                 }
             }*/
-            
+            System.out.println("ciao");
             List<String> namespaces = Epurate(namespaceList);
             Epurate1(namespaceList);
 
@@ -174,6 +174,7 @@ public class Module {
         } catch (ApiException e) {
             System.err.println("Errore: ");
             e.printStackTrace();
+            System.err.println("Errore durante la chiamata all'API Kubernetes: " + e.getResponseBody());
         }
     
     }

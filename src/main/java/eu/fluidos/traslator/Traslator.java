@@ -15,8 +15,12 @@ import eu.fluidos.harmonization.Utils;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,6 +28,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ObjectUtils.Null;
 import org.yaml.snakeyaml.DumperOptions;
+
+import com.google.gson.Gson;
 
 import io.kubernetes.client.openapi.models.V1NetworkPolicy;
 import io.kubernetes.client.openapi.models.V1NetworkPolicyIngressRule;
@@ -279,13 +285,41 @@ public class Traslator {
         List<String> namespacesListToUseFinal = new ArrayList<>();
         if (Pods.getFirst().getKey().equals("*") && Pods.getFirst().getValue().equals("*")){
             namespacesListToUseFinal.addAll(namespacesListToUse);
+        }else if (Pods.getFirst().getKey().equals("*")){
+            for (KeyValue pods : Pods){
+                for (Map.Entry<LabelsKeyValue, String> entry : availablePodsMap.entrySet()) {
+                    LabelsKeyValue pod = entry.getKey();
+                    String namespace = entry.getValue();
+                    if(pod.getValue().equals(pods.getValue().replace("_", "-"))){
+                        if (!namespacesListToUseFinal.contains(namespace)) {
+                            namespacesListToUseFinal.add(namespace);
+                        }
+                    }
+                }                                
+            }
+        } else if (Pods.getFirst().getValue().equals("*")){
+            for (KeyValue pods : Pods){
+                for (Map.Entry<LabelsKeyValue, String> entry : availablePodsMap.entrySet()) {
+                    LabelsKeyValue pod = entry.getKey();
+                    String namespace = entry.getValue();
+                    if(pod.getKey().equals(pods.getKey())){
+                        if (!namespacesListToUseFinal.contains(namespace)) {
+                            namespacesListToUseFinal.add(namespace);
+                        }
+                    }
+                }                                
+            }
         }else{
             for (KeyValue pods : Pods){
                 for (Map.Entry<LabelsKeyValue, String> entry : availablePodsMap.entrySet()) {
                     LabelsKeyValue pod = entry.getKey();
                     String namespace = entry.getValue();
                     if(pod.getKey().equals(pods.getKey()) && pod.getValue().equals(pods.getValue().replace("_", "-"))){
-                        namespacesListToUseFinal.add(namespace);
+                        if (!namespacesListToUseFinal.contains(namespace)) {
+                            if (!namespacesListToUseFinal.contains(namespace)) {
+                                namespacesListToUseFinal.add(namespace);
+                            }
+                        }
                     }
                 }                                
             }
@@ -347,11 +381,14 @@ public class Traslator {
             networkPolicy.setApiVersion("networking.k8s.io/v1");
             networkPolicy.setKind("NetworkPolicy");
             V1ObjectMeta metadata = new V1ObjectMeta();
-            metadata.setName(name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase()+namespaceName+index);
+            //Qui aggiungere l' 
+            networkPolicy.setSpec(spec1);  
+            String hash_Name = hashName(name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase(),networkPolicy,"Egress",namespaceName);
+            metadata.setName(name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase()+namespaceName+hash_Name);
             index ++;
             metadata.namespace(namespaceName);
             networkPolicy.setMetadata(metadata);
-            networkPolicy.setSpec(spec1);  
+            
             //System.out.print(networkPolicy.getSpec().getEgress().getFirst().getTo().getFirst().getNamespaceSelector().getMatchLabels().get("name"));
             networkPolicyList.add(networkPolicy);
         }
@@ -386,7 +423,7 @@ public class Traslator {
                         V1NetworkPolicyPeer destinationPeer1 = new V1NetworkPolicyPeer();
                         V1LabelSelector namespace = new V1LabelSelector();
                         Map<String, String> map = new HashMap<>();
-                        map.put("name", namespaceNameAvailable);
+                        map.put("kubernetes.io/metadata.name", namespaceNameAvailable);
                         namespace.setMatchLabels(map);
                         destinationPeer.setNamespaceSelector(namespace);
                         egressRule.setTo(Collections.singletonList(destinationPeer));
@@ -394,7 +431,7 @@ public class Traslator {
                         //System.out.print(destinationPeer.getNamespaceSelector().getMatchLabels().get("name"));
                         //System.out.print(egressRule.getTo().getFirst().getNamespaceSelector().getMatchLabels().get("name"));
                         egressRuleList.add(egressRule);
-                        System.out.println(egressRule.getTo().getFirst().getNamespaceSelector().getMatchLabels().get("name"));  
+                        System.out.println(egressRule.getTo().getFirst().getNamespaceSelector().getMatchLabels().get("kubernetes.io/metadata.name"));  
                     }
                 } else {
                     V1NetworkPolicyEgressRule egressRule = new V1NetworkPolicyEgressRule();
@@ -431,7 +468,7 @@ public class Traslator {
                         if(destinationSelector.getMatchLabels() != null && destinationSelector.getMatchLabels().equals(key1.getMap()) && namespaceNameAvailable.equals(namespaceAssociatedPod)){
                             V1LabelSelector namespace = new V1LabelSelector();
                             Map<String, String> map = new HashMap<>();
-                            map.put("name", namespaceNameAvailable);
+                            map.put("kubernetes.io/metadata.name", namespaceNameAvailable);
                             namespace.setMatchLabels(map);
                             destinationPeer.setNamespaceSelector(namespace);
                             listDestinationPeer.add(destinationPeer);
@@ -440,7 +477,7 @@ public class Traslator {
                     if (destinationSelector.getMatchLabels()==null){
                         V1LabelSelector namespace = new V1LabelSelector();
                         Map<String, String> map = new HashMap<>();
-                        map.put("name", namespaceNameAvailable);
+                        map.put("kubernetes.io/metadata.name", namespaceNameAvailable);
                         namespace.setMatchLabels(map);
                         destinationPeer.setNamespaceSelector(namespace);
                         listDestinationPeer.add(destinationPeer);
@@ -450,15 +487,39 @@ public class Traslator {
                 V1NetworkPolicyPeer destinationPeer = new V1NetworkPolicyPeer();
                 V1LabelSelector namespace = new V1LabelSelector();
                 Map<String, String> map = new HashMap<>();
-                map.put(key, value);
-                destinationPeer.setPodSelector(destinationSelector);
-                namespace.setMatchLabels(map);
-                destinationPeer.setNamespaceSelector(namespace);
-                listDestinationPeer.add(destinationPeer);
+                if (destinationSelector.getMatchLabels() == null){
+                    map.put("kubernetes.io/metadata.name", value);
+                    destinationPeer.setPodSelector(destinationSelector);
+                    namespace.setMatchLabels(map);
+                    destinationPeer.setNamespaceSelector(namespace);
+                    listDestinationPeer.add(destinationPeer);
+                }
+                else if(isInTheNamespaceCheck (destinationSelector,value)){
+                    map.put("kubernetes.io/metadata.name", value);
+                    destinationPeer.setPodSelector(destinationSelector);
+                    namespace.setMatchLabels(map);
+                    destinationPeer.setNamespaceSelector(namespace);
+                    listDestinationPeer.add(destinationPeer);
+                }
             }
 
         }
         return listDestinationPeer;
+    }
+
+    private boolean isInTheNamespaceCheck (V1LabelSelector destinationSelector,String value){
+            for (Map.Entry<String, String> entry1 : destinationSelector.getMatchLabels().entrySet()) {
+                String key1 = entry1.getKey();
+                String value1 = entry1.getValue();
+                for (Map.Entry<LabelsKeyValue, String> entry2 : availablePodsMap.entrySet()) {
+                    LabelsKeyValue key2 = entry2.getKey();
+                    String namespaceAssociatedPod = entry2.getValue();
+                    if (key1.equals(key2.getKey()) && value1.equals(key2.getValue()) && value.equals(namespaceAssociatedPod)){
+                        return true;
+                    }
+                }
+            }
+        return false;
     }
     private List <V1NetworkPolicySpec> createEgressSpecList (Map<String, String> matchLabelsSourcePod,String namespace){
         List <V1NetworkPolicySpec> specList = new ArrayList<>();
@@ -735,7 +796,7 @@ public class Traslator {
                         if(sourceSelector.getMatchLabels() != null && sourceSelector.getMatchLabels().equals(key1.getMap()) && namespaceNameAvailable.equals(namespaceAssociatedPod)){
                             V1LabelSelector namespace = new V1LabelSelector();
                             Map<String, String> map = new HashMap<>();
-                            map.put("name", namespaceNameAvailable);
+                            map.put("kubernetes.io/metadata.name", namespaceNameAvailable);
                             namespace.setMatchLabels(map);
                             sourcePeer.setNamespaceSelector(namespace);
                             listSourcePeer.add(sourcePeer);
@@ -744,7 +805,7 @@ public class Traslator {
                     if(sourceSelector.getMatchLabels() == null){ //Caso in cui ho tutti i pod e tutte le chaivi selezionate
                         V1LabelSelector namespace = new V1LabelSelector();
                         Map<String, String> map = new HashMap<>();
-                        map.put("name", namespaceNameAvailable);
+                        map.put("kubernetes.io/metadata.name", namespaceNameAvailable);
                         namespace.setMatchLabels(map);
                         sourcePeer.setNamespaceSelector(namespace);
                         listSourcePeer.add(sourcePeer);
@@ -754,11 +815,19 @@ public class Traslator {
                 V1NetworkPolicyPeer sourcePeer = new V1NetworkPolicyPeer();
                 V1LabelSelector namespace = new V1LabelSelector();
                 Map<String, String> map = new HashMap<>();
-                map.put(key, value);
-                sourcePeer.setPodSelector(sourceSelector);
-                namespace.setMatchLabels(map);
-                sourcePeer.setNamespaceSelector(namespace);
-                listSourcePeer.add(sourcePeer);
+                if (sourceSelector.getMatchLabels() == null){
+                    map.put("kubernetes.io/metadata.name", value);
+                    sourcePeer.setPodSelector(sourceSelector);
+                    namespace.setMatchLabels(map);
+                    sourcePeer.setNamespaceSelector(namespace);
+                    listSourcePeer.add(sourcePeer);
+                } else if(isInTheNamespaceCheck (sourceSelector,value)){
+                    map.put("kubernetes.io/metadata.name", value);
+                    sourcePeer.setPodSelector(sourceSelector);
+                    namespace.setMatchLabels(map);
+                    sourcePeer.setNamespaceSelector(namespace);
+                    listSourcePeer.add(sourcePeer);
+                }
             }
 
         }
@@ -804,11 +873,13 @@ public class Traslator {
             networkPolicy.setApiVersion("networking.k8s.io/v1");
             networkPolicy.setKind("NetworkPolicy");
             V1ObjectMeta metadata = new V1ObjectMeta();
-            metadata.setName(name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase()+namespaceName+index);
+            networkPolicy.setSpec(spec1); 
+            String hash_Name = hashName(name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase(),networkPolicy,"Ingress",namespaceName);
+            metadata.setName(name.replaceAll("[^a-zA-Z0-9]", "").toLowerCase()+namespaceName+hash_Name);
             index++;
             metadata.namespace(namespaceName);
             networkPolicy.setMetadata(metadata);
-            networkPolicy.setSpec(spec1);  
+             
             //System.out.print(networkPolicy.getSpec().getEgress().getFirst().getTo().getFirst().getNamespaceSelector().getMatchLabels().get("name"));
             networkPolicyList.add(networkPolicy);
         }
@@ -914,7 +985,6 @@ public class Traslator {
         ingressRules.add(ingressRule);
         spec.ingress(ingressRules);
         networkPolicy.setSpec(spec);
-
         return networkPolicy;
         
     }
@@ -924,8 +994,8 @@ public class Traslator {
     private void writeNetworkPoliciesToFile1(List<V1NetworkPolicy> networkPolicies) {
         try {
             for (V1NetworkPolicy networkPolicy : networkPolicies) {
-                
                 String fileName = "src/network_policies/" + networkPolicy.getMetadata().getName() + " " + networkPolicy.getSpec().getPolicyTypes().get(0)+".yaml";
+                //String fileName = "/app/network_policies/" + networkPolicy.getMetadata().getName() + " " + networkPolicy.getSpec().getPolicyTypes().get(0)+".yaml";
                 FileWriter fileWriter = new FileWriter(fileName);
                 LinkedHashMap<String, Object> yamlData = new LinkedHashMap<>();
                 yamlData.put("apiVersion", networkPolicy.getApiVersion());
@@ -969,4 +1039,87 @@ public class Traslator {
         }
     }
 
+ private String hashName(String name , V1NetworkPolicy networkPolicy ,String Policy_type,String namespaceName) {
+            StringBuilder string_to_hash = new StringBuilder(name);
+            string_to_hash.append(Policy_type);
+            string_to_hash.append(namespaceName);
+            
+            if (networkPolicy.getSpec().getEgress() != null) {
+                for (V1NetworkPolicyEgressRule entry : networkPolicy.getSpec().getEgress()) {
+                    for (V1NetworkPolicyPort port : entry.getPorts()) {
+                        string_to_hash.append(port);
+                    }
+                    for (V1NetworkPolicyPeer peer : entry.getTo()) {
+                        if (peer.getIpBlock() != null) {
+                            string_to_hash.append(peer.getIpBlock().getCidr());
+                        }
+                        if (peer.getNamespaceSelector() != null && peer.getNamespaceSelector().getMatchLabels() != null) {
+                            for (Map.Entry<String, String> namespaceEntry : peer.getNamespaceSelector().getMatchLabels().entrySet()) {
+                                string_to_hash.append(namespaceEntry.getKey());
+                                string_to_hash.append(namespaceEntry.getValue());
+                            }
+                        }
+                        if (peer.getPodSelector() != null && peer.getPodSelector().getMatchLabels() != null) {
+                            for (Map.Entry<String, String> podSelectorEntry : peer.getPodSelector().getMatchLabels().entrySet()) {
+                                string_to_hash.append(podSelectorEntry.getKey());
+                                string_to_hash.append(podSelectorEntry.getValue());
+                            }
+                        }
+                    }
+                }
+            }
+            
+            if (networkPolicy.getSpec().getIngress() != null) {
+                for (V1NetworkPolicyIngressRule entry : networkPolicy.getSpec().getIngress()) {
+                    for (V1NetworkPolicyPort port : entry.getPorts()) {
+                        string_to_hash.append(port);
+                    }
+                    for (V1NetworkPolicyPeer peer : entry.getFrom()) {
+                        if (peer.getIpBlock() != null) {
+                            string_to_hash.append(peer.getIpBlock().getCidr());
+                        }
+                        if (peer.getNamespaceSelector() != null && peer.getNamespaceSelector().getMatchLabels() != null) {
+                            for (Map.Entry<String, String> namespaceEntry : peer.getNamespaceSelector().getMatchLabels().entrySet()) {
+                                string_to_hash.append(namespaceEntry.getKey());
+                                string_to_hash.append(namespaceEntry.getValue());
+                            }
+                        }
+                        if (peer.getPodSelector() != null && peer.getPodSelector().getMatchLabels() != null) {
+                            for (Map.Entry<String, String> podSelectorEntry : peer.getPodSelector().getMatchLabels().entrySet()) {
+                                string_to_hash.append(podSelectorEntry.getKey());
+                                string_to_hash.append(podSelectorEntry.getValue());
+                            }
+                        }
+                    }
+                }
+            }
+            
+            if (networkPolicy.getSpec().getPodSelector() != null && networkPolicy.getSpec().getPodSelector().getMatchLabels() != null) {
+                for (Map.Entry<String, String> entry : networkPolicy.getSpec().getPodSelector().getMatchLabels().entrySet()) {
+                    string_to_hash.append(entry.getKey());
+                    string_to_hash.append(entry.getValue());
+                }
+            }
+            
+            try {
+                MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                // Convertire la stringa in un array di byte
+                byte[] encodedhash = digest.digest(string_to_hash.toString().getBytes(StandardCharsets.UTF_8));
+                // Convertire l'array di byte in una stringa esadecimale
+                return bytesToHex(encodedhash);
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+    private String bytesToHex(byte[] hash) {
+        // Utilizzare un Formatter per convertire i byte in una stringa esadecimale
+        Formatter formatter = new Formatter();
+        for (byte b : hash) {
+            formatter.format("%02x", b);
+        }
+        String result = formatter.toString();
+        formatter.close();
+        return result;
+    }
 }
