@@ -181,4 +181,8 @@ public class HarmonizationService {
 		this.consumerIntents = consumerIntents;
 	}
 
+
+	public void function (){
+		
+	}
 }

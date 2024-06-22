@@ -62,7 +62,28 @@ public class Utils {
 		}
 		return portRangeX;
 	}
+	/**
+	 * Function to compute the difference between two port ranges.
+	 * @param portRangeX is the first port range.
+	 * @param portRangeY is the second port range.
+	 * @return the resulting of first port range MINUS second port range (true (overlap) / false (no overlap))
+	 */
+	public static boolean computeVerifiedPortRange(String portRangeX, String portRangeY) {
+		portRangeX = portRangeX.equals("*") ? "0-65535" : portRangeX;
+		portRangeY = portRangeY.equals("*") ? "0-65535" : portRangeY;
 
+		String[] x = portRangeX.split("-");
+		String[] y = portRangeY.split("-");
+
+		int x0 = Integer.parseInt(x[0]);
+		int x1 = x.length == 2 ? Integer.parseInt(x[1]) : x0;
+
+		int y0 = Integer.parseInt(y[0]);
+		int y1 = y.length == 2 ? Integer.parseInt(y[1]) : y0;
+
+		/* Return true if portRangeX are overlapping with portRangeY */
+		return (x0 <= y1 && x1 >= y0);
+	}
 	/**
 	 * Function to compute the (set) difference between two Protocol types.
 	 * @param value is the first set of protocols.
@@ -90,7 +111,15 @@ public class Utils {
 		// If none of the previous, then they are two disjoint sets.
 		return new String[] {value};
 	}
-
+	/**
+	 * Function to compute the (set) difference between two Protocol types.
+	 * @param value is the first set of protocols.
+	 * @param value2 is the second set of protocols.
+	 * @return true if value is overlapping with value2.
+	 */
+	public static boolean computeVerifyProtocolType(String value, String value2) {
+        return value.equals(value2) || value2.equals("ALL");
+	}
 	/**
 	 * Function convert a KubernetesNetworkFilteringCondition into a string.
 	 * @param cond is the condition to be printed.
@@ -170,16 +199,15 @@ public class Utils {
 			// First, need to check if the two selectors refer to the same cluster.
 			if(pns1.isIsHostCluster() && !pns2.isIsHostCluster()) {
 				// sel_1 considers the host cluster, sel_2 considers the local one. Use map_2.
-				System.out.println("This is the first case");
 				res.addAll(computeHarmonizedPodNamespaceSelector(pns1, pns2, map_2));
-				System.out.println("res:"+res);
+
 			} else if(!pns1.isIsHostCluster() && pns2.isIsHostCluster()){
 				// sel_1 considers the local cluster, sel_2 considers the remote one. Use map_1.
-				System.out.println("This is the second case");
+
 				res.addAll(computeHarmonizedPodNamespaceSelector(pns1, pns2, map_1));
-				System.out.println("res:"+res);
+
 			} else {
-				System.out.println("This is the third case");
+
 				// There is not compatibility between the two selectors... they cover different clusters.
 				return null;
 			}
@@ -188,6 +216,37 @@ public class Utils {
 			return null;
 		}
 		return res;
+	}
+	/**
+	 * Function to compute the difference between two different resourceSelectors.
+	 * @param sel_1 is the first resourceSelector.
+	 * @param sel_2 is the second resourceSelector.
+	 * @param map_1 is the hashmap of pods grouped by namespace and labels for the first selector's cluster.
+	 * @param map_2  is the hashmap of pods grouped by namespace and labels for the second selector's cluster.
+	 * @return true/false if there is an overlap or not
+	 */
+	public static boolean computeOverlapResourceSelector(ResourceSelector sel_1, ResourceSelector sel_2, HashMap<String, HashMap<String, List<Pod>>> map_1, HashMap<String, HashMap<String, List<Pod>>> map_2) {
+		if (sel_1 instanceof CIDRSelector && sel_2 instanceof CIDRSelector) {
+			CIDRSelector cidr1 = (CIDRSelector) sel_1;
+			CIDRSelector cidr2 = (CIDRSelector) sel_2;
+			return cidrDifference(cidr1.getAddressRange(), cidr2.getAddressRange()) != null;
+		} else if (sel_1 instanceof PodNamespaceSelector && sel_2 instanceof PodNamespaceSelector) {
+			PodNamespaceSelector pns1 = (PodNamespaceSelector) sel_1;
+			PodNamespaceSelector pns2 = (PodNamespaceSelector) sel_2;
+
+
+			HashMap<String, HashMap<String, List<Pod>>> relevantMap =
+					(pns1.isIsHostCluster() == pns2.isIsHostCluster())
+							? (pns1.isIsHostCluster() ? map_1 : map_2)
+							: null;
+
+			if (relevantMap != null) {
+				return !computeHarmonizedPodNamespaceSelector(pns1, pns2, relevantMap).isEmpty();
+			}
+		}
+
+
+		return false;
 	}
 
 	/**
@@ -209,7 +268,7 @@ public class Utils {
 		ArrayList<Pod> pns1SelectedPods = new ArrayList<Pod>();
 		ArrayList<Pod> pns2SelectedPods = new ArrayList<Pod>();
 
-		if(pns1.getNamespace().get(0).getKey().equals("*") && pns1.getNamespace().get(0).getValue().equals("*") && 
+		if(pns1.getNamespace().get(0).getKey().equals("*") && pns1.getNamespace().get(0).getValue().equals("*") &&
 			pns1.getPod().get(0).getKey().equals("*") && pns1.getPod().get(0).getValue().equals("*")){
 			// Special case-1: select all cluster's pods
 			
@@ -253,7 +312,7 @@ public class Utils {
 
 		// Repeat everything for pns2...
 
-		if(pns2.getNamespace().get(0).getKey().equals("*") && pns2.getNamespace().get(0).getValue().equals("*") && 
+		if(pns2.getNamespace().get(0).getKey().equals("*") && pns2.getNamespace().get(0).getValue().equals("*") &&
 			pns2.getPod().get(0).getKey().equals("*") && pns2.getPod().get(0).getValue().equals("*")){
 			// Special case-1: select all cluster's pods
 			
@@ -308,7 +367,7 @@ public class Utils {
 					// ...and check if the combination is present in the HashMap
 					if(clusterMap.containsKey(s) && clusterMap.get(s).containsKey(si)) {
 						// Check if all elements selected by this combination are in the list of selected pods..
-						Boolean flag = true;
+						boolean flag = true;
 						for(Pod pi: clusterMap.get(s).get(si)) {
 							if(!pns1SelectedPods.contains(pi)) {
 								// If not, then break the loop and go to the next combination
@@ -483,7 +542,7 @@ public class Utils {
 	 * @return true if rs_1 and rs_2 are strictly equal, false otherwise.
 	 */
 	public static boolean compareResourceSelector(ResourceSelector rs_1, ResourceSelector rs_2) {
-		Boolean found;
+		boolean found;
 
 		if(rs_1.getClass().equals(PodNamespaceSelector.class) && rs_2.getClass().equals(PodNamespaceSelector.class)){
 			PodNamespaceSelector pns_1 = (PodNamespaceSelector) rs_1;
@@ -527,8 +586,6 @@ public class Utils {
 			return false;
 		}
 	}
-	
-	
 	/**
 	 * Function to create a deep copy of a ConfigurationRule.
 	 * @param it the ConfigurationRule to be copied.
