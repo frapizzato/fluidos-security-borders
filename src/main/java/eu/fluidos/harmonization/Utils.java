@@ -227,25 +227,26 @@ public class Utils {
 	 */
 	public static boolean computeOverlapResourceSelector(ResourceSelector sel_1, ResourceSelector sel_2, HashMap<String, HashMap<String, List<Pod>>> map_1, HashMap<String, HashMap<String, List<Pod>>> map_2) {
 		if (sel_1 instanceof CIDRSelector && sel_2 instanceof CIDRSelector) {
+			// Check CIDR overlap (unchanged logic)
 			CIDRSelector cidr1 = (CIDRSelector) sel_1;
 			CIDRSelector cidr2 = (CIDRSelector) sel_2;
 			return cidrDifference(cidr1.getAddressRange(), cidr2.getAddressRange()) != null;
 		} else if (sel_1 instanceof PodNamespaceSelector && sel_2 instanceof PodNamespaceSelector) {
+			// Check PodNamespaceSelector overlap
 			PodNamespaceSelector pns1 = (PodNamespaceSelector) sel_1;
 			PodNamespaceSelector pns2 = (PodNamespaceSelector) sel_2;
 
-
-			HashMap<String, HashMap<String, List<Pod>>> relevantMap =
-					(pns1.isIsHostCluster() == pns2.isIsHostCluster())
-							? (pns1.isIsHostCluster() ? map_1 : map_2)
-							: null;
-
-			if (relevantMap != null) {
-				return !computeHarmonizedPodNamespaceSelector(pns1, pns2, relevantMap).isEmpty();
+			// Ensure both selectors refer to the same cluster
+			if (pns1.isIsHostCluster() != pns2.isIsHostCluster()) {
+				return false; // Different clusters, no overlap possible
 			}
+
+			HashMap<String, HashMap<String, List<Pod>>> relevantMap = pns1.isIsHostCluster() ? map_1 : map_2;
+
+			return compareResourceSelector(pns1, pns2);
 		}
 
-
+		// Incompatible selector types
 		return false;
 	}
 
@@ -586,6 +587,7 @@ public class Utils {
 			return false;
 		}
 	}
+
 	/**
 	 * Function to create a deep copy of a ConfigurationRule.
 	 * @param it the ConfigurationRule to be copied.

@@ -212,12 +212,12 @@ public class HarmonizationData {
 		boolean overlapDstPort = false;
 		boolean overlapSrc = false;
 		boolean overlapDst = false;
-
+		int i = 0;
 		// Loop over the forbiddenConnectionList.
 		for (ConfigurationRule confRule : connList) {
 			KubernetesNetworkFilteringCondition tmp = (KubernetesNetworkFilteringCondition) confRule
 					.getConfigurationCondition();
-
+			System.out.println("Iteration: "+ ++i);
 			loggerInfo.debug("[verify] - processing rule "
 					+ Utils.kubernetesNetworkFilteringConditionToString(resCond) + " vs. "
 					+ Utils.kubernetesNetworkFilteringConditionToString(tmp));
@@ -226,36 +226,36 @@ public class HarmonizationData {
 			// protocol types of res are overlapping with tmp.
 			overlap = Utils.computeVerifyProtocolType(resCond.getProtocolType().value(),
 					tmp.getProtocolType().value());
-
-			if(!overlap)
-				continue;
+			System.out.println("overlap: " +overlap);
 			// Step-1.2: check the ports. Detect if the port ranges of res are overlapping
 			// with tmp.
 			overlapSrcPort = Utils.computeVerifiedPortRange(resCond.getSourcePort(), tmp.getSourcePort());
+			System.out.println("overlapSrcPort: " +overlapSrcPort);
 			overlapDstPort = Utils.computeVerifiedPortRange(resCond.getDestinationPort(), tmp.getDestinationPort());
-
-			if (!overlapSrcPort || !overlapDstPort)
-				// No overlap with the current rule (tmp), continue and check next one.
-				continue;
-
-
+			System.out.println("overlapDstPort: " +overlapDstPort);
 			// Step-1.3: check the source and destination.s
-			overlapSrc = Utils.computeOverlapResourceSelector(resCond.getSource(),
+			/*overlapSrc = Utils.computeOverlapResourceSelector(resCond.getSource(),
 					tmp.getSource(), map_conn, map_connList);
-
-			if (!overlapSrc)
-				continue;
-
-
+			System.out.println("overlapSrc: " +overlapSrc);
 			overlapDst = Utils.computeOverlapResourceSelector(resCond.getDestination(),
 					tmp.getDestination(), map_conn, map_connList);
+			System.out.println("overlapDst: " +overlapDst); */
+			List<ResourceSelector> source = Utils.computeHarmonizedResourceSelector(resCond.getSource(),
+					tmp.getSource(), map_conn, map_connList);
 
-			if(!overlapDst)
-				continue;
+            overlapSrc = source != null && (source.isEmpty() || !Utils.compareResourceSelector(source.get(0), resCond.getSource()));
+			System.out.println("overlapSrc: " +overlapSrc);
+			List<ResourceSelector> destination = Utils.computeHarmonizedResourceSelector(resCond.getDestination(),
+					tmp.getDestination(), map_conn, map_connList);
+//					List<ResourceSelector> destination = Utils.computeHarmonizedResourceSelector(resCond.getDestination(), tmp.getDestination(), this.podsByNamespaceAndLabelsConsumer, this.podsByNamespaceAndLabelsProvider);
+            overlapDst = destination != null && (destination.isEmpty()
+                    || !Utils.compareResourceSelector(destination.get(0), resCond.getDestination()));
+			System.out.println("overlapDst: " +overlapDst);
 
-			return true;
+			if(overlap && overlapSrc && overlapDst && overlapSrcPort && overlapDstPort)
+				return false;
 		}
-		return false;
+		return true;
 	}
 
 
