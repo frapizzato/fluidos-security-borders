@@ -141,7 +141,9 @@ public class HarmonizationService {
 
 		verify = HarmonizationData.verify(this.requestIntentsConsumer, this.authIntentsProvider,
 						podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider);
-		System.out.println("[harmonization] - verify: " + verify);
+		HarmonizationData.printDash();
+		System.out.println("[Orchestration] - verify result: " + verify);
+		HarmonizationData.printDash();
 		return verify;
 	}
 

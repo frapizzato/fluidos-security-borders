@@ -42,8 +42,8 @@
                     <destination xsi:type="PodNamespaceSelector">
                         <isHostCluster>false</isHostCluster>
                         <pod>
-                            <key>key</key>
-                            <value>value</value>
+                            <key>*</key>
+                            <value>*</value>
                         </pod>
                         <namespace>
                             <key>*</key>
@@ -99,7 +99,7 @@
                             <value>*</value>
                         </namespace>
                     </destination>
-                    <destinationPort>40</destinationPort>
+                    <destinationPort>*</destinationPort>
                     <protocolType>UDP</protocolType>
                 </configurationCondition>
                 <externalData xsi:type="Priority">

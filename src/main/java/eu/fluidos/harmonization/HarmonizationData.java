@@ -79,7 +79,7 @@ public class HarmonizationData {
 		scan.nextLine();
 
 		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
-		System.out.println(requestIntent);
+
 		// External loop over the consumer's Request Intents.
 		for (ConfigurationRule cr : requestIntent.getConfigurationRule()) {
 			loggerInfo.debug("[harmonization/harmonizeForbiddenConnectionIntent] - processing rule { [" + cr.getName()
@@ -192,6 +192,10 @@ public class HarmonizationData {
 		for (ConfigurationRule cr : requestIntent.getConfigurationRule()) {
 			if(!verifyConfigurationRule(cr, authIntent.getForbiddenConnectionList(),
 					podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider)){
+				KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr
+						.getConfigurationCondition();
+				System.out.print(" (*) " + cr.getName() + " - ");
+				System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
 				return false;
 			}
 		}
@@ -252,8 +256,15 @@ public class HarmonizationData {
                     || !Utils.compareResourceSelector(destination.get(0), resCond.getDestination()));
 			System.out.println("overlapDst: " +overlapDst);
 
-			if(overlap && overlapSrc && overlapDst && overlapSrcPort && overlapDstPort)
+			if(overlap && overlapSrc && overlapDst && overlapSrcPort && overlapDstPort) {
+				KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr
+						.getConfigurationCondition();
+				System.out.println("Overlap between these two intents: " );
+				printDash();
+				System.out.print(" (*) " + confRule.getName() + " - ");
+				System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
 				return false;
+			}
 		}
 		return true;
 	}

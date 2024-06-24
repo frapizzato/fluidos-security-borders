@@ -12,37 +12,37 @@
             <acceptMonitoring>true</acceptMonitoring>
 
             <configurationRule>
-            <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
-                <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
-            </configurationRuleAction>
-            <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
-            <isCNF>false</isCNF>
-            <source xsi:type="PodNamespaceSelector">
-                <isHostCluster>false</isHostCluster>
-                <pod>
-                    <key>application</key>
-                    <value>consumer_resource</value>
-                </pod>
-                <namespace>
-                    <key>name</key>
-                    <value>fluidos</value>
-                </namespace>
-            </source>
-                <sourcePort>*</sourcePort>
-                <destination  xsi:type="PodNamespaceSelector">
-                    <isHostCluster>true</isHostCluster>
-                    <pod>
-                        <key>*</key>
-                        <value>*</value>
-                    </pod>
-                    <namespace>
-                        <key>*</key>
-                        <value>*</value>
-                    </namespace>
-                </destination>
-                <destinationPort>40</destinationPort>
-                <protocolType>TCP</protocolType>
-            </configurationCondition>
+                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+                    <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
+                </configurationRuleAction>
+                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+                    <isCNF>false</isCNF>
+                    <source xsi:type="PodNamespaceSelector">
+                        <isHostCluster>false</isHostCluster>
+                        <pod>
+                            <key>application</key>
+                            <value>consumer_resource</value>
+                        </pod>
+                        <namespace>
+                            <key>name</key>
+                            <value>fluidos</value>
+                        </namespace>
+                    </source>
+                    <sourcePort>*</sourcePort>
+                    <destination  xsi:type="PodNamespaceSelector">
+                        <isHostCluster>true</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>*</key>
+                            <value>*</value>
+                        </namespace>
+                    </destination>
+                    <destinationPort>40</destinationPort>
+                    <protocolType>TCP</protocolType>
+                </configurationCondition>
                 <externalData xsi:type="Priority">
                     <value>60000</value>
                 </externalData>
@@ -69,7 +69,7 @@
                     <sourcePort>*</sourcePort>
                     <destination xsi:type="CIDRSelector">
                         <isHostCluster>true</isHostCluster>
-                        <addressRange>0.0.0.0/0</addressRange>
+                        <addressRange>0.0.0.0/4</addressRange>
                     </destination>
                     <destinationPort>*</destinationPort>
                     <protocolType>ALL</protocolType>
@@ -77,7 +77,7 @@
                 <externalData xsi:type="Priority">
                     <value>60000</value>
                 </externalData>
-                <Name>RequestIntent_Internet</Name>
+                <Name>RequestIntent_3</Name>
                 <isCNF>false</isCNF>
             </configurationRule>
         </configuration>
