@@ -28,16 +28,19 @@ public class HarmonizationData {
 		if (cluster == "consumer") {
 			System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + "Received the following "
 					+ Main.ANSI_YELLOW + "Request intents" + Main.ANSI_RESET + " (CONSUMER):");
+			System.out.println("  [AcceptMonitoring]: " + requestIntent.isAcceptMonitoring());
 		} else if (cluster == "provider") {
 			System.out.println(
 					Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + "Local cluster defined the following "
 							+ Main.ANSI_YELLOW + "Request intents" + Main.ANSI_RESET + " (PROVIDER):");
+			System.out.println("  [RequestMonitoring]: " + requestIntent.isAcceptMonitoring());
 		}
+
 		for (ConfigurationRule cr : requestIntent.getConfigurationRule()) {
 			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr
 					.getConfigurationCondition();
 			System.out.print("  (*) " + cr.getName() + " - ");
-			System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
+			System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) +  "\n");
 		}
 	}
 
@@ -180,7 +183,7 @@ public class HarmonizationData {
 				harmonizedRules.add(Utils.deepCopyConfigurationAndInvertVCluster(cr));
 		}
 
-		printHarmonizedRules(harmonizedRules, "harmonized PROVIDER intents"," after type-3 discordances resolution:");
+		printHarmonizedRules(harmonizedRules, "harmonized CONSUMER intents"," after type-3 discordances resolution:");
 
 		return harmonizedRules;
 	}

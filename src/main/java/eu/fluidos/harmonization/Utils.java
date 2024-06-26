@@ -26,8 +26,8 @@ public class Utils {
 		Integer x_1 = x_0;
 		if (x.length == 2) 
 			x_1 = Integer.parseInt(x[1]);
-		Integer y_0 = Integer.parseInt(y[0]);
-		Integer y_1 = y_0;
+		int y_0 = Integer.parseInt(y[0]);
+		int y_1 = y_0;
 		if (y.length == 2)
 			y_1 = Integer.parseInt(y[1]);
 
@@ -53,9 +53,9 @@ public class Utils {
 					return "";
 				} else if(x_0 <= y_0 && x_1 <= y_1){
 					return (x_0 != (y_0-1))? x_0 + "-" + (y_0 - 1): String.valueOf(x_0);
-				} else if(x_0 >= y_0 && x_1 >= y_1){
+				} else if(x_0 >= y_0){
 					return ((y_1+1) != x_1)?(y_1 + 1) + "-" + x_1: String.valueOf(x_1);
-				} else if(x_0 <= y_0 && x_1 >= y_1){
+				} else {
 					return ((x_0 != (y_0-1))?x_0 + "-" + (y_0 - 1): x_0) + ";" + (((y_1+1) != x_1)?(y_1 + 1) + "-" + x_1: x_1);
 				}
 			} 
@@ -99,13 +99,14 @@ public class Utils {
 			return new String[] {};
 		} else if(value.equals("ALL")) {
 			// inner set is whole domain, return it minus the second set.
-			if(value2.equals("TCP")){
-				return new String[]{"UDP", "STCP"};
-			} else if(value2.equals("UDP")){
-				return new String[]{"TCP","STCP"};
-			} else if(value2.equals("STCP")){
-				return new String[]{"TCP", "UDP"};
-			}
+            switch (value2) {
+                case "TCP":
+                    return new String[]{"UDP", "STCP"};
+                case "UDP":
+                    return new String[]{"TCP", "STCP"};
+                case "STCP":
+                    return new String[]{"TCP", "UDP"};
+            }
 		} 
 		
 		// If none of the previous, then they are two disjoint sets.
@@ -126,7 +127,7 @@ public class Utils {
 	 * @return the string representation
 	 */
 	public static String kubernetesNetworkFilteringConditionToString(KubernetesNetworkFilteringCondition cond) {
-		String res = new String();
+		String res = "";
 		if(cond.getSource().getClass().equals(PodNamespaceSelector.class)){
 			PodNamespaceSelector pns = (PodNamespaceSelector) cond.getSource();
 			res = res + "Src: [" + pns.getPod().stream()
@@ -161,18 +162,10 @@ public class Utils {
 	 */
 	public static List<ResourceSelector> computeHarmonizedResourceSelector(ResourceSelector sel_1, ResourceSelector sel_2, HashMap<String, HashMap<String, List<Pod>>> map_1, HashMap<String, HashMap<String, List<Pod>>> map_2) {
 
-		Boolean isCIDR_1 = false, isCIDR_2 = false;
+		boolean isCIDR_1 = false, isCIDR_2 = false;
 		List<ResourceSelector> res = new ArrayList<ResourceSelector>();
-		if(sel_1.getClass().equals(PodNamespaceSelector.class)){
-			isCIDR_1 = false;
-		} else {
-			isCIDR_1 = true;
-		}
-		if(sel_2.getClass().equals(PodNamespaceSelector.class)){
-			isCIDR_2 = false;
-		} else {
-			isCIDR_2 = true;
-		}
+        isCIDR_1 = !sel_1.getClass().equals(PodNamespaceSelector.class);
+        isCIDR_2 = !sel_2.getClass().equals(PodNamespaceSelector.class);
 
 		// If both are CIDRSelectors, then we can compute the difference in this way.
 		if(isCIDR_1 && isCIDR_2){
@@ -261,13 +254,12 @@ public class Utils {
 
 		//Case-1: pns2 selects all pods and namespaces, so pns1 - pns2 = 0
 		if(pns2.getNamespace().get(0).getKey().equals("*") && pns2.getPod().get(0).getValue().equals("*")) {
-
-			return new ArrayList<PodNamespaceSelector>();
+			return new ArrayList<>();
 		}
 
 		//Case-2: possibility of having none or partial overlap between pns1 and pns2. Need to move to Pods.
-		ArrayList<Pod> pns1SelectedPods = new ArrayList<Pod>();
-		ArrayList<Pod> pns2SelectedPods = new ArrayList<Pod>();
+		ArrayList<Pod> pns1SelectedPods = new ArrayList<>();
+		ArrayList<Pod> pns2SelectedPods = new ArrayList<>();
 
 		if(pns1.getNamespace().get(0).getKey().equals("*") && pns1.getNamespace().get(0).getValue().equals("*") &&
 			pns1.getPod().get(0).getKey().equals("*") && pns1.getPod().get(0).getValue().equals("*")){
@@ -358,7 +350,7 @@ public class Utils {
 		pns1SelectedPods.removeAll(pns2SelectedPods);
 
 		//Now we have the list of pods. We need to convert it into a list of PodNamespaceSelectors.
-		List<PodNamespaceSelector> resSelectors = new ArrayList<PodNamespaceSelector>();
+		List<PodNamespaceSelector> resSelectors = new ArrayList<>();
 		//Convert list of pods to list of Selectors using the HashMap...
 		for(Pod p: pns1SelectedPods) {
 			// Take the namespace from current pod and extract the associated labels in the form "key:label"...

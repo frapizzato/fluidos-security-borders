@@ -81,6 +81,10 @@ public class HarmonizationService {
 		HarmonizationData.printAuthorizationIntents(this.authIntentsProvider, "mandatory");
 		HarmonizationData.printDash();
 
+		if (requestIntentsProvider.isAcceptMonitoring() && !requestIntentsConsumer.isAcceptMonitoring()) {
+			System.out.println("[Orchestration] - Consumer is not accepting monitoring");
+			return null;
+		}
 		/**
 		 * Then, the lists are processed to resolve any possible discordances: 1)
 		 * consumer asks for a connection not permitted by the provider -> these are
@@ -137,8 +141,12 @@ public class HarmonizationService {
 		HarmonizationData.printAuth();
 		HarmonizationData.printAuthorizationIntents(this.authIntentsProvider, "forbidden");
 		HarmonizationData.printDash();
-		//Verifica monitoring in sospeso if (requestIntentsProvider.isAcceptMonitoring())
 
+		 if (requestIntentsProvider.isAcceptMonitoring() && !requestIntentsConsumer.isAcceptMonitoring()) {
+			 System.out.println("[Orchestration] - Consumer is not accepting monitoring");
+			 HarmonizationData.printDash();
+			 return false;
+		 }
 		verify = HarmonizationData.verify(this.requestIntentsConsumer, this.authIntentsProvider,
 						podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider);
 		HarmonizationData.printDash();

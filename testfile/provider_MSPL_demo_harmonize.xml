@@ -42,21 +42,21 @@
                     <destination xsi:type="PodNamespaceSelector">
                         <isHostCluster>false</isHostCluster>
                         <pod>
-                            <key>key</key>
-                            <value>value</value>
+                            <key>app</key>
+                            <value>product_catalogue</value>
                         </pod>
                         <namespace>
-                            <key>*</key>
-                            <value>*</value>
+                            <key>name</key>
+                            <value>default</value>
                         </namespace>
                     </destination>
                     <destinationPort>80</destinationPort>
-                    <protocolType>TCP</protocolType>
+                    <protocolType>UDP</protocolType>
                 </configurationCondition>
                 <externalData xsi:type="Priority">
                     <value>60000</value>
                 </externalData>
-                <Name>PrivateIntent_</Name>
+                <Name>PrivateIntent_1</Name>
                 <isCNF>false</isCNF>
             </configurationRule>
         </configuration>
@@ -91,15 +91,15 @@
                     <destination xsi:type="PodNamespaceSelector">
                         <isHostCluster>false</isHostCluster>
                         <pod>
-                            <key>*</key>
-                            <value>*</value>
+                            <key>app</key>
+                            <value>database</value>
                         </pod>
                         <namespace>
-                            <key>*</key>
-                            <value>*</value>
+                            <key>name</key>
+                            <value>default</value>
                         </namespace>
                     </destination>
-                    <destinationPort>40</destinationPort>
+                    <destinationPort>41</destinationPort>
                     <protocolType>UDP</protocolType>
                 </configurationCondition>
                 <externalData xsi:type="Priority">
@@ -139,6 +139,198 @@
                 <Name>AuthorizationDeny_2</Name>
                 <isCNF>false</isCNF>
             </forbiddenConnectionList>
+            <!-- Four different rules to deny any other connections to "product_catalogue" with port !80 and protocol !TCP-->
+            <!-- from ANY to "app:product_catalogue", SCTP -->
+            <forbiddenConnectionList>
+                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+                    <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
+                </configurationRuleAction>
+                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+                    <isCNF>false</isCNF>
+                    <source xsi:type="PodNamespaceSelector">
+                        <isHostCluster>true</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>*</key>
+                            <value>*</value>
+                        </namespace>
+                    </source>
+                    <sourcePort>*</sourcePort>
+                    <destination xsi:type="PodNamespaceSelector">
+                        <isHostCluster>false</isHostCluster>
+                        <pod>
+                            <key>app</key>
+                            <value>order_placement</value>
+                        </pod>
+                        <namespace>
+                            <key>name</key>
+                            <value>default</value>
+                        </namespace>
+                    </destination>
+                    <destinationPort>*</destinationPort>
+                    <protocolType>STCP</protocolType>
+                </configurationCondition>
+                <externalData xsi:type="Priority">
+                    <value>60000</value>
+                </externalData>
+                <Name>AuthorizationDeny_3</Name>
+                <isCNF>false</isCNF>
+            </forbiddenConnectionList>
+            <!-- from ANY to "app:product_catalogue", UDP -->
+            <forbiddenConnectionList>
+                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+                    <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
+                </configurationRuleAction>
+                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+                    <isCNF>false</isCNF>
+                    <source xsi:type="PodNamespaceSelector">
+                        <isHostCluster>true</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>*</key>
+                            <value>*</value>
+                        </namespace>
+                    </source>
+                    <sourcePort>*</sourcePort>
+                    <destination xsi:type="PodNamespaceSelector">
+                        <isHostCluster>false</isHostCluster>
+                        <pod>
+                            <key>app</key>
+                            <value>order_placement</value>
+                        </pod>
+                        <namespace>
+                            <key>name</key>
+                            <value>default</value>
+                        </namespace>
+                    </destination>
+                    <destinationPort>*</destinationPort>
+                    <protocolType>UDP</protocolType>
+                </configurationCondition>
+                <externalData xsi:type="Priority">
+                    <value>60000</value>
+                </externalData>
+                <Name>AuthorizationDeny_4</Name>
+                <isCNF>false</isCNF>
+            </forbiddenConnectionList>
+            <!-- from ANY to "app:product_catalogue":0-79, TCP -->
+            <forbiddenConnectionList>
+                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+                    <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
+                </configurationRuleAction>
+                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+                    <isCNF>false</isCNF>
+                    <source xsi:type="PodNamespaceSelector">
+                        <isHostCluster>true</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>*</key>
+                            <value>*</value>
+                        </namespace>
+                    </source>
+                    <sourcePort>*</sourcePort>
+                    <destination xsi:type="PodNamespaceSelector">
+                        <isHostCluster>false</isHostCluster>
+                        <pod>
+                            <key>app</key>
+                            <value>order_placement</value>
+                        </pod>
+                        <namespace>
+                            <key>name</key>
+                            <value>default</value>
+                        </namespace>
+                    </destination>
+                    <destinationPort>0-79</destinationPort>
+                    <protocolType>TCP</protocolType>
+                </configurationCondition>
+                <externalData xsi:type="Priority">
+                    <value>60000</value>
+                </externalData>
+                <Name>AuthorizationDeny_5</Name>
+                <isCNF>false</isCNF>
+            </forbiddenConnectionList>
+            <!-- from ANY to "app:product_catalogue":81-65535, TCP -->
+            <forbiddenConnectionList>
+                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+                    <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
+                </configurationRuleAction>
+                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+                    <isCNF>false</isCNF>
+                    <source xsi:type="PodNamespaceSelector">
+                        <isHostCluster>true</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>*</key>
+                            <value>*</value>
+                        </namespace>
+                    </source>
+                    <sourcePort>*</sourcePort>
+                    <destination xsi:type="PodNamespaceSelector">
+                        <isHostCluster>false</isHostCluster>
+                        <pod>
+                            <key>app</key>
+                            <value>order_placement</value>
+                        </pod>
+                        <namespace>
+                            <key>name</key>
+                            <value>default</value>
+                        </namespace>
+                    </destination>
+                    <destinationPort>81-65535</destinationPort>
+                    <protocolType>TCP</protocolType>
+                </configurationCondition>
+                <externalData xsi:type="Priority">
+                    <value>60000</value>
+                </externalData>
+                <Name>AuthorizationDeny_6</Name>
+                <isCNF>false</isCNF>
+            </forbiddenConnectionList>
+            <mandatoryConnectionList>
+                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+                    <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
+                </configurationRuleAction>
+                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+                    <isCNF>false</isCNF>
+                    <source xsi:type="PodNamespaceSelector">
+                        <isHostCluster>false</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>*</key>
+                            <value>*</value>
+                        </namespace>
+                    </source>
+                    <sourcePort>*</sourcePort>
+                    <destination xsi:type="PodNamespaceSelector">
+                        <isHostCluster>true</isHostCluster>
+                        <pod>
+                            <key>app</key>
+                            <value>database</value>
+                        </pod>
+                        <namespace>
+                            <key>name</key>
+                            <value>default</value>
+                        </namespace>
+                    </destination>
+                    <destinationPort>43</destinationPort>
+                    <protocolType>TCP</protocolType>
+                </configurationCondition>
+                <Name>AuthorizationMandatory_1</Name>
+                <isCNF>false</isCNF>
+            </mandatoryConnectionList>
         </configuration>
     </ITResource>
 </ITResourceOrchestration>

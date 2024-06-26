@@ -42,8 +42,14 @@ public class ClusterData {
 			podsConsumer.add(pC4);
 		}
 		else if(Objects.equals(endpoint, "harmonize")) {
-			Pod pC1 = createPod("*", nsC1);
+			Pod pC1 = createPod("bank_payment", nsC2);
 			podsConsumer.add(pC1);
+
+			Pod pC2 = createPod("database", nsC2);
+			podsConsumer.add(pC2);
+
+			Pod pC3 = createPod("order_placement", nsC2);
+			podsConsumer.add(pC3);
 		}
 
 		for(Pod p : podsConsumer)
