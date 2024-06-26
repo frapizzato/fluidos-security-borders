@@ -4,7 +4,6 @@ import eu.fluidos.cluster.ClusterService;
 import eu.fluidos.harmonization.HarmonizationController;
 import eu.fluidos.harmonization.HarmonizationData;
 import eu.fluidos.harmonization.HarmonizationService;
-import eu.fluidos.jaxb.ConfigurationRule;
 import eu.fluidos.jaxb.ITResourceOrchestrationType;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
@@ -21,7 +20,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Scanner;
 
 
@@ -41,14 +39,14 @@ public class Main
     {
 		/* VERIFY */
 
-		//String arg_1 = "./testfile/provider_MSPL_demo_verify.xml";
-    	//String arg_2 = "./testfile/consumer_MSPL_demo_verify.xml";
+		String arg_1 = "./testfile/provider_MSPL_demo_verify.xml";
+    	String arg_2 = "./testfile/consumer_MSPL_demo_verify.xml";
 		String arg_3 = "./testfile/provider_MSPL_demo_verify_false.xml";
 		String arg_4 = "./testfile/consumer_MSPL_demo_verify_false.xml";
 		/* HARMONIZE */
 
-		String arg_1 = "./testfile/provider_MSPL_demo_harmonize.xml";
-		String arg_2 = "./testfile/consumer_MSPL_demo_harmonize.xml";
+		String arg_5 = "./testfile/provider_MSPL_demo_harmonize.xml";
+		String arg_6 = "./testfile/consumer_MSPL_demo_harmonize.xml";
 
 		//String arg_1 = "./testfile/provider_MSPL_demo.xml";
 		//String arg_2 = "./testfile/consumer_MSPL_demo_2.xml";
@@ -89,30 +87,37 @@ public class Main
 			Path filePath_2 = Paths.get(arg_2);
 			Path filePath_3 = Paths.get(arg_3);
 			Path filePath_4 = Paths.get(arg_4);
+			Path filePath_5 = Paths.get(arg_5);
+			Path filePath_6 = Paths.get(arg_6);
         	Object tmp_1 = u.unmarshal(new FileInputStream(arg_1));
         	ITResourceOrchestrationType intents_1 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_1).getValue();
-        	//loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_1+"].");
-        	// User offering some resources
+        	loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_1+"].");
+
         	Object tmp_2 = u.unmarshal(new FileInputStream(arg_2));
         	ITResourceOrchestrationType intents_2 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_2).getValue();
-
+			loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_2+"].");
 			Object tmp_3 = u.unmarshal(new FileInputStream(arg_3));
 			ITResourceOrchestrationType intents_3 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_3).getValue();
-
+			loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_3+"].");
 			Object tmp_4 = u.unmarshal(new FileInputStream(arg_4));
+			loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_4+"].");
 			ITResourceOrchestrationType intents_4 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_4).getValue();
-			//loggerInfo.debug("Successfull unmarshalling of second input file ["+arg_2+"].");
+			Object tmp_5 = u.unmarshal(new FileInputStream(arg_5));
+			loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_5+"].");
+			ITResourceOrchestrationType intents_5 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_5).getValue();
+			Object tmp_6 = u.unmarshal(new FileInputStream(arg_6));
+			ITResourceOrchestrationType intents_6 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_6).getValue();
+			loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_6+"].");
 
 			// HARMONIZATION
 
         	loggerInfo.debug("Start of the harmonization process.");
-        	List<ConfigurationRule> res = HarmonizationController.harmonize(intents_1, intents_2);
+        	//List<ConfigurationRule> res = HarmonizationController.harmonize(intents_5, intents_6);
 
 			// VERIFY
-
-			//boolean verify = HarmonizationController.verify(intents_1, intents_2);
-			//boolean verify2 = HarmonizationController.verify(intents_3, intents_4);
-			//System.out.println("Verify result:" + verify);
+			loggerInfo.debug("Start of the verify process.");
+			boolean verify = HarmonizationController.verify(intents_1, intents_2);
+			boolean verify2 = HarmonizationController.verify(intents_3, intents_4);
 
 
         	//Here output the "Harmonized" set of intents

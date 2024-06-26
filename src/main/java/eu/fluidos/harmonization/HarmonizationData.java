@@ -6,7 +6,10 @@ import eu.fluidos.jaxb.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Scanner;
 
 public class HarmonizationData {
 
@@ -193,10 +196,13 @@ public class HarmonizationData {
 						  HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer,
 						  HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider) {
 		for (ConfigurationRule cr : requestIntent.getConfigurationRule()) {
+			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr
+					.getConfigurationCondition();
+			System.out.print(" (*) " + cr.getName() + " - ");
+			System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
 			if(!verifyConfigurationRule(cr, authIntent.getForbiddenConnectionList(),
 					podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider)){
-				KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr
-						.getConfigurationCondition();
+				//KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
 				System.out.print(" (*) " + cr.getName() + " - ");
 				System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
 				return false;
@@ -214,17 +220,20 @@ public class HarmonizationData {
 		KubernetesNetworkFilteringCondition resCond = (KubernetesNetworkFilteringCondition) res
 				.getConfigurationCondition();
 
-		boolean overlap = false;
-		boolean overlapSrcPort = false;
-		boolean overlapDstPort = false;
-		boolean overlapSrc = false;
-		boolean overlapDst = false;
+
 		int i = 0;
 		// Loop over the forbiddenConnectionList.
 		for (ConfigurationRule confRule : connList) {
+			boolean overlap = false;
+			boolean overlapSrcPort = false;
+			boolean overlapDstPort = false;
+			boolean overlapSrc = false;
+			boolean overlapDst = false;
 			KubernetesNetworkFilteringCondition tmp = (KubernetesNetworkFilteringCondition) confRule
 					.getConfigurationCondition();
-			System.out.println("Iteration: "+ ++i);
+			System.out.print(" (*) " + confRule.getName() + " - ");
+			System.out.print(Utils.kubernetesNetworkFilteringConditionToString(tmp) + "\n");
+			//System.out.println("Iteration: "+ ++i);
 			loggerInfo.debug("[verify] - processing rule "
 					+ Utils.kubernetesNetworkFilteringConditionToString(resCond) + " vs. "
 					+ Utils.kubernetesNetworkFilteringConditionToString(tmp));
@@ -247,25 +256,31 @@ public class HarmonizationData {
 			overlapDst = Utils.computeOverlapResourceSelector(resCond.getDestination(),
 					tmp.getDestination(), map_conn, map_connList);
 			System.out.println("overlapDst: " +overlapDst); */
-			List<ResourceSelector> source = Utils.computeHarmonizedResourceSelector(resCond.getSource(),
+			overlapSrc = Utils.computeOverlapResourceSelector(resCond.getSource(),
 					tmp.getSource(), map_conn, map_connList);
-
-            overlapSrc = source != null && (source.isEmpty() || !Utils.compareResourceSelector(source.get(0), resCond.getSource()));
+			if(!overlapSrc){
+				if(Utils.compareOverlapResourceSelector(resCond.getSource(),
+						tmp.getSource()))
+					overlapSrc = true;
+			}
+            //overlapSrc = source != null && (source.isEmpty() || !Utils.compareResourceSelector(source.get(0), resCond.getSource()));
 			System.out.println("overlapSrc: " +overlapSrc);
-			List<ResourceSelector> destination = Utils.computeHarmonizedResourceSelector(resCond.getDestination(),
+			overlapDst = Utils.computeOverlapResourceSelector(resCond.getDestination(),
 					tmp.getDestination(), map_conn, map_connList);
-//					List<ResourceSelector> destination = Utils.computeHarmonizedResourceSelector(resCond.getDestination(), tmp.getDestination(), this.podsByNamespaceAndLabelsConsumer, this.podsByNamespaceAndLabelsProvider);
-            overlapDst = destination != null && (destination.isEmpty()
-                    || !Utils.compareResourceSelector(destination.get(0), resCond.getDestination()));
+			if(!overlapDst){
+				if(Utils.compareOverlapResourceSelector(resCond.getDestination(),
+						tmp.getDestination()))
+					overlapDst = true;
+			}
+
+			//overlapDst = destination != null && (destination.isEmpty() && Utils.compareResourceSelector(destination.get(0), resCond.getDestination()));
 			System.out.println("overlapDst: " +overlapDst);
 
 			if(overlap && overlapSrc && overlapDst && overlapSrcPort && overlapDstPort) {
-				KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr
-						.getConfigurationCondition();
 				System.out.println("Overlap between these two intents: " );
 				printDash();
 				System.out.print(" (*) " + confRule.getName() + " - ");
-				System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
+				System.out.print(Utils.kubernetesNetworkFilteringConditionToString(tmp) + "\n");
 				return false;
 			}
 		}
@@ -339,6 +354,7 @@ public class HarmonizationData {
 			List<ResourceSelector> destination = Utils.computeHarmonizedResourceSelector(resCond.getDestination(),
 					tmp.getDestination(), map_conn, map_connList);
 //					List<ResourceSelector> destination = Utils.computeHarmonizedResourceSelector(resCond.getDestination(), tmp.getDestination(), this.podsByNamespaceAndLabelsConsumer, this.podsByNamespaceAndLabelsProvider);
+
 			if (destination == null) {
 				// There was a comparison problem...likely trying to perform a CIDR/PodNamespace
 				// comparison

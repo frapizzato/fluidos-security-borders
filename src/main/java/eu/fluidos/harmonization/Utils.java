@@ -161,20 +161,27 @@ public class Utils {
 	 * @return the list of harmonized resourceSelector; i.e. the set difference between them, so the selector for the resources that are selected by sel_1 and NOT by sel_2)
 	 */
 	public static List<ResourceSelector> computeHarmonizedResourceSelector(ResourceSelector sel_1, ResourceSelector sel_2, HashMap<String, HashMap<String, List<Pod>>> map_1, HashMap<String, HashMap<String, List<Pod>>> map_2) {
-
-		boolean isCIDR_1 = false, isCIDR_2 = false;
+		Boolean isCIDR_1 = false, isCIDR_2 = false;
 		List<ResourceSelector> res = new ArrayList<ResourceSelector>();
-        isCIDR_1 = !sel_1.getClass().equals(PodNamespaceSelector.class);
-        isCIDR_2 = !sel_2.getClass().equals(PodNamespaceSelector.class);
+
+		if(sel_1.getClass().equals(PodNamespaceSelector.class)){
+			isCIDR_1 = false;
+		} else {
+			isCIDR_1 = true;
+		}
+		if(sel_2.getClass().equals(PodNamespaceSelector.class)){
+			isCIDR_2 = false;
+		} else {
+			isCIDR_2 = true;
+		}
 
 		// If both are CIDRSelectors, then we can compute the difference in this way.
 		if(isCIDR_1 && isCIDR_2){
 			CIDRSelector cidr1 = (CIDRSelector) sel_1;
 			CIDRSelector cidr2 = (CIDRSelector) sel_2;
-
 			String resCIDRHarmonization = cidrDifference(cidr1.getAddressRange(), cidr2.getAddressRange());
 			if(resCIDRHarmonization == null) {
-				return res;				
+				return res;
 			}
 			// Convert the resulting CIDR strings into CIDRSelectors.
 			for(String s: resCIDRHarmonization.split(";")){
@@ -184,7 +191,6 @@ public class Utils {
 			}
 			return res;
 		} else if(!isCIDR_1 && !isCIDR_2){
-
 			// If both are PodNamespaceSelectors, then we can compute the difference in this way.
 			PodNamespaceSelector pns1 = (PodNamespaceSelector) sel_1;
 			PodNamespaceSelector pns2 = (PodNamespaceSelector) sel_2;
@@ -193,14 +199,10 @@ public class Utils {
 			if(pns1.isIsHostCluster() && !pns2.isIsHostCluster()) {
 				// sel_1 considers the host cluster, sel_2 considers the local one. Use map_2.
 				res.addAll(computeHarmonizedPodNamespaceSelector(pns1, pns2, map_2));
-
 			} else if(!pns1.isIsHostCluster() && pns2.isIsHostCluster()){
 				// sel_1 considers the local cluster, sel_2 considers the remote one. Use map_1.
-
 				res.addAll(computeHarmonizedPodNamespaceSelector(pns1, pns2, map_1));
-
 			} else {
-
 				// There is not compatibility between the two selectors... they cover different clusters.
 				return null;
 			}
@@ -208,6 +210,7 @@ public class Utils {
 			// If one is a CIDRSelector and the other is a PodNamespaceSelector, then we can not compute the difference (for the moment...)
 			return null;
 		}
+
 		return res;
 	}
 	/**
@@ -216,31 +219,39 @@ public class Utils {
 	 * @param sel_2 is the second resourceSelector.
 	 * @param map_1 is the hashmap of pods grouped by namespace and labels for the first selector's cluster.
 	 * @param map_2  is the hashmap of pods grouped by namespace and labels for the second selector's cluster.
-	 * @return true/false if there is an overlap or not
+	 * @return true if there is an overlap
+	 *
 	 */
 	public static boolean computeOverlapResourceSelector(ResourceSelector sel_1, ResourceSelector sel_2, HashMap<String, HashMap<String, List<Pod>>> map_1, HashMap<String, HashMap<String, List<Pod>>> map_2) {
-		if (sel_1 instanceof CIDRSelector && sel_2 instanceof CIDRSelector) {
-			// Check CIDR overlap (unchanged logic)
+		Boolean isCIDR_1 = sel_1 instanceof CIDRSelector;
+		Boolean isCIDR_2 = sel_2 instanceof CIDRSelector;
+
+		if (isCIDR_1 && isCIDR_2) {
 			CIDRSelector cidr1 = (CIDRSelector) sel_1;
 			CIDRSelector cidr2 = (CIDRSelector) sel_2;
-			return cidrDifference(cidr1.getAddressRange(), cidr2.getAddressRange()) != null;
-		} else if (sel_1 instanceof PodNamespaceSelector && sel_2 instanceof PodNamespaceSelector) {
-			// Check PodNamespaceSelector overlap
+			return cidr1.getAddressRange().equals(cidr2.getAddressRange());
+		} else if (!isCIDR_1 && !isCIDR_2) {
 			PodNamespaceSelector pns1 = (PodNamespaceSelector) sel_1;
 			PodNamespaceSelector pns2 = (PodNamespaceSelector) sel_2;
 
-			// Ensure both selectors refer to the same cluster
 			if (pns1.isIsHostCluster() != pns2.isIsHostCluster()) {
-				return false; // Different clusters, no overlap possible
+				return false;
 			}
 
-			HashMap<String, HashMap<String, List<Pod>>> relevantMap = pns1.isIsHostCluster() ? map_1 : map_2;
+			if (pns1.getNamespace().get(0).getKey().equals("*") && pns1.getNamespace().get(0).getValue().equals("*") &&
+					pns1.getPod().get(0).getKey().equals("*") && pns1.getPod().get(0).getValue().equals("*")) {
+				return true;
+			}
 
-			return compareResourceSelector(pns1, pns2);
+			if (pns2.getNamespace().get(0).getKey().equals("*") && pns2.getNamespace().get(0).getValue().equals("*") &&
+					pns2.getPod().get(0).getKey().equals("*") && pns2.getPod().get(0).getValue().equals("*")) {
+				return true;
+			}
+
+			return pns1.getNamespace().equals(pns2.getNamespace()) && pns1.getPod().equals(pns2.getPod());
+		} else {
+			return false;
 		}
-
-		// Incompatible selector types
-		return false;
 	}
 
 	/**
@@ -251,9 +262,11 @@ public class Utils {
 	 * @return the list of harmonized PodNamespaceSelectors (selecting the resources that are selected by pns1 and NOT by pns2)
 	 */
 	private static List<PodNamespaceSelector> computeHarmonizedPodNamespaceSelector(PodNamespaceSelector pns1, PodNamespaceSelector pns2, HashMap<String, HashMap<String, List<Pod>>> clusterMap) {
-
+		System.out.println("pns2: "+ pns2.getNamespace().get(0).getKey());
+		System.out.println("pns2: "+ pns2.getNamespace().get(0).getValue());
 		//Case-1: pns2 selects all pods and namespaces, so pns1 - pns2 = 0
 		if(pns2.getNamespace().get(0).getKey().equals("*") && pns2.getPod().get(0).getValue().equals("*")) {
+			System.out.println("Empty");
 			return new ArrayList<>();
 		}
 
@@ -579,7 +592,59 @@ public class Utils {
 			return false;
 		}
 	}
+	public static boolean compareOverlapResourceSelector(ResourceSelector rs_1, ResourceSelector rs_2) {
+		boolean found;
 
+		if (rs_1 instanceof PodNamespaceSelector && rs_2 instanceof PodNamespaceSelector) {
+			PodNamespaceSelector pns_1 = (PodNamespaceSelector) rs_1;
+			PodNamespaceSelector pns_2 = (PodNamespaceSelector) rs_2;
+
+
+			if (pns_1.getNamespace().size() == 1 && pns_1.getNamespace().get(0).getKey().equals("*") && pns_1.getNamespace().get(0).getValue().equals("*") &&
+					pns_1.getPod().size() == 1 && pns_1.getPod().get(0).getKey().equals("*") && pns_1.getPod().get(0).getValue().equals("*")|| pns_2.getNamespace().size() == 1 && pns_2.getNamespace().get(0).getKey().equals("*") && pns_2.getNamespace().get(0).getValue().equals("*") &&
+					pns_2.getPod().size() == 1 && pns_2.getPod().get(0).getKey().equals("*") && pns_2.getPod().get(0).getValue().equals("*")) {
+				return true;
+			}
+
+			if (pns_1.getPod().size() != pns_2.getPod().size() || pns_1.getNamespace().size() != pns_2.getNamespace().size()) {
+				return false;
+			}
+
+			for (KeyValue kv_1 : pns_1.getPod()) {
+				found = false;
+				for (KeyValue kv_2 : pns_2.getPod()) {
+					if (kv_1.getKey().equals(kv_2.getKey()) && kv_1.getValue().equals(kv_2.getValue())) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					return false;
+				}
+			}
+
+			for (KeyValue kv_1 : pns_1.getNamespace()) {
+				found = false;
+				for (KeyValue kv_2 : pns_2.getNamespace()) {
+					if (kv_1.getKey().equals(kv_2.getKey()) && kv_1.getValue().equals(kv_2.getValue())) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					return false;
+				}
+			}
+
+			return true;
+		} else if (rs_1 instanceof CIDRSelector && rs_2 instanceof CIDRSelector) {
+			CIDRSelector cidr_1 = (CIDRSelector) rs_1;
+			CIDRSelector cidr_2 = (CIDRSelector) rs_2;
+			return cidr_1.getAddressRange().equals(cidr_2.getAddressRange());
+		} else {
+			return false;
+		}
+	}
 	/**
 	 * Function to create a deep copy of a ConfigurationRule.
 	 * @param it the ConfigurationRule to be copied.

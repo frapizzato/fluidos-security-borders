@@ -24,6 +24,8 @@ public class ClusterData {
 				nsC1.setSingleLabel("name", "fluidos");
 				Namespace nsC2 = new Namespace();
 				nsC2.setSingleLabel("name", "default");
+				Namespace nsC3 = new Namespace();
+				nsC3.setSingleLabel("*", "*");
 				
 		loggerInfo.debug("[harmonization/initializeClusterData] - ns: " + nsC1.getLabels().keySet().stream().map(x -> x+":"+nsC1.getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
 		loggerInfo.debug("[harmonization/initializeClusterData] - ns: " + nsC2.getLabels().keySet().stream().map(x -> x+":"+nsC2.getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
@@ -42,14 +44,9 @@ public class ClusterData {
 			podsConsumer.add(pC4);
 		}
 		else if(Objects.equals(endpoint, "harmonize")) {
-			Pod pC1 = createPod("bank_payment", nsC2);
+			Pod pC1 = createPod("*", nsC3);
 			podsConsumer.add(pC1);
 
-			Pod pC2 = createPod("database", nsC2);
-			podsConsumer.add(pC2);
-
-			Pod pC3 = createPod("order_placement", nsC2);
-			podsConsumer.add(pC3);
 		}
 
 		for(Pod p : podsConsumer)
@@ -66,12 +63,14 @@ public class ClusterData {
 				nsP1.setSingleLabel("name", "default");
 				Namespace nsP2 = new Namespace();
 				nsP2.setSingleLabel("name", "monitoring");
+				Namespace nsP3 = new Namespace();
+				nsP3.setSingleLabel("*", "*");
 
 				loggerInfo.debug("[harmonization/initializeClusterData] - ns: " + nsP1.getLabels().keySet().stream().map(x -> x+":"+nsP1.getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
 				loggerInfo.debug("[harmonization/initializeClusterData] - ns: " + nsP2.getLabels().keySet().stream().map(x -> x+":"+nsP2.getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
 
 				if(Objects.equals(endpoint, "verify")){
-					Pod pP1 = createPod("*", nsP1);
+					Pod pP1 = createPod("*", nsP3);
 					podsProvider.add(pP1);
 				}
 				else if(Objects.equals(endpoint, "harmonize")){
