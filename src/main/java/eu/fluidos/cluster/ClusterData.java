@@ -46,7 +46,6 @@ public class ClusterData {
 		else if(Objects.equals(endpoint, "harmonize")) {
 			Pod pC1 = createPod("*", nsC3);
 			podsConsumer.add(pC1);
-
 		}
 
 		for(Pod p : podsConsumer)

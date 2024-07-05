@@ -19,7 +19,6 @@
             <capability>
                 <Name>KubernetesNetworkFiltering</Name>
             </capability>
-            <acceptMonitoring>true</acceptMonitoring>
             <!-- Generic rule to allow communication to any resource on TCP port 80 -->
             <configurationRule>
                 <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
@@ -68,6 +67,7 @@
             <capability>
                 <Name>KubernetesNetworkFiltering</Name>
             </capability>
+            <acceptMonitoring>true</acceptMonitoring>
             <!-- ForbiddenConnectionList (action = DENY) -->
             <!-- from "app:bank_payment" to ANY, ALL protocols -->
             <forbiddenConnectionList>
@@ -139,6 +139,45 @@
                 <Name>AuthorizationDeny_2</Name>
                 <isCNF>false</isCNF>
             </forbiddenConnectionList>
+
+            <!-- MandatoryConnectionList (action = ALLOW) -->
+            <!-- from "app:resource_monitor" to ANY:43, TCP  -->
+            <mandatoryConnectionList>
+                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+                    <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
+                </configurationRuleAction>
+
+                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+                    <isCNF>false</isCNF>
+                    <source xsi:type="PodNamespaceSelector">
+                        <isHostCluster>false</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>name</key>
+                            <value>monitoring</value>
+                        </namespace>
+                    </source>
+                    <sourcePort>*</sourcePort>
+                    <destination xsi:type="PodNamespaceSelector">
+                        <isHostCluster>true</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>*</key>
+                            <value>*</value>
+                        </namespace>
+                    </destination>
+                    <destinationPort>*</destinationPort>
+                    <protocolType>ALL</protocolType>
+                </configurationCondition>
+                <Name>AuthorizationMandatory_1</Name>
+                <isCNF>false</isCNF>
+            </mandatoryConnectionList>
         </configuration>
     </ITResource>
 </ITResourceOrchestration>

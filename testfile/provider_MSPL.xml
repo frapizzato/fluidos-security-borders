@@ -25,6 +25,7 @@
       <capability>
         <Name>KubernetesNetworkFiltering</Name>
       </capability>
+        <acceptMonitoring>true</acceptMonitoring>
       <forbiddenConnectionList>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
           <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>

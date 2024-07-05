@@ -195,11 +195,38 @@ public class HarmonizationData {
 						  AuthorizationIntents authIntent,
 						  HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer,
 						  HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider) {
+
 		for (ConfigurationRule cr : requestIntent.getConfigurationRule()) {
 			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr
 					.getConfigurationCondition();
 			System.out.print(" (*) " + cr.getName() + " - ");
 			System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
+
+			/* Monitoring rule check */
+			if(authIntent.isAcceptMonitoring()){
+				boolean flag = false;
+				for(ConfigurationRule mandList : authIntent.getMandatoryConnectionList()){
+					KubernetesNetworkFilteringCondition tmp = (KubernetesNetworkFilteringCondition) mandList
+							.getConfigurationCondition();
+					ResourceSelector dst = tmp.getDestination();
+					Boolean isCIDR = dst instanceof CIDRSelector;
+					if(!isCIDR){
+						PodNamespaceSelector pns = (PodNamespaceSelector) dst;
+						if(pns.getNamespace().get(0).getValue().equals("monitoring")){
+							flag = true;
+						}
+					}
+				}
+				//monitoring rule is present
+				if(flag){
+					if(!requestIntent.isAcceptMonitoring()){
+						System.out.println("[Orchestration] - Consumer is not accepting monitoring");
+						printDash();
+						return false;
+					}
+				}
+			}
+
 			if(!verifyConfigurationRule(cr, authIntent.getForbiddenConnectionList(),
 					podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider)){
 				//KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();

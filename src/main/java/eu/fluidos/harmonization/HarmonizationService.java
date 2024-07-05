@@ -81,7 +81,7 @@ public class HarmonizationService {
 		HarmonizationData.printAuthorizationIntents(this.authIntentsProvider, "mandatory");
 		HarmonizationData.printDash();
 
-		if (requestIntentsProvider.isAcceptMonitoring() && !requestIntentsConsumer.isAcceptMonitoring()) {
+		if (authIntentsProvider.isAcceptMonitoring() && !requestIntentsConsumer.isAcceptMonitoring()) {
 			System.out.println("[Orchestration] - Consumer is not accepting monitoring");
 			return null;
 		}
@@ -142,11 +142,7 @@ public class HarmonizationService {
 		HarmonizationData.printAuthorizationIntents(this.authIntentsProvider, "forbidden");
 		HarmonizationData.printDash();
 
-		 if (requestIntentsProvider.isAcceptMonitoring() && !requestIntentsConsumer.isAcceptMonitoring()) {
-			 System.out.println("[Orchestration] - Consumer is not accepting monitoring");
-			 HarmonizationData.printDash();
-			 return false;
-		 }
+
 		verify = HarmonizationData.verify(this.requestIntentsConsumer, this.authIntentsProvider,
 						podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider);
 		HarmonizationData.printDash();
