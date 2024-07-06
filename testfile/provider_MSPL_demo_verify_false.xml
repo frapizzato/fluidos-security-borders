@@ -68,6 +68,7 @@
             <capability>
                 <Name>KubernetesNetworkFiltering</Name>
             </capability>
+            <acceptMonitoring>true</acceptMonitoring>
             <!-- ForbiddenConnectionList (action = DENY) -->
             <!-- from "app:bank_payment" to ANY, ALL protocols -->
             <forbiddenConnectionList>

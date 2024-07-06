@@ -38,6 +38,7 @@ import java.util.List;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "AuthorizationIntents", propOrder = {
+        "acceptMonitoring",
     "forbiddenConnectionList",
     "mandatoryConnectionList"
 })

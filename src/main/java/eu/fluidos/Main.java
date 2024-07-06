@@ -4,7 +4,6 @@ import eu.fluidos.cluster.ClusterService;
 import eu.fluidos.harmonization.HarmonizationController;
 import eu.fluidos.harmonization.HarmonizationData;
 import eu.fluidos.harmonization.HarmonizationService;
-import eu.fluidos.jaxb.ConfigurationRule;
 import eu.fluidos.jaxb.ITResourceOrchestrationType;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
@@ -21,7 +20,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Scanner;
 
 
@@ -113,12 +111,12 @@ public class Main
 
 			// HARMONIZATION
 
-        	loggerInfo.debug("Start of the harmonization process.");
-        	List<ConfigurationRule> res = HarmonizationController.harmonize(intents_5, intents_6);
+        	//loggerInfo.debug("Start of the harmonization process.");
+        	//List<ConfigurationRule> res = HarmonizationController.harmonize(intents_5, intents_6);
 
 			// VERIFY
-			//loggerInfo.debug("Start of the verify process.");
-			//boolean verify = HarmonizationController.verify(intents_1, intents_2);
+			loggerInfo.debug("Start of the verify process.");
+			boolean verify = HarmonizationController.verify(intents_1, intents_2);
 			//boolean verify2 = HarmonizationController.verify(intents_3, intents_4);
 
 

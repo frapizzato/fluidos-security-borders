@@ -77,8 +77,8 @@ public class HarmonizationService {
 		HarmonizationData.printRequestIntents(this.requestIntentsProvider, "provider");
 		HarmonizationData.printDash();
 		HarmonizationData.printAuth();
-		HarmonizationData.printAuthorizationIntents(this.authIntentsProvider, "forbidden");
-		HarmonizationData.printAuthorizationIntents(this.authIntentsProvider, "mandatory");
+		HarmonizationData.printAuthorizationIntents(this.authIntentsProvider);
+		HarmonizationData.printAuthorizationIntents(this.authIntentsProvider);
 		HarmonizationData.printDash();
 
 		if (authIntentsProvider.isAcceptMonitoring() && !requestIntentsConsumer.isAcceptMonitoring()) {
@@ -139,14 +139,14 @@ public class HarmonizationService {
 		HarmonizationData.printRequestIntents(this.requestIntentsConsumer, "consumer");
 		HarmonizationData.printDash();
 		HarmonizationData.printAuth();
-		HarmonizationData.printAuthorizationIntents(this.authIntentsProvider, "forbidden");
+		HarmonizationData.printAuthorizationIntents(this.authIntentsProvider);
 		HarmonizationData.printDash();
 
 
 		verify = HarmonizationData.verify(this.requestIntentsConsumer, this.authIntentsProvider,
 						podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider);
 		HarmonizationData.printDash();
-		System.out.println("[Orchestration] - verify result: " + verify);
+		System.out.println("[Orchestrator] - verify result: " + verify);
 		HarmonizationData.printDash();
 		return verify;
 	}

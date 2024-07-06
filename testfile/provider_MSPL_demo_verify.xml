@@ -146,7 +146,6 @@
                 <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
                     <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
                 </configurationRuleAction>
-
                 <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
                     <isCNF>false</isCNF>
                     <source xsi:type="PodNamespaceSelector">

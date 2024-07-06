@@ -24,7 +24,6 @@ public class HarmonizationData {
 		System.out
 				.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + "Local cluster defined the following "
 						+ Main.ANSI_YELLOW + "Authorization Intents" + Main.ANSI_RESET + " (PROVIDER):");
-		System.out.print("   |\n");
 	}
 
 	public void printRequestIntents(RequestIntents requestIntent, String cluster) {
@@ -47,17 +46,25 @@ public class HarmonizationData {
 		}
 	}
 
-	public void printAuthorizationIntents(AuthorizationIntents authorizationIntent, String connectionList) {
-		List<ConfigurationRule> configurationRule = null;
-		if (connectionList == "forbidden") {
+	public void printAuthorizationIntents(AuthorizationIntents authorizationIntent) {
+		List<ConfigurationRule> forbiddenRule = null;
+		List<ConfigurationRule> mandatoryRule = null;
+		System.out.println("  [AcceptMonitoring]: " + authorizationIntent.isAcceptMonitoring());
+
 			System.out.print("   .-> " + Main.ANSI_YELLOW + "ForbiddenConnectionList" + Main.ANSI_RESET + ":\n");
 			System.out.print("   |\n");
-			configurationRule = authorizationIntent.getForbiddenConnectionList();
-		} else if (connectionList == "mandatory") {
-			System.out.print("   .-> " + Main.ANSI_YELLOW + "MandatoryConnectionList" + Main.ANSI_RESET + ":\n");
-			configurationRule = authorizationIntent.getMandatoryConnectionList();
+			forbiddenRule= authorizationIntent.getForbiddenConnectionList();
+
+		for (ConfigurationRule cr : forbiddenRule) {
+			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr
+					.getConfigurationCondition();
+			System.out.print("   | (*) " + cr.getName() + " - ");
+			System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
 		}
-		for (ConfigurationRule cr : configurationRule) {
+			System.out.print("   .-> " + Main.ANSI_YELLOW + "MandatoryConnectionList" + Main.ANSI_RESET + ":\n");
+			mandatoryRule = authorizationIntent.getMandatoryConnectionList();
+
+		for (ConfigurationRule cr : mandatoryRule) {
 			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr
 					.getConfigurationCondition();
 			System.out.print("   | (*) " + cr.getName() + " - ");
@@ -204,15 +211,19 @@ public class HarmonizationData {
 
 			/* Monitoring rule check */
 			if(authIntent.isAcceptMonitoring()){
+
 				boolean flag = false;
 				for(ConfigurationRule mandList : authIntent.getMandatoryConnectionList()){
 					KubernetesNetworkFilteringCondition tmp = (KubernetesNetworkFilteringCondition) mandList
 							.getConfigurationCondition();
-					ResourceSelector dst = tmp.getDestination();
-					Boolean isCIDR = dst instanceof CIDRSelector;
+					ResourceSelector src = tmp.getSource();
+					System.out.print(Utils.kubernetesNetworkFilteringConditionToString(tmp) + "\n");
+					boolean isCIDR = src instanceof CIDRSelector;
 					if(!isCIDR){
-						PodNamespaceSelector pns = (PodNamespaceSelector) dst;
+						PodNamespaceSelector pns = (PodNamespaceSelector) src;
+						System.out.println("namespace:" + pns.getNamespace().get(0).getValue());
 						if(pns.getNamespace().get(0).getValue().equals("monitoring")){
+							System.out.print("Monitoring accepted");
 							flag = true;
 						}
 					}
@@ -269,13 +280,13 @@ public class HarmonizationData {
 			// protocol types of res are overlapping with tmp.
 			overlap = Utils.computeVerifyProtocolType(resCond.getProtocolType().value(),
 					tmp.getProtocolType().value());
-			System.out.println("overlap: " +overlap);
+			//System.out.println("overlap: " +overlap);
 			// Step-1.2: check the ports. Detect if the port ranges of res are overlapping
 			// with tmp.
 			overlapSrcPort = Utils.computeVerifiedPortRange(resCond.getSourcePort(), tmp.getSourcePort());
-			System.out.println("overlapSrcPort: " +overlapSrcPort);
+			//System.out.println("overlapSrcPort: " +overlapSrcPort);
 			overlapDstPort = Utils.computeVerifiedPortRange(resCond.getDestinationPort(), tmp.getDestinationPort());
-			System.out.println("overlapDstPort: " +overlapDstPort);
+			//System.out.println("overlapDstPort: " +overlapDstPort);
 			// Step-1.3: check the source and destination.s
 			/*overlapSrc = Utils.computeOverlapResourceSelector(resCond.getSource(),
 					tmp.getSource(), map_conn, map_connList);
@@ -291,7 +302,7 @@ public class HarmonizationData {
 					overlapSrc = true;
 			}
             //overlapSrc = source != null && (source.isEmpty() || !Utils.compareResourceSelector(source.get(0), resCond.getSource()));
-			System.out.println("overlapSrc: " +overlapSrc);
+			//System.out.println("overlapSrc: " +overlapSrc);
 			overlapDst = Utils.computeOverlapResourceSelector(resCond.getDestination(),
 					tmp.getDestination(), map_conn, map_connList);
 			if(!overlapDst){
@@ -301,7 +312,7 @@ public class HarmonizationData {
 			}
 
 			//overlapDst = destination != null && (destination.isEmpty() && Utils.compareResourceSelector(destination.get(0), resCond.getDestination()));
-			System.out.println("overlapDst: " +overlapDst);
+			//System.out.println("overlapDst: " +overlapDst);
 
 			if(overlap && overlapSrc && overlapDst && overlapSrcPort && overlapDstPort) {
 				System.out.println("Overlap between these two intents: " );
