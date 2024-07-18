@@ -14,6 +14,11 @@ import java.util.stream.Collectors;
 
 public class ClusterData {
 	Logger loggerInfo = LogManager.getLogger("harmonizationManager");
+
+	public Cluster createCluster(List<Pod> pods) {
+		return new Cluster(pods, null);
+	}
+
 	public Cluster createConsumerCluster(String endpoint) {
 		List<Pod> podsConsumer = new ArrayList<>();
 		
@@ -28,19 +33,19 @@ public class ClusterData {
 				nsC3.setSingleLabel("*", "*");
 				
 		loggerInfo.debug("[harmonization/initializeClusterData] - ns: " + nsC1.getLabels().keySet().stream().map(x -> x+":"+nsC1.getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
-		loggerInfo.debug("[harmonization/initializeClusterData] - ns: " + nsC2.getLabels().keySet().stream().map(x -> x+":"+nsC2.getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
 
 		if(Objects.equals(endpoint, "verify")) {
-			Pod pC1 = createPod("online_store", nsC2);
+
+			Pod pC1 = createPod("order_placement", nsC1);
 			podsConsumer.add(pC1);
 
-			Pod pC2 = createPod("help_desk", nsC2);
+			Pod pC2 = createPod("bank_payment", nsC1);
 			podsConsumer.add(pC2);
 
-			Pod pC3 = createPod("order_placement", nsC1);
+			Pod pC3 = createPod("consumer_resource", nsC1);
 			podsConsumer.add(pC3);
 
-			Pod pC4 = createPod("bank_payment", nsC1);
+			Pod pC4 = createPod("order_placement", nsC2);
 			podsConsumer.add(pC4);
 		}
 		else if(Objects.equals(endpoint, "harmonize")) {
@@ -53,6 +58,7 @@ public class ClusterData {
 				+ " ns:" + p.getNamespace().getLabels().keySet().stream().map(x -> x+":"+p.getNamespace().getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
 		return new Cluster(podsConsumer, null);
 	}
+
 	public Cluster createProviderCluster(String endpoint) {
 		List<Pod> podsProvider = new ArrayList<>();
 
@@ -64,6 +70,9 @@ public class ClusterData {
 				nsP2.setSingleLabel("name", "monitoring");
 				Namespace nsP3 = new Namespace();
 				nsP3.setSingleLabel("*", "*");
+				Namespace nsP4 = new Namespace();
+				nsP4.setSingleLabel("name", "*");
+
 
 				loggerInfo.debug("[harmonization/initializeClusterData] - ns: " + nsP1.getLabels().keySet().stream().map(x -> x+":"+nsP1.getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
 				loggerInfo.debug("[harmonization/initializeClusterData] - ns: " + nsP2.getLabels().keySet().stream().map(x -> x+":"+nsP2.getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
@@ -73,27 +82,22 @@ public class ClusterData {
 					podsProvider.add(pP1);
 				}
 				else if(Objects.equals(endpoint, "harmonize")){
-					Pod pP1 = createPod("database", nsP1);
+					Pod pP1 = createPod("resource_monitor", nsP2);
 					podsProvider.add(pP1);
 
-					Pod pP2 = createPod("product_catalogue", nsP1);
+					Pod pP2 = createPod("all_resource", nsP1);
 					podsProvider.add(pP2);
 
-					Pod pP3 = createPod("resource_monitor", nsP2);
-					podsProvider.add(pP3);
 				}
 
-
-
-
-				
 				for(Pod p : podsProvider)
 					loggerInfo.debug("[harmonization/initializeClusterData] - pod: " + p.getLabels().keySet().stream().map(x -> x+":"+p.getLabels().get(x)+"; ").collect(Collectors.toList()).toString()
 						+ " ns:" + p.getNamespace().getLabels().keySet().stream().map(x -> x+":"+p.getNamespace().getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
 
 		return new Cluster(podsProvider, null);
 	}
-	public void initializeHashMaps(Cluster cluster, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabels) {
+
+	public HashMap<String, HashMap<String, List<Pod>>> initializeHashMaps(Cluster cluster, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabels) {
 		loggerInfo.debug("[harmonization/initializeHashMaps] - creation of multi-level HashMaps containing clusters information.");
 		 
 		for(Pod p: cluster.getPods()){
@@ -119,6 +123,7 @@ public class ClusterData {
 				}
 			});
 		}
+		return podsByNamespaceAndLabels;
 	}
 	
 	public Pod createPod(String value, Namespace namespace) {

@@ -1,5 +1,6 @@
 package eu.fluidos.cluster;
 
+import eu.fluidos.Cluster;
 import eu.fluidos.Pod;
 
 import java.util.HashMap;
@@ -15,6 +16,9 @@ public class ClusterController {
 	/*public void initializeClusterData() {
 		clusterService.initializeClusterData();
 	}*/
+	public Cluster createCluster(List<Pod> pods){
+		return clusterService.createCluster(pods);
+	}
 
 	public void createProviderCluster(String endpoint){
 		clusterService.createProviderCluster(endpoint);

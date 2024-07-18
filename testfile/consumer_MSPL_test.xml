@@ -11,6 +11,7 @@
             </capability>
             <acceptMonitoring>true</acceptMonitoring>
 
+            <!-- from "app:order_placement" to "*", ALL  -->
             <configurationRule>
                 <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
                     <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
@@ -20,8 +21,8 @@
                     <source xsi:type="PodNamespaceSelector">
                         <isHostCluster>false</isHostCluster>
                         <pod>
-                            <key>application</key>
-                            <value>consumer_resource</value>
+                            <key>app</key>
+                            <value>order_placement</value>
                         </pod>
                         <namespace>
                             <key>name</key>
@@ -29,7 +30,7 @@
                         </namespace>
                     </source>
                     <sourcePort>*</sourcePort>
-                    <destination  xsi:type="PodNamespaceSelector">
+                    <destination xsi:type="PodNamespaceSelector">
                         <isHostCluster>true</isHostCluster>
                         <pod>
                             <key>*</key>
@@ -40,15 +41,17 @@
                             <value>*</value>
                         </namespace>
                     </destination>
-                    <destinationPort>40</destinationPort>
+                    <destinationPort>80</destinationPort>
                     <protocolType>TCP</protocolType>
                 </configurationCondition>
                 <externalData xsi:type="Priority">
                     <value>60000</value>
                 </externalData>
-                <Name>RequestIntent_AllResources</Name>
+                <Name>RequestIntent_1</Name>
                 <isCNF>false</isCNF>
             </configurationRule>
+
+            <!-- from "app:bank_payment" to ANY, ALL -->
             <configurationRule>
                 <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
                     <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
@@ -69,7 +72,7 @@
                     <sourcePort>*</sourcePort>
                     <destination xsi:type="CIDRSelector">
                         <isHostCluster>true</isHostCluster>
-                        <addressRange>0.0.0.0/4</addressRange>
+                        <addressRange>0.0.0.0/0</addressRange>
                     </destination>
                     <destinationPort>*</destinationPort>
                     <protocolType>ALL</protocolType>
@@ -77,10 +80,22 @@
                 <externalData xsi:type="Priority">
                     <value>60000</value>
                 </externalData>
-                <Name>RequestIntent_3</Name>
+                <Name>RequestIntent_2</Name>
                 <isCNF>false</isCNF>
             </configurationRule>
+            <!-- from ANY ("monitoring") to "app:order_placement", ALL  -->
         </configuration>
     </ITResource>
 
+
+
+    <!-- Now define Authorization Intents -->
+    <ITResource>
+        <configuration xsi:type="AuthorizationIntents">
+            <capability>
+                <Name>KubernetesNetworkFiltering</Name>
+            </capability>
+            <acceptMonitoring>true</acceptMonitoring>
+        </configuration>
+    </ITResource>
 </ITResourceOrchestration>

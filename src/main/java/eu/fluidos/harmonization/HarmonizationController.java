@@ -1,13 +1,15 @@
 package eu.fluidos.harmonization;
 
-import java.util.List;
-
+import eu.fluidos.Cluster;
+import eu.fluidos.jaxb.ConfigurationRule;
+import eu.fluidos.jaxb.ITResourceOrchestrationType;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.HttpStatus;
-import eu.fluidos.jaxb.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/harmonization")
@@ -26,8 +28,8 @@ public class HarmonizationController {
 	@GetMapping("/harmonize")
 	@ResponseStatus(HttpStatus.OK)
 	public List<ConfigurationRule> harmonize(ITResourceOrchestrationType provider,
-			ITResourceOrchestrationType consumer) {
-		return HarmonizationService.harmonize(provider, consumer);
+			ITResourceOrchestrationType consumer, Cluster cluster) {
+		return HarmonizationService.harmonize(provider, consumer, cluster);
 	}
 
 	@GetMapping("/verify")

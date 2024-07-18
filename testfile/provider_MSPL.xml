@@ -18,15 +18,15 @@
       <acceptMonitoring>false</acceptMonitoring>
     </configuration>
   </ITResource>
-  
-  <!-- Now define Authorization Intents -->  
-  <ITResource>
-    <configuration xsi:type="AuthorizationIntents">
-      <capability>
-        <Name>KubernetesNetworkFiltering</Name>
-      </capability>
-        <acceptMonitoring>true</acceptMonitoring>
-      <forbiddenConnectionList>
+
+    <!-- Now define Authorization Intents -->
+    <ITResource>
+        <configuration xsi:type="AuthorizationIntents">
+            <capability>
+                <Name>KubernetesNetworkFiltering</Name>
+            </capability>
+            <acceptMonitoring>true</acceptMonitoring>
+            <forbiddenConnectionList>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
           <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
         </configurationRuleAction>
@@ -194,12 +194,12 @@
           <source xsi:type="PodNamespaceSelector">
           	<isHostCluster>false</isHostCluster>
           	<pod>
-          		<key>app</key>
-          		<value>database</value>
+          		<key>*</key>
+          		<value>*</value>
           	</pod>
           	<namespace>
           		<key>name</key>
-          		<value>default</value>
+          		<value>monitoring</value>
           	</namespace>
           </source>
           <sourcePort>*</sourcePort>
@@ -214,7 +214,7 @@
           		<value>*</value>
           	</namespace>
           </destination>
-          <destinationPort>43</destinationPort>
+          <destinationPort>80</destinationPort>
           <protocolType>TCP</protocolType>
         </configurationCondition>
         <Name>AuthoriztionAllow1</Name>

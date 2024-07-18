@@ -1,17 +1,18 @@
 package eu.fluidos.harmonization;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.stream.Collectors;
-
+import eu.fluidos.Cluster;
+import eu.fluidos.Main;
+import eu.fluidos.Namespace;
+import eu.fluidos.Pod;
+import eu.fluidos.jaxb.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-
-import eu.fluidos.*;
-import eu.fluidos.jaxb.*;
+import java.util.List;
+import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class HarmonizationManager {
 	
@@ -37,7 +38,7 @@ public class HarmonizationManager {
 
 		this.providerIntents = provider;
 		this.consumerIntents = consumer;
-		
+
 		/**
 		 * In the current version, all the data about the cluster is hard-coded here (temporary solution).
 		 * TODO: final version should retrieve these data from the API server of peered clusters.
@@ -66,18 +67,18 @@ public class HarmonizationManager {
 		this.requestIntentsProvider = providerIntents.getITResource().stream()
 				.filter(it -> it.getConfiguration().getClass().equals(RequestIntents.class))
 				.map(it -> (RequestIntents) it.getConfiguration()).findFirst().orElse(null);
-		
-		
+
+
 		this.authIntentsConsumer = consumerIntents.getITResource().stream()
 				.filter(it -> it.getConfiguration().getClass().equals(AuthorizationIntents.class))
-				.map(it -> (AuthorizationIntents) it.getConfiguration()).findFirst().orElse(null);		
+				.map(it -> (AuthorizationIntents) it.getConfiguration()).findFirst().orElse(null);
 		this.privateIntentsConsumer = consumerIntents.getITResource().stream()
 				.filter(it -> it.getConfiguration().getClass().equals(PrivateIntents.class))
 				.map(it -> (PrivateIntents) it.getConfiguration()).findFirst().orElse(null);
 		this.requestIntentsConsumer = consumerIntents.getITResource().stream()
 				.filter(it -> it.getConfiguration().getClass().equals(RequestIntents.class))
 				.map(it -> (RequestIntents) it.getConfiguration()).findFirst().orElse(null);
-	
+
 
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET +"Received the following " + Main.ANSI_YELLOW + "Request intents" + Main.ANSI_RESET + " (CONSUMER):");
@@ -87,7 +88,7 @@ public class HarmonizationManager {
 			System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
 		}
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
-		
+
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET +"Local cluster defined the following " + Main.ANSI_YELLOW + "Request intents" + Main.ANSI_RESET + " (PROVIDER):");
 		for(ConfigurationRule cr: this.requestIntentsProvider.getConfigurationRule()) {
 			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
@@ -95,7 +96,7 @@ public class HarmonizationManager {
 			System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
 		}
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
-		
+
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET +"Local cluster defined the following " + Main.ANSI_YELLOW + "Authorization Intents" + Main.ANSI_RESET +" (PROVIDER):");
 		System.out.print("   |\n");
 		System.out.print("   .-> " + Main.ANSI_YELLOW + "ForbiddenConnectionList"+ Main.ANSI_RESET + ":\n");
@@ -113,8 +114,8 @@ public class HarmonizationManager {
 		}
 
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
-		
-		
+
+
 		/**
 		 * Then, the lists are processed to resolve any possible discordances:
 		 * 		1) consumer asks for a connection not permitted by the provider -> these are removed from the final set of "Consumer" intents
@@ -124,7 +125,7 @@ public class HarmonizationManager {
 		List <ConfigurationRule> harmonizedRequest_Consumer = solveTypeOneDiscordances();
 		harmonizedRequest_Consumer = solverTypeTwoDiscordances(harmonizedRequest_Consumer);
 		List <ConfigurationRule> harmonizedRequest_Provider = solverTypeThreeDiscordances(harmonizedRequest_Consumer);
-		
+
 		/**
 		 * Finally, write the resulting Intents in the original data structures so that they can be retrieved
 		 */
@@ -135,7 +136,7 @@ public class HarmonizationManager {
 				tmp.getConfigurationRule().addAll(harmonizedRequest_Consumer);
 			}
 		}
-		
+
 		for(ITResourceType IT_rt: this.providerIntents.getITResource()) {
 			if(IT_rt.getConfiguration().getClass().equals(RequestIntents.class)) {
 				RequestIntents tmp = (RequestIntents) IT_rt.getConfiguration();
@@ -144,7 +145,7 @@ public class HarmonizationManager {
 			}
 		}
 	}
-	
+
 	private void initializeHashMaps() {
 		loggerInfo.debug("[harmonization/initializeHashMaps] - creation of multi-level HashMaps containing clusters information.");
 		//Initialize the HashMaps for the consumer...
@@ -196,12 +197,12 @@ public class HarmonizationManager {
 			});
 		}
 	}
-	
-	
+
+
 	private void initializeClusterData() {
 		List<Pod> podsConsumer = new ArrayList<>();
 		List<Pod> podsProvider = new ArrayList<>();
-		
+
 		loggerInfo.debug("[harmonization/initializeClusterData] - Gathering information about CONSUMER cluster data.");
 
 		// Configure the CONSUMER cluster data
@@ -209,17 +210,17 @@ public class HarmonizationManager {
 		nsC1.setSingleLabel("name", "fluidos");
 		Namespace nsC2 = new Namespace();
 		nsC2.setSingleLabel("name", "default");
-		
+
 		loggerInfo.debug("[harmonization/initializeClusterData] - ns: " + nsC1.getLabels().keySet().stream().map(x -> x+":"+nsC1.getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
 		loggerInfo.debug("[harmonization/initializeClusterData] - ns: " + nsC2.getLabels().keySet().stream().map(x -> x+":"+nsC2.getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
-		
+
 		Pod pC1 = new Pod();
 		pC1.setSingleLabel("app", "online_store");
 		pC1.setNamespace(nsC2);
 		podsConsumer.add(pC1);
-		
+
 		Pod pC2 = new Pod();
-		pC2.setSingleLabel("app", "help_desk");	
+		pC2.setSingleLabel("app", "help_desk");
 		pC2.setNamespace(nsC2);
 		podsConsumer.add(pC2);
 
@@ -227,17 +228,17 @@ public class HarmonizationManager {
 		pC3.setSingleLabel("app", "order_placement");
 		pC3.setNamespace(nsC1);
 		podsConsumer.add(pC3);
-				
+
 		Pod pC4 = new Pod();
 		pC4.setSingleLabel("app", "bank_payment");
 		pC4.setNamespace(nsC1);
 		podsConsumer.add(pC4);
-		
+
 		for(Pod p : podsConsumer)
 			loggerInfo.debug("[harmonization/initializeClusterData] - pod: " + p.getLabels().keySet().stream().map(x -> x+":"+p.getLabels().get(x)+"; ").collect(Collectors.toList()).toString()
-				+ " ns:" + p.getNamespace().getLabels().keySet().stream().map(x -> x+":"+p.getNamespace().getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
+					+ " ns:" + p.getNamespace().getLabels().keySet().stream().map(x -> x+":"+p.getNamespace().getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
 
-		
+
 		// Configure the PROVIDER cluster data
 		loggerInfo.debug("[harmonization/initializeClusterData] - Gathering information about PROVIDER cluster data.");
 		Namespace nsP1 = new Namespace();
@@ -247,27 +248,27 @@ public class HarmonizationManager {
 
 		loggerInfo.debug("[harmonization/initializeClusterData] - ns: " + nsP1.getLabels().keySet().stream().map(x -> x+":"+nsP1.getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
 		loggerInfo.debug("[harmonization/initializeClusterData] - ns: " + nsP2.getLabels().keySet().stream().map(x -> x+":"+nsP2.getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
-		
-		
+
+
 		Pod pP1 = new Pod();
 		pP1.setSingleLabel("app", "database");
 		pP1.setNamespace(nsP1);
 		podsProvider.add(pP1);
-		
+
 		Pod pP2 = new Pod();
 		pP2.setSingleLabel("app", "product_catalogue");
 		pP2.setNamespace(nsP1);
 		podsProvider.add(pP2);
-		
+
 		Pod pP3 = new Pod();
 		pP3.setSingleLabel("app", "resource_monitor");
 		pP3.setNamespace(nsP2);
 		podsProvider.add(pP3);
-		
+
 		for(Pod p : podsProvider)
 			loggerInfo.debug("[harmonization/initializeClusterData] - pod: " + p.getLabels().keySet().stream().map(x -> x+":"+p.getLabels().get(x)+"; ").collect(Collectors.toList()).toString()
-				+ " ns:" + p.getNamespace().getLabels().keySet().stream().map(x -> x+":"+p.getNamespace().getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
-				
+					+ " ns:" + p.getNamespace().getLabels().keySet().stream().map(x -> x+":"+p.getNamespace().getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
+
 		this.provider = new Cluster(podsProvider,null);
 		this.consumer = new Cluster(podsConsumer,null);
 	}
@@ -282,8 +283,8 @@ public class HarmonizationManager {
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW + "TYPE-2 DISCORDANCES"+ Main.ANSI_RESET + /*" = when elements in the \"MandatoryConnectionsList\" (PROVIDER) are not completely satisfied by the set of Request Intents (CONSUMER)*/"...press ENTER to continue.");
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
-		
-		scan.nextLine();
+
+		//scan.nextLine();
 		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
 
 		harmonizedRules.addAll(harmonizedRequestConsumerRules);
@@ -297,8 +298,8 @@ public class HarmonizationManager {
 			for (ConfigurationRule cr : tmp)
 				harmonizedRules.add(Utils.deepCopyConfigurationRule(cr));
 		}
-		
-		
+
+
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET + "List of "+ Main.ANSI_YELLOW + "harmonized CONSUMER intents" +Main.ANSI_RESET +" after type-2 discordances resolution:");
 		for(ConfigurationRule cr: harmonizedRules) {
@@ -316,12 +317,13 @@ public class HarmonizationManager {
 	 * If this happens, additional rules are added to the harmonized-Request set of the provider in order to create the "hole".
 	 */
 	private List<ConfigurationRule> solverTypeThreeDiscordances(List<ConfigurationRule> harmonizedRequestConsumerRules) {
-		
+
+
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW + "TYPE-3 DISCORDANCES"+ Main.ANSI_RESET + /*" = when elements in the Requested set of intents (CONSUMER), that have already been authorized, don't have a specular intent on the PROVIDER's Requested set (which is needed to open the \"hole\" in the protected border)*/"...press ENTER to continue.");
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
-		scan.nextLine();
-		
+		//scan.nextLine();
+
 		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
 
 		harmonizedRules.addAll(this.requestIntentsProvider.getConfigurationRule());
@@ -345,13 +347,13 @@ public class HarmonizationManager {
 			System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
 		}
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
-		
-		return harmonizedRules;		
+
+		return harmonizedRules;
 	}
 
 	/**
 	 * Discordances of Type-1 happens when the Requested Intents of the consumer are not all authorized by the provider.
-	 * This function gets all the consumer.Requested connections and perform the set operation: 
+	 * This function gets all the consumer.Requested connections and perform the set operation:
 	 * 		(consumer.Requested) - (provider.AuthorizationIntents.deniedConnectionsList)
 	 * i.e., remove from the requested connections those overlapping with the forbidden ones.
 	 */
@@ -360,15 +362,15 @@ public class HarmonizationManager {
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW + "TYPE-1 DISCORDANCES"+ Main.ANSI_RESET +/*" = when Requested intents (CONSUMER) are not authorized by the Authorization intents (PROVIDER)"*/"...press ENTER to continue.");
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
-		scan.nextLine();
-		
+		//scan.nextLine();
+
 		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
 		// External loop over the consumer's Request Intents.
 		for(ConfigurationRule cr: this.requestIntentsConsumer.getConfigurationRule()) {
 			loggerInfo.debug("[harmonization/harmonizeForbiddenConnectionIntent] - processing rule { [" + cr.getName() +"]" + Utils.kubernetesNetworkFilteringConditionToString((KubernetesNetworkFilteringCondition) cr.getConfigurationCondition()) + "}");
 			harmonizedRules.addAll(harmonizeConfigurationRule(cr,this.authIntentsProvider.getForbiddenConnectionList(),this.podsByNamespaceAndLabelsConsumer, this.podsByNamespaceAndLabelsProvider));
-		}		
-		
+		}
+
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    "+ Main.ANSI_RESET +"List of " + Main.ANSI_YELLOW +"harmonized REQUEST intents" + Main.ANSI_RESET+" after type-1 discordances resolution:");
 		for(ConfigurationRule cr: harmonizedRules) {
@@ -377,7 +379,7 @@ public class HarmonizationManager {
 			System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
 		}
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100)+ Main.ANSI_RESET);
-		
+
 		return harmonizedRules;
 	}
 
@@ -400,18 +402,18 @@ public class HarmonizationManager {
 
 		Integer flag = 0;
 		Boolean dirty = false;
-		
-		// Loop over the forbiddenConnectionList.	
+
+		// Loop over the forbiddenConnectionList.
 		for(ConfigurationRule confRule: connList) {
 
 			flag = 0;
 			KubernetesNetworkFilteringCondition tmp = (KubernetesNetworkFilteringCondition) confRule.getConfigurationCondition();
-			
+
 			loggerInfo.debug("[harmonization/harmonizeForbiddenConnectionIntent] - processing rule " + Utils.kubernetesNetworkFilteringConditionToString(resCond) + " vs. " + Utils.kubernetesNetworkFilteringConditionToString(tmp));
 
 			// Step-1.1: starts with the simplest case, that is protocol type. Detect if protocol types of res are overlapping with tmp.
 			String [] protocolList = Utils.computeHarmonizedProtocolType(resCond.getProtocolType().value(), tmp.getProtocolType().value());
-			if(protocolList.length == 1 && protocolList[0].equals(resCond.getProtocolType().value())){ 
+			if(protocolList.length == 1 && protocolList[0].equals(resCond.getProtocolType().value())){
 				// No overlap with the current rule (tmp), continue and check next one.
 				continue;
 			}
@@ -430,8 +432,8 @@ public class HarmonizationManager {
 			if(source == null) {
 				// There was a comparison problem...likely trying to perform a CIDR/PodNamespace comparison
 				continue;
-			} 
-			if(source.size()!=0 && Utils.compareResourceSelector(source.get(0), resCond.getSource())){ 
+			}
+			if(source.size()!=0 && Utils.compareResourceSelector(source.get(0), resCond.getSource())){
 				// No overlap with the current authorization rule (tmp), continue and check next one.
 				continue;
 			}
@@ -445,12 +447,12 @@ public class HarmonizationManager {
 				// No overlap with the current authorization rule (tmp), continue and check next one.
 				continue;
 			}
-			
-			
+
+
 			// Step-2: if this point is reached, both source, sourcePort, destination, and destinationPort have an overlap (partial or complete) with the current authorization rule.
 			dirty = true;
 
-            // Step-2.1: handle the overlap with the sourcePort and destinationPort fields. Note that if there is a partial overlap, the port range could be broken into two ranges (e.g., if overlap is in the middle of the interval).
+			// Step-2.1: handle the overlap with the sourcePort and destinationPort fields. Note that if there is a partial overlap, the port range could be broken into two ranges (e.g., if overlap is in the middle of the interval).
 			if(sourcePortList[0].isEmpty()){
 				// If the port range is empty, it means that it is not possible to harmonize the current intent (i.e., port range is included in the authorization rule's one)... just update the flag for the moment.
 				flag++;
@@ -462,7 +464,7 @@ public class HarmonizationManager {
 				res2.setName(res.getName().split("-")[0] + "-HARMONIZED");
 				loggerInfo.debug("[harmonization/harmonizeForbiddenConnectionIntent] - found overlap with sourcePort {" + Utils.kubernetesNetworkFilteringConditionToString(resCond) + "} --> {" + Utils.kubernetesNetworkFilteringConditionToString(resCond2)+"}");
 				resList.addAll(harmonizeConfigurationRule(res2, connList, map_conn, map_connList));
-				
+
 				// ... then modify the local ConfigurationRule with the other range and continue.
 				ConfigurationRule res3 = Utils.deepCopyConfigurationRule(res);
 				KubernetesNetworkFilteringCondition resCond3 = (KubernetesNetworkFilteringCondition) res3.getConfigurationCondition();
@@ -536,8 +538,8 @@ public class HarmonizationManager {
 				loggerInfo.debug("[harmonization/harmonizeForbiddenConnectionIntent] - found overlap with transportProtocol {" + Utils.kubernetesNetworkFilteringConditionToString(resCond) + "} --> {" + Utils.kubernetesNetworkFilteringConditionToString(resCond2)+"}");
 				resList.addAll(harmonizeConfigurationRule(res2, connList, map_conn, map_connList));
 
-			}			
-			
+			}
+
 			// Step-2.3: solve possible problems with the source and destination selectors.
 			if(source.size() == 0) {
 				// This means that it was not possible to harmonized current intent.
@@ -552,7 +554,7 @@ public class HarmonizationManager {
 					resList.addAll(harmonizeConfigurationRule(res1, connList, map_conn, map_connList));
 
 				}
-			} 
+			}
 			if(destination.size() == 0) {
 				flag++;
 			} else {
@@ -567,7 +569,7 @@ public class HarmonizationManager {
 				}
 			}
 
-			// Step-3: 
+			// Step-3:
 			//In this case, it either had complete overlap with all fields (i.e., the connection is "fully denied") or partial overlap with all the field and the recursive iterations with non-overlapping components have been issued.
 			//In the end, whatever is the specific case, current request should be discarded and stop comparing it versus other rules.
 			loggerInfo.debug(Main.ANSI_RED + "[harmonization/harmonizeForbiddenConnectionIntent] - complete or partial overlap found, current rule is removed {" + Utils.kubernetesNetworkFilteringConditionToString(resCond) + Main.ANSI_RESET + "}");
@@ -579,12 +581,11 @@ public class HarmonizationManager {
 			loggerInfo.debug(Main.ANSI_GREEN + "[harmonization/harmonizeForbiddenConnectionIntent] - no overlap was found, current rule is added to HARMONIZED set {" + Utils.kubernetesNetworkFilteringConditionToString(resCond) + Main.ANSI_RESET + "}");
 			resList.add(res);
 		}
-		
+
 		return resList;
-		
+
 	}
-	
-	
+
 	public ITResourceOrchestrationType getProviderIntents() {
 		return providerIntents;
 	}
@@ -593,7 +594,7 @@ public class HarmonizationManager {
 	public void setProviderIntents(ITResourceOrchestrationType intents) {
 		this.providerIntents = intents;
 	}
-	
+
 	public ITResourceOrchestrationType getConsumerIntents() {
 		return consumerIntents;
 	}
@@ -603,3 +604,5 @@ public class HarmonizationManager {
 	}
 
 }
+
+

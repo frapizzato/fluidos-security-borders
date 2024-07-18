@@ -4,6 +4,7 @@ import eu.fluidos.cluster.ClusterService;
 import eu.fluidos.harmonization.HarmonizationController;
 import eu.fluidos.harmonization.HarmonizationData;
 import eu.fluidos.harmonization.HarmonizationService;
+import eu.fluidos.jaxb.ConfigurationRule;
 import eu.fluidos.jaxb.ITResourceOrchestrationType;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
@@ -20,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Scanner;
 
 
@@ -34,32 +36,19 @@ public class Main
 	public static final String ANSI_YELLOW = "\u001B[33m";
 	public static final String ANSI_BLUE = "\u001B[34m";
 	public static final String ANSI_PURPLE = "\u001B[35m";
-	
+	private static final Scanner scan = new Scanner(System.in);
+
     public static void main( String[] args )
     {
-		/* VERIFY */
-
-		String arg_1 = "./testfile/provider_MSPL_demo_verify.xml";
-    	String arg_2 = "./testfile/consumer_MSPL_demo_verify.xml";
-		String arg_3 = "./testfile/provider_MSPL_demo_verify_false.xml";
-		String arg_4 = "./testfile/consumer_MSPL_demo_verify_false.xml";
-		/* HARMONIZE */
-
-		String arg_5 = "./testfile/provider_MSPL_demo_harmonize.xml";
-		String arg_6 = "./testfile/consumer_MSPL_demo_harmonize.xml";
-
-		//String arg_1 = "./testfile/provider_MSPL_demo.xml";
-		//String arg_2 = "./testfile/consumer_MSPL_demo_2.xml";
+		/* Intents files */
+		String arg_1 = "./testfile/provider_MSPL_test.xml";
+		String arg_2 = "./testfile/consumer_MSPL_test.xml";
 
     	ClusterService ClusterService = new ClusterService();
     	HarmonizationData HarmonizationData = new HarmonizationData();
     	HarmonizationService HarmonizationService = new HarmonizationService(HarmonizationData, ClusterService);
     	HarmonizationController HarmonizationController = new HarmonizationController(HarmonizationService);
-    	System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
-    	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_YELLOW + "   Harmonization Module" + ANSI_RESET + " has the scope of detecting and correcting all the discordances between consumer and provider intents.");
-    	System.out.println("\t\tThe required inputs are:\n\t\t\t\t(1) Request Intents of the CONSUMER\n\t\t\t\t(2) Authorization intents of the PROVIDER\n\t\t\t\t(3) information about the cluster resources.");
-    	System.out.println("\t\tThe output will be the harmonized sets of intents, free of all discordances.");
-    	System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
+
     	// To convert XML files into Java objects
         try {
         	JAXBContext jc = JAXBContext.newInstance("eu.fluidos.jaxb");
@@ -70,25 +59,12 @@ public class Main
         	Schema sc = sf.newSchema(new File("./xsd/mspl.xsd"));
         	u.setSchema(sc);
         	loggerInfo.debug("Added MSPL schema to the unmarshaller.");
-        	// Printing received MSPL intents
-        	//System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
 
-	    	//System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_YELLOW + "Consumer" + ANSI_RESET + " MSPL intent");
 
-			//loggerInfo.info("\n" + Files.readString(filePath_1));
-	    	//System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
-        	//System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
-	    	//System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_YELLOW + "Provider" + ANSI_RESET + " MSPL intent");
-
-			//loggerInfo.info("\n" + Files.readString(filePath_2));
-	    	//System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
         	// User requesting the offloading
 			Path filePath_1 = Paths.get(arg_1);
 			Path filePath_2 = Paths.get(arg_2);
-			Path filePath_3 = Paths.get(arg_3);
-			Path filePath_4 = Paths.get(arg_4);
-			Path filePath_5 = Paths.get(arg_5);
-			Path filePath_6 = Paths.get(arg_6);
+
         	Object tmp_1 = u.unmarshal(new FileInputStream(arg_1));
         	ITResourceOrchestrationType intents_1 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_1).getValue();
         	loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_1+"].");
@@ -96,29 +72,30 @@ public class Main
         	Object tmp_2 = u.unmarshal(new FileInputStream(arg_2));
         	ITResourceOrchestrationType intents_2 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_2).getValue();
 			loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_2+"].");
-			Object tmp_3 = u.unmarshal(new FileInputStream(arg_3));
-			ITResourceOrchestrationType intents_3 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_3).getValue();
-			loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_3+"].");
-			Object tmp_4 = u.unmarshal(new FileInputStream(arg_4));
-			loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_4+"].");
-			ITResourceOrchestrationType intents_4 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_4).getValue();
-			Object tmp_5 = u.unmarshal(new FileInputStream(arg_5));
-			loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_5+"].");
-			ITResourceOrchestrationType intents_5 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_5).getValue();
-			Object tmp_6 = u.unmarshal(new FileInputStream(arg_6));
-			ITResourceOrchestrationType intents_6 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_6).getValue();
-			loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_6+"].");
 
-			// HARMONIZATION
+			/* VERIFY */
 
-        	//loggerInfo.debug("Start of the harmonization process.");
-        	//List<ConfigurationRule> res = HarmonizationController.harmonize(intents_5, intents_6);
-
-			// VERIFY
 			loggerInfo.debug("Start of the verify process.");
 			boolean verify = HarmonizationController.verify(intents_1, intents_2);
-			//boolean verify2 = HarmonizationController.verify(intents_3, intents_4);
 
+			/* HARMONIZATION */
+			System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + " Starting " + Main.ANSI_YELLOW
+					+ "Harmonization " + Main.ANSI_RESET + "process "
+					+ "...press ENTER to continue.");
+
+			scan.nextLine();
+
+			System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
+			System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_YELLOW + "   Harmonization Module" + ANSI_RESET + " has the scope of detecting and correcting all the discordances between consumer and provider intents.");
+			System.out.println("\t\tThe required inputs are:\n\t\t\t\t(1) Request Intents of the CONSUMER\n\t\t\t\t(2) Authorization intents of the PROVIDER\n\t\t\t\t(3) information about the cluster resources.");
+			System.out.println("\t\tThe output will be the harmonized sets of intents, free of all discordances.");
+
+        	loggerInfo.debug("Start of the harmonization process.");
+        	List<ConfigurationRule> res = HarmonizationController.harmonize(intents_1, intents_2, null);
+
+			/* OLD HARMONIZATION */
+
+			//HarmonizationManager res = new HarmonizationManager(intents_1, intents_2);
 
         	//Here output the "Harmonized" set of intents
         	Scanner scan = new Scanner(System.in);
@@ -144,9 +121,6 @@ public class Main
 			m.marshal(root, stringWriter_2);
 			loggerInfo.info("\n" + stringWriter_2.toString());
 */
-
-        	
-        	
         } catch (Exception e){
         	System.out.println(e.toString());
         	System.exit(1);
