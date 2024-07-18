@@ -9,7 +9,7 @@
             <capability>
                 <Name>KubernetesNetworkFiltering</Name>
             </capability>
-            <acceptMonitoring>true</acceptMonitoring>
+             <acceptMonitoring>true</acceptMonitoring>
             <!-- from "app:order_placement" to "app:product_catalogue", ALL  -->
             <configurationRule>
                 <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
@@ -173,7 +173,6 @@
             <capability>
                 <Name>KubernetesNetworkFiltering</Name>
             </capability>
-            <acceptMonitoring>true</acceptMonitoring>
         </configuration>
     </ITResource>
 </ITResourceOrchestration>

@@ -1,6 +1,6 @@
 package eu.fluidos.harmonization;
 
-import eu.fluidos.Cluster;
+import eu.fluidos.cluster.Cluster;
 import eu.fluidos.jaxb.ConfigurationRule;
 import eu.fluidos.jaxb.ITResourceOrchestrationType;
 import org.springframework.http.HttpStatus;

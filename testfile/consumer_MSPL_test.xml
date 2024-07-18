@@ -50,7 +50,45 @@
                 <Name>RequestIntent_1</Name>
                 <isCNF>false</isCNF>
             </configurationRule>
-
+            <!-- from "app:order_placement" to "*", ALL  -->
+            <configurationRule>
+                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+                    <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
+                </configurationRuleAction>
+                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+                    <isCNF>false</isCNF>
+                    <source xsi:type="PodNamespaceSelector">
+                        <isHostCluster>false</isHostCluster>
+                        <pod>
+                            <key>app</key>
+                            <value>help_desk</value>
+                        </pod>
+                        <namespace>
+                            <key>name</key>
+                            <value>fluidos</value>
+                        </namespace>
+                    </source>
+                    <sourcePort>*</sourcePort>
+                    <destination xsi:type="PodNamespaceSelector">
+                        <isHostCluster>true</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>*</key>
+                            <value>*</value>
+                        </namespace>
+                    </destination>
+                    <destinationPort>*</destinationPort>
+                    <protocolType>ALL</protocolType>
+                </configurationCondition>
+                <externalData xsi:type="Priority">
+                    <value>60000</value>
+                </externalData>
+                <Name>RequestIntent_2</Name>
+                <isCNF>false</isCNF>
+            </configurationRule>
             <!-- from "app:bank_payment" to ANY, ALL -->
             <configurationRule>
                 <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
@@ -80,7 +118,7 @@
                 <externalData xsi:type="Priority">
                     <value>60000</value>
                 </externalData>
-                <Name>RequestIntent_2</Name>
+                <Name>RequestIntent_3</Name>
                 <isCNF>false</isCNF>
             </configurationRule>
             <!-- from ANY ("monitoring") to "app:order_placement", ALL  -->

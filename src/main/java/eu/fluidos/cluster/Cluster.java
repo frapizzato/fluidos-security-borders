@@ -1,4 +1,7 @@
-package eu.fluidos;
+package eu.fluidos.cluster;
+
+import eu.fluidos.Namespace;
+import eu.fluidos.Pod;
 
 import java.util.List;
 
@@ -11,6 +14,7 @@ public class Cluster {
 		this.pods = pods;
 		this.namespaces = namespaces;
 	}
+	
 	public List<Pod> getPods() {
 		return pods;
 	}
@@ -23,6 +27,5 @@ public class Cluster {
 	public void setNamespaces(List<Namespace> namespaces) {
 		this.namespaces = namespaces;
 	}
-	
-	
+
 }

@@ -1,6 +1,5 @@
 package eu.fluidos.cluster;
 
-import eu.fluidos.Cluster;
 import eu.fluidos.Namespace;
 import eu.fluidos.Pod;
 import org.apache.logging.log4j.LogManager;

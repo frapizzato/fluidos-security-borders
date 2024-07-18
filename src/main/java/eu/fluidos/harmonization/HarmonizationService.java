@@ -1,6 +1,6 @@
 package eu.fluidos.harmonization;
 
-import eu.fluidos.Cluster;
+import eu.fluidos.cluster.Cluster;
 import eu.fluidos.Namespace;
 import eu.fluidos.Pod;
 import eu.fluidos.cluster.ClusterService;
@@ -140,7 +140,7 @@ public class HarmonizationService {
 
 		Pod pC2 = new Pod();
 		pC2.setSingleLabel("app", "help_desk");
-		pC2.setNamespace(nsC2);
+		pC2.setNamespace(nsC1);
 		podsConsumer.add(pC2);
 
 		Pod pC3 = new Pod();
@@ -150,7 +150,7 @@ public class HarmonizationService {
 
 		Pod pC4 = new Pod();
 		pC4.setSingleLabel("app", "bank_payment");
-		pC4.setNamespace(nsC2);
+		pC4.setNamespace(nsC1);
 		podsConsumer.add(pC4);
 
 		for(Pod p : podsConsumer)
