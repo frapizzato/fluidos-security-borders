@@ -8,11 +8,12 @@
 
 package eu.fluidos.jaxb;
 
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -49,22 +50,6 @@ public class AuthorizationIntents
     protected boolean acceptMonitoring;
     protected List<ConfigurationRule> forbiddenConnectionList;
     protected List<ConfigurationRule> mandatoryConnectionList;
-
-    /**
-     * Recupera il valore della proprietà acceptMonitoring.
-     * 
-     */
-    public boolean isAcceptMonitoring() {
-        return acceptMonitoring;
-    }
-
-    /**
-     * Imposta il valore della proprietà acceptMonitoring.
-     * 
-     */
-    public void setAcceptMonitoring(boolean value) {
-        this.acceptMonitoring = value;
-    }
 
     /**
      * Gets the value of the forbiddenConnectionList property.

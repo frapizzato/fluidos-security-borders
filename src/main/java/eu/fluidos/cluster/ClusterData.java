@@ -1,7 +1,5 @@
 package eu.fluidos.cluster;
 
-import eu.fluidos.Namespace;
-import eu.fluidos.Pod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,7 +32,6 @@ public class ClusterData {
 		loggerInfo.debug("[harmonization/initializeClusterData] - ns: " + nsC1.getLabels().keySet().stream().map(x -> x+":"+nsC1.getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
 
 		if(Objects.equals(endpoint, "verify")) {
-
 			Pod pC1 = createPod("order_placement", nsC1);
 			podsConsumer.add(pC1);
 

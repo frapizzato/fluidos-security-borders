@@ -1,7 +1,7 @@
 package eu.fluidos.harmonization;
 
 import eu.fluidos.jaxb.*;
-import eu.fluidos.Pod;
+import eu.fluidos.cluster.Pod;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,7 +85,7 @@ public class HarmonizationUtils {
 		/* Return true if portRangeX are overlapping with portRangeY */
 		return (x0 <= y1 && x1 >= y0);
 	}
-	
+
 	/**
 	 * Function to compute the (set) difference between two Protocol types.
 	 * @param value is the first set of protocols.

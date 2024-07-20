@@ -1,16 +1,15 @@
-package eu.fluidos;
+package eu.fluidos.cluster;
 
 import java.util.HashMap;
 
-public class Pod {
+public class Namespace {
 	
 	private HashMap<String, String> labels = new HashMap<>();
-	private Namespace ns;
 
-	public Pod() {
+	public Namespace() {
 		super();
 	}
-
+	
 	public HashMap<String, String> getLabels() {
 		return labels;
 	}
@@ -22,13 +21,4 @@ public class Pod {
 	public void setSingleLabel(String key, String value) {
 		this.labels.put(key, value);
 	}
-	
-	public void setNamespace(Namespace ns) {
-		this.ns = ns;
-	}
-	
-	public Namespace getNamespace() {
-		return ns;
-	}
-
 }

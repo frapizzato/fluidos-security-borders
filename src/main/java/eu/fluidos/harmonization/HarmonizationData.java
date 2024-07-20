@@ -1,7 +1,7 @@
 package eu.fluidos.harmonization;
 
 import eu.fluidos.Main;
-import eu.fluidos.Pod;
+import eu.fluidos.cluster.Pod;
 import eu.fluidos.jaxb.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,38 +20,6 @@ public class HarmonizationData {
 						  HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer,
 						  HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider) {
 
-		/* Monitoring rule check */
-		if(authIntent.isAcceptMonitoring()){
-			System.out.println(Main.ANSI_PURPLE + "[VERIFY] " + Main.ANSI_RESET + "Monitoring check");
-			printDash();
-			/* Provider requires monitoring */
-			boolean flag = false;
-			for(ConfigurationRule mandList : authIntent.getMandatoryConnectionList()){
-				KubernetesNetworkFilteringCondition tmp = (KubernetesNetworkFilteringCondition) mandList
-						.getConfigurationCondition();
-				ResourceSelector src = tmp.getSource();
-				boolean isCIDR = src instanceof CIDRSelector;
-				/* Monitoring mandatory connection found */
-				if(!isCIDR){
-					PodNamespaceSelector pns = (PodNamespaceSelector) src;
-					if(pns.getNamespace().get(0).getValue().equals("monitoring")){
-						flag = true;
-					}
-				}
-			}
-
-			/* Monitoring rule is present */
-			if(flag){
-				if(!requestIntent.isAcceptMonitoring()){
-					System.out.println(" Consumer is not accepting monitoring");
-					printDash();
-					return false;
-				}
-				else
-					System.out.println(" Consumer accepted monitoring");
-				printDash();
-			}
-		}
 		System.out.println(Main.ANSI_PURPLE + "[VERIFY] " + Main.ANSI_RESET + "Process started");
 		printDash();
 		for (ConfigurationRule cr : requestIntent.getConfigurationRule()) {
@@ -586,7 +554,6 @@ public class HarmonizationData {
 	public void printAuthorizationIntents(AuthorizationIntents authorizationIntent) {
 		List<ConfigurationRule> forbiddenRule = null;
 		List<ConfigurationRule> mandatoryRule = null;
-		System.out.println("  [AcceptMonitoring]: " + authorizationIntent.isAcceptMonitoring());
 
 		System.out.print("   .-> " + Main.ANSI_YELLOW + "ForbiddenConnectionList" + Main.ANSI_RESET + ":\n");
 		System.out.print("   |\n");

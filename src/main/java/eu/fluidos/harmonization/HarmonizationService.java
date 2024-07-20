@@ -1,8 +1,8 @@
 package eu.fluidos.harmonization;
 
 import eu.fluidos.cluster.Cluster;
-import eu.fluidos.Namespace;
-import eu.fluidos.Pod;
+import eu.fluidos.cluster.Namespace;
+import eu.fluidos.cluster.Pod;
 import eu.fluidos.cluster.ClusterService;
 import eu.fluidos.jaxb.*;
 import org.apache.logging.log4j.LogManager;
@@ -89,10 +89,12 @@ public class HarmonizationService {
 		HarmonizationData.printAuth();
 		HarmonizationData.printAuthorizationIntents(this.authIntentsProvider);
 
-		if (authIntentsProvider.isAcceptMonitoring() && !requestIntentsConsumer.isAcceptMonitoring()) {
-			System.out.println("[Orchestration] - Consumer is not accepting monitoring");
+		if (authIntentsProvider.getMandatoryConnectionList().size()>1 && !requestIntentsConsumer.isAcceptMonitoring()) {
+			System.out.println("[Harmonization] - Consumer is not accepting monitoring");
 			return null;
 		}
+		else
+			System.out.println("[Harmonization] - Consumer accepted monitoring");
 		/**
 		 * Then, the lists are processed to resolve any possible discordances: 1)
 		 * consumer asks for a connection not permitted by the provider -> these are
@@ -133,10 +135,7 @@ public class HarmonizationService {
 		loggerInfo.debug("[harmonization/initializeClusterData] - ns: " + nsC1.getLabels().keySet().stream().map(x -> x+":"+nsC1.getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
 		loggerInfo.debug("[harmonization/initializeClusterData] - ns: " + nsC2.getLabels().keySet().stream().map(x -> x+":"+nsC2.getLabels().get(x)+"; ").collect(Collectors.toList()).toString());
 
-		Pod pC1 = new Pod();
-		pC1.setSingleLabel("app", "order_placement");
-		pC1.setNamespace(nsC1);
-		podsConsumer.add(pC1);
+
 
 		Pod pC2 = new Pod();
 		pC2.setSingleLabel("app", "help_desk");
@@ -272,6 +271,13 @@ public class HarmonizationService {
 		HarmonizationData.printAuth();
 		HarmonizationData.printAuthorizationIntents(this.authIntentsProvider);
 		HarmonizationData.printDash();
+
+		if (authIntentsProvider.getMandatoryConnectionList().size()>1 && !requestIntentsConsumer.isAcceptMonitoring()) {
+			System.out.println("[Harmonization] - Consumer is not accepting monitoring");
+			return false;
+		}
+		else
+			System.out.println("[Harmonization] - Consumer accepted monitoring");
 
 		verify = HarmonizationData.verify(this.requestIntentsConsumer, this.authIntentsProvider,
 						podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider);

@@ -2,8 +2,8 @@ package eu.fluidos.harmonization;
 
 import eu.fluidos.cluster.Cluster;
 import eu.fluidos.Main;
-import eu.fluidos.Namespace;
-import eu.fluidos.Pod;
+import eu.fluidos.cluster.Namespace;
+import eu.fluidos.cluster.Pod;
 import eu.fluidos.jaxb.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

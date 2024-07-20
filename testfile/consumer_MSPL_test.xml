@@ -41,7 +41,7 @@
                             <value>*</value>
                         </namespace>
                     </destination>
-                    <destinationPort>80</destinationPort>
+                    <destinationPort>*</destinationPort>
                     <protocolType>TCP</protocolType>
                 </configurationCondition>
                 <externalData xsi:type="Priority">

@@ -1,7 +1,5 @@
 package eu.fluidos.cluster;
 
-import eu.fluidos.Pod;
-
 import java.util.HashMap;
 import java.util.List;
 
