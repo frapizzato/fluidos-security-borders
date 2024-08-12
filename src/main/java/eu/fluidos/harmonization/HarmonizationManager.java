@@ -205,6 +205,32 @@ public class HarmonizationManager {
 
 		loggerInfo.debug("[harmonization/initializeClusterData] - Gathering information about CONSUMER cluster data.");
 
+		Namespace nsC1 = new Namespace();
+		nsC1.setSingleLabel("name", "fluidos");
+		Namespace nsC2 = new Namespace();
+		nsC2.setSingleLabel("name", "turin");
+
+
+		Pod pC1 = new Pod();
+		pC1.setSingleLabel("app", "order_placement");
+		pC1.setNamespace(nsC1);
+		podsConsumer.add(pC1);
+
+		Pod pC2 = new Pod();
+		pC2.setSingleLabel("app", "help_desk");
+		pC2.setNamespace(nsC2);
+		podsConsumer.add(pC2);
+
+		Pod pC3 = new Pod();
+		pC3.setSingleLabel("app", "consumer_resource");
+		pC3.setNamespace(nsC1);
+		podsConsumer.add(pC3);
+
+		Pod pC4 = new Pod();
+		pC4.setSingleLabel("app", "bank_payment");
+		pC4.setNamespace(nsC2);
+		podsConsumer.add(pC4);
+/*
 		// Configure the CONSUMER cluster data
 		Namespace nsC1 = new Namespace();
 		nsC1.setSingleLabel("name", "fluidos");
@@ -232,7 +258,7 @@ public class HarmonizationManager {
 		Pod pC4 = new Pod();
 		pC4.setSingleLabel("app", "bank_payment");
 		pC4.setNamespace(nsC1);
-		podsConsumer.add(pC4);
+		podsConsumer.add(pC4); */
 
 		for(Pod p : podsConsumer)
 			loggerInfo.debug("[harmonization/initializeClusterData] - pod: " + p.getLabels().keySet().stream().map(x -> x+":"+p.getLabels().get(x)+"; ").collect(Collectors.toList()).toString()

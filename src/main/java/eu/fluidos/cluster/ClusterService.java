@@ -18,18 +18,16 @@ public class ClusterService {
 		return ClusterData.createConsumerCluster(endpoint);
 	}
 
-	public void initializeHashMaps(HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider,
-			HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer) {
+	public HashMap<String, HashMap<String, List<Pod>>> initializeHashMaps(Cluster cluster) {
 		//Initialize the HashMaps for the Consumer...
 		// ...and for the Provider
-
+		return ClusterData.initializeHashMaps(cluster);
 	}
 
-	public HashMap<String, HashMap<String, List<Pod>>> initializeHashMapsConsumer(Cluster cluster, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer){
-		return ClusterData.initializeHashMaps(cluster, podsByNamespaceAndLabelsConsumer);
+	public static Cluster getClusterData(){
+
+		return new Cluster(null, null);
 	}
-	public HashMap<String, HashMap<String, List<Pod>>> initializeHashMapsProvider(Cluster cluster, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider){
-		return ClusterData.initializeHashMaps(cluster, podsByNamespaceAndLabelsProvider);
-	}
+
 
 }

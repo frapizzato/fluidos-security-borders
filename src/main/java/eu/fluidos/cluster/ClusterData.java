@@ -35,13 +35,13 @@ public class ClusterData {
 			Pod pC1 = createPod("order_placement", nsC1);
 			podsConsumer.add(pC1);
 
-			Pod pC2 = createPod("bank_payment", nsC1);
+			Pod pC2 = createPod("bank_payment", nsC2);
 			podsConsumer.add(pC2);
 
 			Pod pC3 = createPod("consumer_resource", nsC1);
 			podsConsumer.add(pC3);
 
-			Pod pC4 = createPod("order_placement", nsC2);
+			Pod pC4 = createPod("help_desk", nsC2);
 			podsConsumer.add(pC4);
 		}
 		else if(Objects.equals(endpoint, "harmonize")) {
@@ -93,7 +93,8 @@ public class ClusterData {
 		return new Cluster(podsProvider, null);
 	}
 
-	public HashMap<String, HashMap<String, List<Pod>>> initializeHashMaps(Cluster cluster, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabels) {
+	public HashMap<String, HashMap<String, List<Pod>>> initializeHashMaps(Cluster cluster) {
+		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabels = new HashMap<>();
 		loggerInfo.debug("[harmonization/initializeHashMaps] - creation of multi-level HashMaps containing clusters information.");
 		 
 		for(Pod p: cluster.getPods()){

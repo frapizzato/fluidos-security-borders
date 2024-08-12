@@ -2,18 +2,17 @@
 // Questo file è stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
 // Qualsiasi modifica a questo file andrà persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.07.08 alle 07:04:29 PM CEST 
+// Generato il: 2024.08.11 alle 11:12:47 AM CEST 
 //
 
 
 package eu.fluidos.jaxb;
 
+import java.util.ArrayList;
+import java.util.List;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlType;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -26,7 +25,6 @@ import java.util.List;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://modeliosoft/xsddesigner/a22bd60b-ee3d-425c-8618-beb6a854051a/ITResource.xsd}Configuration"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="acceptMonitoring" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
  *         &lt;element name="forbiddenConnectionList" type="{http://modeliosoft/xsddesigner/a22bd60b-ee3d-425c-8618-beb6a854051a/ITResource.xsd}ConfigurationRule" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element name="mandatoryConnectionList" type="{http://modeliosoft/xsddesigner/a22bd60b-ee3d-425c-8618-beb6a854051a/ITResource.xsd}ConfigurationRule" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
@@ -39,7 +37,6 @@ import java.util.List;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "AuthorizationIntents", propOrder = {
-    "acceptMonitoring",
     "forbiddenConnectionList",
     "mandatoryConnectionList"
 })
@@ -47,7 +44,6 @@ public class AuthorizationIntents
     extends Configuration
 {
 
-    protected boolean acceptMonitoring;
     protected List<ConfigurationRule> forbiddenConnectionList;
     protected List<ConfigurationRule> mandatoryConnectionList;
 

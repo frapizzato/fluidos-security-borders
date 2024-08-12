@@ -24,11 +24,9 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Scanner;
 
-
 public class Main
 {
 	public static Logger loggerInfo = LogManager.getLogger(Main.class);
-	
 
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_RED = "\u001B[31m";
@@ -41,9 +39,10 @@ public class Main
     public static void main( String[] args )
     {
 		/* Intents files */
+		//String arg_1 = "./testfile/provider_MSPL_test_dual.xml";
+		//String arg_2 = "./testfile/consumer_MSPL_test_dual.xml";
 		String arg_1 = "./testfile/provider_MSPL_test.xml";
 		String arg_2 = "./testfile/consumer_MSPL_test.xml";
-
     	ClusterService ClusterService = new ClusterService();
     	HarmonizationData HarmonizationData = new HarmonizationData();
     	HarmonizationService HarmonizationService = new HarmonizationService(HarmonizationData, ClusterService);
@@ -73,12 +72,13 @@ public class Main
         	ITResourceOrchestrationType intents_2 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_2).getValue();
 			loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_2+"].");
 
+
 			/* VERIFY */
 
-			loggerInfo.debug("Start of the verify process.");
+			/*loggerInfo.debug("Start of the verify process.");
 			boolean verify = HarmonizationController.verify(intents_1, intents_2);
 
-			/* HARMONIZATION */
+			*//* HARMONIZATION *//*
 			System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + " Starting " + Main.ANSI_YELLOW
 					+ "Harmonization " + Main.ANSI_RESET + "process "
 					+ "...press ENTER to continue.");
@@ -88,10 +88,10 @@ public class Main
 			System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
 			System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_YELLOW + "   Harmonization Module" + ANSI_RESET + " has the scope of detecting and correcting all the discordances between consumer and provider intents.");
 			System.out.println("\t\tThe required inputs are:\n\t\t\t\t(1) Request Intents of the CONSUMER\n\t\t\t\t(2) Authorization intents of the PROVIDER\n\t\t\t\t(3) information about the cluster resources.");
-			System.out.println("\t\tThe output will be the harmonized sets of intents, free of all discordances.");
+			System.out.println("\t\tThe output will be the harmonized sets of intents, free of all discordances."); */
 
         	loggerInfo.debug("Start of the harmonization process.");
-        	List<ConfigurationRule> res = HarmonizationController.harmonize(intents_1, intents_2, null);
+        	List<ConfigurationRule> res = HarmonizationController.harmonize(intents_1, intents_2);
 
 			/* OLD HARMONIZATION */
 

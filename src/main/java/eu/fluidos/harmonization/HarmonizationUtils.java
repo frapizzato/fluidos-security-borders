@@ -1,7 +1,8 @@
 package eu.fluidos.harmonization;
 
-import eu.fluidos.jaxb.*;
 import eu.fluidos.cluster.Pod;
+import eu.fluidos.jaxb.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -217,47 +218,6 @@ public class HarmonizationUtils {
 	}
 
 	/**
-	 * Function to compute the difference between two different resourceSelectors.
-	 * @param sel_1 is the first resourceSelector.
-	 * @param sel_2 is the second resourceSelector.
-	 * @param map_1 is the hashmap of pods grouped by namespace and labels for the first selector's cluster.
-	 * @param map_2  is the hashmap of pods grouped by namespace and labels for the second selector's cluster.
-	 * @return true if there is an overlap
-	 *
-	 */
-	public static boolean computeOverlapResourceSelector(ResourceSelector sel_1, ResourceSelector sel_2, HashMap<String, HashMap<String, List<Pod>>> map_1, HashMap<String, HashMap<String, List<Pod>>> map_2) {
-		Boolean isCIDR_1 = sel_1 instanceof CIDRSelector;
-		Boolean isCIDR_2 = sel_2 instanceof CIDRSelector;
-
-		if (isCIDR_1 && isCIDR_2) {
-			CIDRSelector cidr1 = (CIDRSelector) sel_1;
-			CIDRSelector cidr2 = (CIDRSelector) sel_2;
-			return cidr1.getAddressRange().equals(cidr2.getAddressRange());
-		} else if (!isCIDR_1 && !isCIDR_2) {
-			PodNamespaceSelector pns1 = (PodNamespaceSelector) sel_1;
-			PodNamespaceSelector pns2 = (PodNamespaceSelector) sel_2;
-
-			if (pns1.isIsHostCluster() != pns2.isIsHostCluster()) {
-				return false;
-			}
-
-			if (pns1.getNamespace().get(0).getKey().equals("*") && pns1.getNamespace().get(0).getValue().equals("*") &&
-					pns1.getPod().get(0).getKey().equals("*") && pns1.getPod().get(0).getValue().equals("*")) {
-				return true;
-			}
-
-			if (pns2.getNamespace().get(0).getKey().equals("*") && pns2.getNamespace().get(0).getValue().equals("*") &&
-					pns2.getPod().get(0).getKey().equals("*") && pns2.getPod().get(0).getValue().equals("*")) {
-				return true;
-			}
-
-			return pns1.getNamespace().equals(pns2.getNamespace()) && pns1.getPod().equals(pns2.getPod());
-		} else {
-			return false;
-		}
-	}
-
-	/**
 	 * Function to compute the difference between two different PodNamespaceSelector.
 	 * @param pns1 is the first PodNamespaceSelector.
 	 * @param pns2 is the second PodNamespaceSelector.
@@ -265,107 +225,83 @@ public class HarmonizationUtils {
 	 * @return the list of harmonized PodNamespaceSelectors (selecting the resources that are selected by pns1 and NOT by pns2)
 	 */
 	private static List<PodNamespaceSelector> computeHarmonizedPodNamespaceSelector(PodNamespaceSelector pns1, PodNamespaceSelector pns2, HashMap<String, HashMap<String, List<Pod>>> clusterMap) {
+		ArrayList<Pod> pns1SelectedPods = new ArrayList<Pod>();
+		ArrayList<Pod> pns2SelectedPods = new ArrayList<Pod>();
 
 		//Case-1: pns2 selects all pods and namespaces, so pns1 - pns2 = 0
-		if(pns2.getNamespace().get(0).getKey().equals("*") && pns2.getPod().get(0).getValue().equals("*")) {
+
+		if(pns2.getNamespace().get(0).getKey().equals("*") && pns2.getPod().get(0).getValue().equals("*")){
 			return new ArrayList<PodNamespaceSelector>();
 		}
 
 		//Case-2: possibility of having none or partial overlap between pns1 and pns2. Need to move to Pods.
-		ArrayList<Pod> pns1SelectedPods = new ArrayList<Pod>();
-		ArrayList<Pod> pns2SelectedPods = new ArrayList<Pod>();
 
-		if(pns1.getNamespace().get(0).getKey().equals("*") && pns1.getNamespace().get(0).getValue().equals("*") &&
-				pns1.getPod().get(0).getKey().equals("*") && pns1.getPod().get(0).getValue().equals("*")){
-			// Special case-1: select all cluster's pods
-
-			// Select all pods in the cluster
-			pns1SelectedPods.addAll(clusterMap.values().stream().flatMap(it -> it.values().stream()).flatMap(it -> it.stream()).collect(Collectors.toList()));
-		} else if(pns1.getPod().get(0).getKey().equals("*") && pns1.getPod().get(0).getValue().equals("*")){
-			// Special case-2: select all pods in the namespace
-
-			// Select all pods in the namespace
-			for(KeyValue ns : pns1.getNamespace()) {
-				if(clusterMap.containsKey(ns.getKey() + ":" + ns.getValue())) {
-					for(List<Pod> pods : clusterMap.get(ns.getKey() + ":" + ns.getValue()).values()) {
-						pns1SelectedPods.addAll(pods);
-					}
-				}
-			}
-		} else if(pns1.getNamespace().get(0).getKey().equals("*") && pns1.getNamespace().get(0).getValue().equals("*")){
-			// Special case-3: select all namespaces with a specific pod label
-
-			// Select all namespaces with a specific pod label
-			for(KeyValue pod : pns1.getPod()) {
-				for(HashMap<String, List<Pod>> pods : clusterMap.values()) {
-					if(pods.containsKey(pod.getKey() + ":" + pod.getValue())) {
-						pns1SelectedPods.addAll(pods.get(pod.getKey() + ":" + pod.getValue()));
-					}
-				}
-			}
-		} else {
-			// Normal selection: select specific pods in specific namespaces
-			for(KeyValue ns : pns1.getNamespace()) {
-				// Search namespace and pod in the clusterMap...
-				if(clusterMap.containsKey(ns.getKey() + ":" + ns.getValue())) {
-					for(KeyValue pod : pns1.getPod()) {
-						if(clusterMap.get(ns.getKey() + ":" + ns.getValue()).containsKey(pod.getKey() + ":" + pod.getValue())) {
-							pns1SelectedPods.addAll(clusterMap.get(ns.getKey() + ":" + ns.getValue()).get(pod.getKey() + ":" + pod.getValue()));
-						}
-					}
-				}
-			}
-		}
+		pns1SelectedPods = selectPods(pns1, clusterMap);
 
 		// Repeat everything for pns2...
 
-		if(pns2.getNamespace().get(0).getKey().equals("*") && pns2.getNamespace().get(0).getValue().equals("*") &&
-				pns2.getPod().get(0).getKey().equals("*") && pns2.getPod().get(0).getValue().equals("*")){
+		pns2SelectedPods = selectPods(pns2, clusterMap);
+
+
+		//Change the list.
+
+		List<PodNamespaceSelector> resSelectors = new ArrayList<>();
+
+		pns1SelectedPods.removeAll(pns2SelectedPods);
+
+		//Now we have the list of pods. We need to convert it into a list of PodNamespaceSelectors.
+		resSelectors = convertPods(pns1, pns1SelectedPods, clusterMap);
+
+		return resSelectors;
+	}
+
+	private static ArrayList<Pod> selectPods(PodNamespaceSelector pns, HashMap<String, HashMap<String, List<Pod>>> clusterMap){
+
+		ArrayList<Pod> pnsSelectedPods = new ArrayList<Pod>();
+
+		if(pns.getNamespace().get(0).getKey().equals("*") && pns.getNamespace().get(0).getValue().equals("*") &&
+				pns                                                                   .getPod().get(0).getKey().equals("*") && pns.getPod().get(0).getValue().equals("*")){
 			// Special case-1: select all cluster's pods
-
 			// Select all pods in the cluster
-			pns2SelectedPods.addAll(clusterMap.values().stream().flatMap(it -> it.values().stream()).flatMap(it -> it.stream()).collect(Collectors.toList()));
-		} else if(pns2.getPod().get(0).getKey().equals("*") && pns2.getPod().get(0).getValue().equals("*")){
+			pnsSelectedPods.addAll(clusterMap.values().stream().flatMap(it -> it.values().stream()).flatMap(it -> it.stream()).collect(Collectors.toList()));
+		} else if(pns.getPod().get(0).getKey().equals("*") && pns.getPod().get(0).getValue().equals("*")){
 			// Special case-2: select all pods in the namespace
-
 			// Select all pods in the namespace
-			for(KeyValue ns : pns2.getNamespace()) {
+			for(KeyValue ns : pns.getNamespace()) {
 				if(clusterMap.containsKey(ns.getKey() + ":" + ns.getValue())) {
 					for(List<Pod> pods : clusterMap.get(ns.getKey() + ":" + ns.getValue()).values()) {
-						pns2SelectedPods.addAll(pods);
+						pnsSelectedPods.addAll(pods);
 					}
 				}
 			}
-		} else if(pns2.getNamespace().get(0).getKey().equals("*") && pns2.getNamespace().get(0).getValue().equals("*")){
+		} else if(pns.getNamespace().get(0).getKey().equals("*") && pns.getNamespace().get(0).getValue().equals("*")){
 			// Special case-3: select all namespaces with a specific pod label
-
 			// Select all namespaces with a specific pod label
-			for(KeyValue pod : pns2.getPod()) {
+			for(KeyValue pod : pns.getPod()) {
 				for(HashMap<String, List<Pod>> pods : clusterMap.values()) {
 					if(pods.containsKey(pod.getKey() + ":" + pod.getValue())) {
-						pns2SelectedPods.addAll(pods.get(pod.getKey() + ":" + pod.getValue()));
+						pnsSelectedPods.addAll(pods.get(pod.getKey() + ":" + pod.getValue()));
 					}
 				}
 			}
 		} else {
 			// Normal selection: select specific pods in specific namespaces
-			for(KeyValue ns : pns2.getNamespace()) {
+			for(KeyValue ns : pns.getNamespace()) {
+				// Search namespace and pod in the clusterMap...
 				if(clusterMap.containsKey(ns.getKey() + ":" + ns.getValue())) {
-					for(KeyValue pod : pns2.getPod()) {
+					for(KeyValue pod : pns.getPod()) {
 						if(clusterMap.get(ns.getKey() + ":" + ns.getValue()).containsKey(pod.getKey() + ":" + pod.getValue())) {
-							pns2SelectedPods.addAll(clusterMap.get(ns.getKey() + ":" + ns.getValue()).get(pod.getKey() + ":" + pod.getValue()));
+							pnsSelectedPods.addAll(clusterMap.get(ns.getKey() + ":" + ns.getValue()).get(pod.getKey() + ":" + pod.getValue()));
 						}
 					}
 				}
 			}
 		}
-
-		//Change the list.
-		pns1SelectedPods.removeAll(pns2SelectedPods);
-
-		//Now we have the list of pods. We need to convert it into a list of PodNamespaceSelectors.
-		List<PodNamespaceSelector> resSelectors = new ArrayList<PodNamespaceSelector>();
-		//Convert list of pods to list of Selectors using the HashMap...
+		return pnsSelectedPods;
+	}
+	/*Convert list of pods to list of Selectors using the HashMap*/
+	private static List<PodNamespaceSelector> convertPods(PodNamespaceSelector pns1, ArrayList<Pod> pns1SelectedPods, HashMap<String, HashMap<String, List<Pod>>> clusterMap ){
+		List<PodNamespaceSelector> resSelectors = new ArrayList<>();
 		for(Pod p: pns1SelectedPods) {
 			// Take the namespace from current pod and extract the associated labels in the form "key:label"...
 			for(String s :p.getNamespace().getLabels().keySet().stream().map(k -> k + ":" + p.getNamespace().getLabels().get(k)).collect(Collectors.toList())) {
@@ -400,10 +336,109 @@ public class HarmonizationUtils {
 				}
 			}
 		}
-
 		return resSelectors;
 	}
 
+	/**
+	 * Function to compute the difference between two different resourceSelectors.
+	 * @param sel_1 is the first resourceSelector.
+	 * @param sel_2 is the second resourceSelector.
+	 * @return true if there is an overlap
+	 *
+	 */
+	public static boolean computeOverlapResourceSelector(ResourceSelector sel_1, ResourceSelector sel_2) {
+		Boolean isCIDR_1 = sel_1 instanceof CIDRSelector;
+		Boolean isCIDR_2 = sel_2 instanceof CIDRSelector;
+
+		if (isCIDR_1 && isCIDR_2) {
+			CIDRSelector cidr1 = (CIDRSelector) sel_1;
+			CIDRSelector cidr2 = (CIDRSelector) sel_2;
+			return cidr1.getAddressRange().equals(cidr2.getAddressRange());
+		} else if (!isCIDR_1 && !isCIDR_2) {
+			PodNamespaceSelector pns1 = (PodNamespaceSelector) sel_1;
+			PodNamespaceSelector pns2 = (PodNamespaceSelector) sel_2;
+
+			if (pns1.isIsHostCluster() != pns2.isIsHostCluster()) {
+				return false;
+			}
+
+			if (pns1.getNamespace().get(0).getKey().equals("*") && pns1.getNamespace().get(0).getValue().equals("*") &&
+					pns1.getPod().get(0).getKey().equals("*") && pns1.getPod().get(0).getValue().equals("*")) {
+				return true;
+			}
+
+			if (pns2.getNamespace().get(0).getKey().equals("*") && pns2.getNamespace().get(0).getValue().equals("*") &&
+					pns2.getPod().get(0).getKey().equals("*") && pns2.getPod().get(0).getValue().equals("*")) {
+				return true;
+			}
+
+			return pns1.getNamespace().equals(pns2.getNamespace()) && pns1.getPod().equals(pns2.getPod());
+		} else {
+			return false;
+		}
+	}
+
+
+	public static boolean checkWildcard(ResourceSelector rs){
+		boolean isCIDR_1 = !rs.getClass().equals(PodNamespaceSelector.class);
+        if(isCIDR_1)
+			return false;
+		else {
+			PodNamespaceSelector pns = (PodNamespaceSelector) rs;
+			return pns.getPod().get(0).getKey().equals("*") && pns.getPod().get(0).getValue().equals("*");
+		}
+	}
+	public static List<PodNamespaceSelector> computePodNamespaceSelector(ResourceSelector rs,  HashMap<String, HashMap<String, List<Pod>>> clusterMap){
+		PodNamespaceSelector pns1 = (PodNamespaceSelector) rs;
+		ArrayList<Pod> pnsSelectedPods = new ArrayList<Pod>();
+		if(!pns1.getNamespace().get(0).getValue().equals("*")) {
+			for (KeyValue ns : pns1.getNamespace()) {
+				if (clusterMap.containsKey(ns.getKey() + ":" + ns.getValue())) {
+					for (List<Pod> pods : clusterMap.get(ns.getKey() + ":" + ns.getValue()).values()) {
+						pnsSelectedPods.addAll(pods);
+					}
+				}
+			}
+		}
+		else
+			pnsSelectedPods.addAll(clusterMap.values().stream().flatMap(it -> it.values().stream()).flatMap(it -> it.stream()).collect(Collectors.toList()));
+		List<PodNamespaceSelector> resSelectors = new ArrayList<PodNamespaceSelector>();
+		for(Pod p: pnsSelectedPods) {
+			// Take the namespace from current pod and extract the associated labels in the form "key:label"...
+			for(String s :p.getNamespace().getLabels().keySet().stream().map(k -> k + ":" + p.getNamespace().getLabels().get(k)).collect(Collectors.toList())) {
+				// ...then iterate also over all the pod's labels
+				for(String si: p.getLabels().keySet().stream().map(k -> k + ":" + p.getLabels().get(k)).collect(Collectors.toList())) {
+					// ...and check if the combination is present in the HashMap
+					if(clusterMap.containsKey(s) && clusterMap.get(s).containsKey(si)) {
+						// Check if all elements selected by this combination are in the list of selected pods..
+						Boolean flag = true;
+						for(Pod pi: clusterMap.get(s).get(si)) {
+							if(!pnsSelectedPods.contains(pi)) {
+								// If not, then break the loop and go to the next combination
+								flag = false;
+								break;
+							}
+						}
+						// If the previous check is successful, then add the PodNamespaceSelector to the list of results
+						if (flag) {
+							PodNamespaceSelector pns = new PodNamespaceSelector();
+							KeyValue kv_1 = new KeyValue();
+							kv_1.setKey(si.split(":")[0]);
+							kv_1.setValue(si.split(":")[1]);
+							pns.getPod().add(kv_1);
+							KeyValue kv_2 = new KeyValue();
+							kv_2.setKey(s.split(":")[0]);
+							kv_2.setValue(s.split(":")[1]);
+							pns.getNamespace().add(kv_2);
+							pns.setIsHostCluster(pns.isIsHostCluster());
+							resSelectors.add(pns);
+						}
+					}
+				}
+			}
+		}
+		return resSelectors;
+	}
 	/**
 	 * Function to convert a CIDR string into an array of two integers: the first is the IP address in numeric format, the second is the length of the network prefix.
 	 * @param cidr is the CIDR string to be converted.
@@ -554,6 +589,7 @@ public class HarmonizationUtils {
 		if(rs_1.getClass().equals(PodNamespaceSelector.class) && rs_2.getClass().equals(PodNamespaceSelector.class)){
 			PodNamespaceSelector pns_1 = (PodNamespaceSelector) rs_1;
 			PodNamespaceSelector pns_2 = (PodNamespaceSelector) rs_2;
+
 			if(pns_1.getPod().size() != pns_2.getPod().size() || pns_1.getNamespace().size() != pns_2.getNamespace().size()){
 				return false;
 			}
@@ -561,7 +597,8 @@ public class HarmonizationUtils {
 			for(KeyValue kv_1: pns_1.getPod()){
 				found = false;
 				for(KeyValue kv_2: pns_2.getPod()){
-					if(kv_1.getKey().equals(kv_2.getKey()) && kv_1.getValue().equals(kv_2.getValue())){
+					//if((kv_1.getKey().equals(kv_2.getKey() )|| kv_2.getKey().equals("*")) && (kv_1.getValue().equals(kv_2.getValue()) || kv_2.getValue().equals("*"))){
+					if(kv_1.getKey().equals(kv_2.getKey() ) && kv_1.getValue().equals(kv_2.getValue())){
 						found = true;
 						break;
 					}
@@ -575,6 +612,7 @@ public class HarmonizationUtils {
 				found = false;
 				for(KeyValue kv_2: pns_2.getNamespace()){
 					if(kv_1.getKey().equals(kv_2.getKey()) && kv_1.getValue().equals(kv_2.getValue())){
+					//if((kv_1.getKey().equals(kv_2.getKey()) || kv_1.getKey().equals("*"))  && (kv_1.getValue().equals(kv_2.getValue()) || kv_1.getValue().equals("*"))){
 						found = true;
 						break;
 					}
@@ -689,6 +727,7 @@ public class HarmonizationUtils {
 		
 		KubernetesNetworkFilteringCondition cr_inverse_cond = (KubernetesNetworkFilteringCondition) cr_inverse.getConfigurationCondition();
 		// Invert the source and destination "isHostCluster" flags.
+
 		cr_inverse_cond.getSource().setIsHostCluster(!cr_inverse_cond.getSource().isIsHostCluster());
 		cr_inverse_cond.getDestination().setIsHostCluster(!cr_inverse_cond.getDestination().isIsHostCluster());
 

@@ -18,45 +18,6 @@
                 <Name>KubernetesNetworkFiltering</Name>
             </capability>
             <acceptMonitoring>true</acceptMonitoring>
-            <!-- from ANY to "app:product_catalogue", TCP:80 -->
-            <configurationRule>
-                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
-                    <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
-                </configurationRuleAction>
-                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
-                    <isCNF>false</isCNF>
-                    <source xsi:type="PodNamespaceSelector">
-                        <isHostCluster>true</isHostCluster>
-                        <pod>
-                            <key>*</key>
-                            <value>*</value>
-                        </pod>
-                        <namespace>
-                            <key>*</key>
-                            <value>*</value>
-                        </namespace>
-                    </source>
-                    <sourcePort>*</sourcePort>
-                    <destination xsi:type="PodNamespaceSelector">
-                        <isHostCluster>false</isHostCluster>
-                        <pod>
-                            <key>*</key>
-                            <value>*</value>
-                        </pod>
-                        <namespace>
-                            <key>*</key>
-                            <value>*</value>
-                        </namespace>
-                    </destination>
-                    <destinationPort>81</destinationPort>
-                    <protocolType>UDP</protocolType>
-                </configurationCondition>
-                <externalData xsi:type="Priority">
-                    <value>60000</value>
-                </externalData>
-                <Name>PrivateIntent_1</Name>
-                <isCNF>false</isCNF>
-            </configurationRule>
         </configuration>
     </ITResource>
 
@@ -77,12 +38,12 @@
                     <source xsi:type="PodNamespaceSelector">
                         <isHostCluster>true</isHostCluster>
                         <pod>
-                            <key>app</key>
-                            <value>bank_payment</value>
-                        </pod>
-                        <namespace>
                             <key>*</key>
                             <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>name</key>
+                            <value>turin</value>
                         </namespace>
                     </source>
                     <sourcePort>*</sourcePort>
@@ -98,7 +59,7 @@
                         </namespace>
                     </destination>
                     <destinationPort>*</destinationPort>
-                    <protocolType>ALL</protocolType>
+                    <protocolType>UDP</protocolType>
                 </configurationCondition>
                 <externalData xsi:type="Priority">
                     <value>60000</value>
@@ -155,8 +116,8 @@
                             <value>*</value>
                         </pod>
                         <namespace>
-                            <key>*</key>
-                            <value>*</value>
+                            <key>name</key>
+                            <value>turin</value>
                         </namespace>
                     </source>
                     <sourcePort>*</sourcePort>
@@ -194,8 +155,8 @@
                             <value>*</value>
                         </pod>
                         <namespace>
-                            <key>*</key>
-                            <value>*</value>
+                            <key>name</key>
+                            <value>turin</value>
                         </namespace>
                     </source>
                     <sourcePort>*</sourcePort>
@@ -233,8 +194,8 @@
                             <value>*</value>
                         </pod>
                         <namespace>
-                            <key>*</key>
-                            <value>*</value>
+                            <key>name</key>
+                            <value>turin</value>
                         </namespace>
                     </source>
                     <sourcePort>*</sourcePort>
@@ -272,8 +233,8 @@
                             <value>*</value>
                         </pod>
                         <namespace>
-                            <key>*</key>
-                            <value>*</value>
+                            <key>name</key>
+                            <value>turin</value>
                         </namespace>
                     </source>
                     <sourcePort>*</sourcePort>
@@ -309,24 +270,24 @@
                     <source xsi:type="PodNamespaceSelector">
                         <isHostCluster>false</isHostCluster>
                         <pod>
-                            <key>app</key>
-                            <value>resource_monitor</value>
+                            <key>*</key>
+                            <value>*</value>
                         </pod>
                         <namespace>
                             <key>name</key>
-                            <value>monitoring</value>
+                            <value>fluidos</value>
                         </namespace>
                     </source>
                     <sourcePort>*</sourcePort>
                     <destination xsi:type="PodNamespaceSelector">
                         <isHostCluster>true</isHostCluster>
                         <pod>
-                            <key>*</key>
-                            <value>*</value>
+                            <key>app</key>
+                            <value>resource_monitor</value>
                         </pod>
                         <namespace>
-                            <key>*</key>
-                            <value>*</value>
+                            <key>name</key>
+                            <value>monitoring</value>
                         </namespace>
                     </destination>
                     <destinationPort>43</destinationPort>

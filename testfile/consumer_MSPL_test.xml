@@ -42,7 +42,7 @@
                         </namespace>
                     </destination>
                     <destinationPort>*</destinationPort>
-                    <protocolType>TCP</protocolType>
+                    <protocolType>ALL</protocolType>
                 </configurationCondition>
                 <externalData xsi:type="Priority">
                     <value>60000</value>
@@ -50,7 +50,7 @@
                 <Name>RequestIntent_1</Name>
                 <isCNF>false</isCNF>
             </configurationRule>
-            <!-- from "app:order_placement" to "*", ALL  -->
+            <!-- from "app:help_desk" to "*", ALL  -->
             <configurationRule>
                 <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
                     <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
@@ -65,7 +65,7 @@
                         </pod>
                         <namespace>
                             <key>name</key>
-                            <value>fluidos</value>
+                            <value>turin</value>
                         </namespace>
                     </source>
                     <sourcePort>*</sourcePort>
@@ -104,7 +104,7 @@
                         </pod>
                         <namespace>
                             <key>name</key>
-                            <value>fluidos</value>
+                            <value>turin</value>
                         </namespace>
                     </source>
                     <sourcePort>*</sourcePort>
@@ -121,19 +121,15 @@
                 <Name>RequestIntent_3</Name>
                 <isCNF>false</isCNF>
             </configurationRule>
-            <!-- from ANY ("monitoring") to "app:order_placement", ALL  -->
+
         </configuration>
     </ITResource>
-
-
-
     <!-- Now define Authorization Intents -->
     <ITResource>
         <configuration xsi:type="AuthorizationIntents">
             <capability>
                 <Name>KubernetesNetworkFiltering</Name>
             </capability>
-            <acceptMonitoring>true</acceptMonitoring>
         </configuration>
     </ITResource>
 </ITResourceOrchestration>

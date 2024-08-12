@@ -1,7 +1,11 @@
 package eu.fluidos.cluster;
 
 
-import java.util.HashMap;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.io.IOException;
 import java.util.List;
 
 public class ClusterController {
@@ -11,20 +15,19 @@ public class ClusterController {
 		this.clusterService = clusterService;
 	}
 
-	/*public void initializeClusterData() {
-		clusterService.initializeClusterData();
-	}*/
+
 	public Cluster createCluster(List<Pod> pods){
 		return clusterService.createCluster(pods);
 	}
 
-	public void createProviderCluster(String endpoint){
-		clusterService.createProviderCluster(endpoint);
+
+	public void initializeHashMap(Cluster cluster) {
+		clusterService.initializeHashMaps(cluster);
 	}
-	public void createConsumerCluster(String endpoint){
-		clusterService.createConsumerCluster(endpoint);
-	}
-	public void initializeHashMap(HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer) {
-		clusterService.initializeHashMaps(podsByNamespaceAndLabelsProvider, podsByNamespaceAndLabelsConsumer);
+
+	@GetMapping("/cluster")
+	@ResponseStatus(HttpStatus.OK)
+	public Cluster getClusterData() throws IOException {
+		return ClusterService.getClusterData();
 	}
 }
