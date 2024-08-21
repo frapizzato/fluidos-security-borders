@@ -2,6 +2,7 @@ package eu.fluidos.harmonization;
 
 import eu.fluidos.jaxb.ConfigurationRule;
 import eu.fluidos.jaxb.ITResourceOrchestrationType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,13 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/harmonization")
+@RequestMapping("/harmonization")
 public class HarmonizationController {
-	private final HarmonizationService HarmonizationService;
+	private final HarmonizationService harmonizationService;
 	private ITResourceOrchestrationType providerIntents, consumerIntents;
 
+
+	@Autowired
 	public HarmonizationController(HarmonizationService HarmonizationService) {
-		this.HarmonizationService = HarmonizationService;
+		this.harmonizationService = HarmonizationService;
 	}
 
 	/*
@@ -28,30 +31,30 @@ public class HarmonizationController {
 	@ResponseStatus(HttpStatus.OK)
 	public List<ConfigurationRule> harmonize(ITResourceOrchestrationType provider,
 			ITResourceOrchestrationType consumer) {
-		return HarmonizationService.harmonize(provider, consumer);
+		return harmonizationService.harmonize(provider, consumer);
 	}
 
 	@GetMapping("/verify")
 	@ResponseStatus(HttpStatus.OK)
 	public boolean verify(ITResourceOrchestrationType provider, ITResourceOrchestrationType consumer) {
-		return HarmonizationService.verify(provider, consumer);
+		return harmonizationService.verify(provider, consumer);
 	}
     
     /* Temporary */ 
     
     public ITResourceOrchestrationType getProviderIntents() {
-		return HarmonizationService.getProviderIntents();
+		return harmonizationService.getProviderIntents();
 	}
 
 	public void setProviderIntents(ITResourceOrchestrationType intents) {
-		HarmonizationService.setProviderIntents(intents);
+		harmonizationService.setProviderIntents(intents);
 	}
 	
 	public ITResourceOrchestrationType getConsumerIntents() {
-		return HarmonizationService.getConsumerIntents();
+		return harmonizationService.getConsumerIntents();
 	}
 
 	public void setConsumerIntents(ITResourceOrchestrationType consumerIntents) {
-		HarmonizationService.setConsumerIntents(consumerIntents);
+		harmonizationService.setConsumerIntents(consumerIntents);
 	}
 }

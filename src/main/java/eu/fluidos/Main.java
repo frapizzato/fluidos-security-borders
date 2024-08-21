@@ -1,10 +1,5 @@
 package eu.fluidos;
 
-import eu.fluidos.cluster.ClusterService;
-import eu.fluidos.harmonization.HarmonizationController;
-import eu.fluidos.harmonization.HarmonizationData;
-import eu.fluidos.harmonization.HarmonizationService;
-import eu.fluidos.jaxb.ConfigurationRule;
 import eu.fluidos.jaxb.ITResourceOrchestrationType;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
@@ -12,6 +7,8 @@ import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -21,9 +18,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Scanner;
 
+@SpringBootApplication
 public class Main
 {
 	public static Logger loggerInfo = LogManager.getLogger(Main.class);
@@ -36,17 +33,17 @@ public class Main
 	public static final String ANSI_PURPLE = "\u001B[35m";
 	private static final Scanner scan = new Scanner(System.in);
 
+
     public static void main( String[] args )
     {
-		/* Intents files */
+		SpringApplication.run(Main.class, args);
+        /* Intents files */
 		//String arg_1 = "./testfile/provider_MSPL_test_dual.xml";
 		//String arg_2 = "./testfile/consumer_MSPL_test_dual.xml";
 		String arg_1 = "./testfile/provider_MSPL_test.xml";
 		String arg_2 = "./testfile/consumer_MSPL_test.xml";
-    	ClusterService ClusterService = new ClusterService();
-    	HarmonizationData HarmonizationData = new HarmonizationData();
-    	HarmonizationService HarmonizationService = new HarmonizationService(HarmonizationData, ClusterService);
-    	HarmonizationController HarmonizationController = new HarmonizationController(HarmonizationService);
+
+    	//HarmonizationController HarmonizationController = new HarmonizationController(HarmonizationService);
 
     	// To convert XML files into Java objects
         try {
@@ -65,11 +62,11 @@ public class Main
 			Path filePath_2 = Paths.get(arg_2);
 
         	Object tmp_1 = u.unmarshal(new FileInputStream(arg_1));
-        	ITResourceOrchestrationType intents_1 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_1).getValue();
+        	ITResourceOrchestrationType intents_1 = (ITResourceOrchestrationType) ((JAXBElement) tmp_1).getValue();
         	loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_1+"].");
 
         	Object tmp_2 = u.unmarshal(new FileInputStream(arg_2));
-        	ITResourceOrchestrationType intents_2 = (ITResourceOrchestrationType) JAXBElement.class.cast(tmp_2).getValue();
+        	ITResourceOrchestrationType intents_2 = (ITResourceOrchestrationType) ((JAXBElement) tmp_2).getValue();
 			loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_2+"].");
 
 
@@ -91,7 +88,7 @@ public class Main
 			System.out.println("\t\tThe output will be the harmonized sets of intents, free of all discordances."); */
 
         	loggerInfo.debug("Start of the harmonization process.");
-        	List<ConfigurationRule> res = HarmonizationController.harmonize(intents_1, intents_2);
+        	//List<ConfigurationRule> res = HarmonizationController.harmonize(intents_1, intents_2);
 
 			/* OLD HARMONIZATION */
 
@@ -103,7 +100,7 @@ public class Main
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 			m.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "./xsd/mspl.xsd");
 			QName qName = new QName("eu.fluidos.jaxb.ITResourceOrchestrationType", "ITResourceOrchestrationType");
-			JAXBElement<ITResourceOrchestrationType> root = new JAXBElement<>(qName, ITResourceOrchestrationType.class, HarmonizationController.getConsumerIntents());
+			//JAXBElement<ITResourceOrchestrationType> root = new JAXBElement<>(qName, ITResourceOrchestrationType.class, HarmonizationController.getConsumerIntents());
 	    	System.out.println(ANSI_PURPLE + "-".repeat(100)+ ANSI_RESET);
 			/*
 	    	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_RESET + "Press ENTER to output " + ANSI_YELLOW + "Consumer" + ANSI_RESET + " MSPL intent...");
@@ -122,7 +119,7 @@ public class Main
 			loggerInfo.info("\n" + stringWriter_2.toString());
 */
         } catch (Exception e){
-        	System.out.println(e.toString());
+        	System.out.println(e);
         	System.exit(1);
         }
     }

@@ -5,17 +5,19 @@ import eu.fluidos.cluster.Pod;
 import eu.fluidos.jaxb.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+@Component
 public class HarmonizationData {
 
-	private final Logger loggerInfo = LogManager.getLogger("harmonization");
+	private static final Logger loggerInfo = LogManager.getLogger("harmonization");
 	private final Scanner scan = new Scanner(System.in);
 	public boolean verify(RequestIntents requestIntent,
-						  AuthorizationIntents authIntent,
-						  HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer,
-						  HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider) {
+                                 AuthorizationIntents authIntent,
+                                 HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer,
+                                 HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider) {
 
 		System.out.println(Main.ANSI_PURPLE + "[VERIFY] " + Main.ANSI_RESET + "Process started");
 		printDash();
@@ -116,9 +118,9 @@ public class HarmonizationData {
 	 */
 
 	public List<ConfigurationRule> solveTypeOneDiscordances(RequestIntents requestIntent,
-															AuthorizationIntents authIntent,
-															HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer,
-															HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider) {
+                                                            AuthorizationIntents authIntent,
+                                                            HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer,
+                                                            HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider) {
 		printDash();
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW
 				+ "TYPE-1 DISCORDANCES" + Main.ANSI_RESET + /*
@@ -152,9 +154,9 @@ public class HarmonizationData {
 	 */
 
 	public List<ConfigurationRule> solverTypeTwoDiscordances(List<ConfigurationRule> harmonizedRequestConsumerRules,
-															 RequestIntents requestIntent, AuthorizationIntents authIntent,
-															 HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider,
-															 HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer) {
+                                                                    RequestIntents requestIntent, AuthorizationIntents authIntent,
+                                                                    HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider,
+                                                                    HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer) {
 		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
 		printDash();
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW
@@ -201,8 +203,8 @@ public class HarmonizationData {
 	 */
 
 	public List<ConfigurationRule> solverTypeThreeDiscordances(List<ConfigurationRule> harmonizedRequestConsumerRules,
-															   RequestIntents requestIntent, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer,
-															   HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider) {
+                                                                      RequestIntents requestIntent, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer,
+                                                                      HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider) {
 		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
 		printDash();
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW
@@ -238,8 +240,8 @@ public class HarmonizationData {
 	}
 
 	private List<ConfigurationRule> harmonizeConfigurationRule(ConfigurationRule conn, List<ConfigurationRule> connList,
-															   HashMap<String, HashMap<String, List<Pod>>> map_conn,
-															   HashMap<String, HashMap<String, List<Pod>>> map_connList) {
+                                                                      HashMap<String, HashMap<String, List<Pod>>> map_conn,
+                                                                      HashMap<String, HashMap<String, List<Pod>>> map_connList) {
 		// Initialize the resulting list.
 		List<ConfigurationRule> resList = new ArrayList<>();
 		// Create a deep copy of the current ConfigurationRule to be modified and
@@ -478,7 +480,7 @@ public class HarmonizationData {
 	}
 
 	private ConfigurationRule addHarmonizedRules(ConfigurationRule res, KubernetesNetworkFilteringCondition resCond,
-			String protocolList, Logger loggerInfo, String overlap, ResourceSelector rs) {
+                                                        String protocolList, Logger loggerInfo, String overlap, ResourceSelector rs) {
 		ConfigurationRule res1 = HarmonizationUtils.deepCopyConfigurationRule(res);
 		res1.setName(res.getName().split("-")[0] + "-HARMONIZED");
 		KubernetesNetworkFilteringCondition resCond1 = (KubernetesNetworkFilteringCondition) res1

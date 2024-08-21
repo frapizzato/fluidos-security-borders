@@ -1,4 +1,4 @@
-package eu.fluidos.ClusterExample;
+package eu.fluidos.clusterExample;
 
 import eu.fluidos.cluster.Cluster;
 import eu.fluidos.cluster.Namespace;

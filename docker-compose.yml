@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  harmonization-app:
+    image: harmonization-app:latest
+    build:
+      context: .
+    ports:
+      - "8080:8080"

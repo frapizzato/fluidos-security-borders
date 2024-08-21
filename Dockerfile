@@ -9,8 +9,8 @@ COPY target/harmonization.jar /app/harmonization.jar
 COPY xsd /app/xsd
 COPY testfile /app/testfile
 
+CMD ["java", "-jar", "harmonization.jar"]
+
 # Espone la porta 8080 per l'applicazione
 EXPOSE 8080
 
-# Comando per eseguire il JAR
-ENTRYPOINT ["java", "-jar", "/app/harmonization.jar"]
