@@ -29,8 +29,8 @@ public class HarmonizationService{
 	private PrivateIntents privateIntentsProvider, privateIntentsConsumer;
 	private RequestIntents requestIntentsProvider, requestIntentsConsumer;
     private final Logger loggerInfo = LogManager.getLogger("harmonizationManager");
-	String arg_1 = "./testfile/provider_MSPL_test.xml";
-	String arg_2 = "./testfile/consumer_MSPL_test.xml";
+	//String arg_1 = "./testfile/provider_MSPL_test.xml";
+	String arg_1 = "./testfile/consumer_MSPL_test.xml";
 
 	@Autowired
 	public HarmonizationService(HarmonizationData HarmonizationData, ClusterService clusterService) {
@@ -135,7 +135,7 @@ public class HarmonizationService{
         return null;
     }
 
-	public boolean verify(ITResourceOrchestrationType provider, ITResourceOrchestrationType consumer) {
+	public boolean verify(AuthorizationIntents authIntentsProvider) {
 		this.consumerVer = ClusterConsumerVerify.createConsumerCluster();
 		this.providerVer = ClusterProviderVerify.createProviderCluster();
 		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider = new HashMap();
@@ -147,9 +147,6 @@ public class HarmonizationService{
 			Unmarshaller u = jc.createUnmarshaller();
 			Object tmp_1 = u.unmarshal(new FileInputStream(arg_1));
 			intents_1 = (ITResourceOrchestrationType) ((JAXBElement<?>) tmp_1).getValue();
-
-			Object tmp_2 = u.unmarshal(new FileInputStream(arg_2));
-			intents_2 = (ITResourceOrchestrationType) ((JAXBElement<?>) tmp_2).getValue();
 		} catch (Exception e) {
 			System.out.println(e);
 			System.exit(1);
@@ -157,18 +154,18 @@ public class HarmonizationService{
 		boolean verify = true;
 		//this.providerIntents = provider;
 		//this.consumerIntents = consumer;
-		this.providerIntents = intents_1;
-		this.consumerIntents = intents_2;
+		//this.providerIntents = intents_1;
+		this.consumerIntents = intents_1;
 
         HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumerVer = clusterService.initializeHashMaps(this.consumerVer);
         HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProviderVer = clusterService.initializeHashMaps(this.providerVer);
 
-		this.authIntentsProvider = extractAuthorizationIntents(providerIntents);
+		this.authIntentsProvider = authIntentsProvider;
 		this.privateIntentsProvider = extractPrivateIntents(providerIntents);
 		this.requestIntentsProvider = extractRequestIntents(providerIntents);
 
-		this.authIntentsConsumer = extractAuthorizationIntents(consumerIntents);
-		this.privateIntentsConsumer = extractPrivateIntents(consumerIntents);
+		//this.authIntentsConsumer = extractAuthorizationIntents(consumerIntents);
+		//this.privateIntentsConsumer = extractPrivateIntents(consumerIntents);
 		this.requestIntentsConsumer = extractRequestIntents(consumerIntents);
 
 		harmonizationData.printRequestIntents(this.requestIntentsConsumer, "consumer");

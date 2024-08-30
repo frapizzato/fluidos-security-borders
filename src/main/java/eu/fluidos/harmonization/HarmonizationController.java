@@ -1,5 +1,6 @@
 package eu.fluidos.harmonization;
 
+import eu.fluidos.jaxb.AuthorizationIntents;
 import eu.fluidos.jaxb.ConfigurationRule;
 import eu.fluidos.jaxb.ITResourceOrchestrationType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +37,8 @@ public class HarmonizationController {
 
 	@GetMapping("/verify")
 	@ResponseStatus(HttpStatus.OK)
-	public boolean verify(ITResourceOrchestrationType provider, ITResourceOrchestrationType consumer) {
-		return harmonizationService.verify(provider, consumer);
+	public boolean verify(AuthorizationIntents authIntentsProvider) {
+		return harmonizationService.verify(authIntentsProvider);
 	}
     
     /* Temporary */ 
