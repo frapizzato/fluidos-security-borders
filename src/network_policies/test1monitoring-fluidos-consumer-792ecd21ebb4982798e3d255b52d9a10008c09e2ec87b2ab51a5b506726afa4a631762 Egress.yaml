@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: test1monitoring-fluidos-consumer-792ecd21ebb4982798e3d255b52d9a10008c09e2ec87b2ab51a5b506726afa4a631762
+  namespace: monitoring-fluidos-consumer-792ecd
+spec:
+  policyTypes:
+  - Egress
+  podSelector: {}
+  egress:
+  - ports:
+    - port: 80
+      protocol: TCP
+    to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: default-fluidos-consumer-792ecd
+      podSelector:
+        matchLabels:
+          app: product-catalogue

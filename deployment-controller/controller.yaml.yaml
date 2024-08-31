@@ -16,7 +16,7 @@ spec:
       serviceAccountName: costum-controller
       containers:
       - name: controller
-        image: sasa001/salvo:fluidos_latest
+        image: sasa001/sasa001:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080

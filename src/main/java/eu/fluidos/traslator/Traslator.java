@@ -994,8 +994,8 @@ public class Traslator {
     private void writeNetworkPoliciesToFile1(List<V1NetworkPolicy> networkPolicies) {
         try {
             for (V1NetworkPolicy networkPolicy : networkPolicies) {
-                String fileName = "src/network_policies/" + networkPolicy.getMetadata().getName() + " " + networkPolicy.getSpec().getPolicyTypes().get(0)+".yaml";
-                //String fileName = "/app/network_policies/" + networkPolicy.getMetadata().getName() + " " + networkPolicy.getSpec().getPolicyTypes().get(0)+".yaml";
+                //String fileName = "src/network_policies/" + networkPolicy.getMetadata().getName() + " " + networkPolicy.getSpec().getPolicyTypes().get(0)+".yaml";
+                String fileName = "/app/network_policies/" + networkPolicy.getMetadata().getName() + " " + networkPolicy.getSpec().getPolicyTypes().get(0)+".yaml";
                 FileWriter fileWriter = new FileWriter(fileName);
                 LinkedHashMap<String, Object> yamlData = new LinkedHashMap<>();
                 yamlData.put("apiVersion", networkPolicy.getApiVersion());

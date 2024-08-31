@@ -78,7 +78,6 @@ public class ConfigurationCondition {
     public boolean isIsCNF() {
         return isCNF;
     }
-
     /**
      * Imposta il valore della proprietà isCNF.
      * 
