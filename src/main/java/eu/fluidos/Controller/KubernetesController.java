@@ -344,8 +344,7 @@ public class KubernetesController {
                 if (item.type.equals("ADDED") || item.type.equals("MODIFIED")) {
                     JsonObject contract = item.object.getAsJsonObject();
                     JsonObject spec = contract.getAsJsonObject("spec");
-    
-                    // Accesso ai vari campi
+
                     String networkPropertyType = spec.has("flavor") && spec.getAsJsonObject("flavor").getAsJsonObject("spec").has("networkPropertyType") ?
                             spec.getAsJsonObject("flavor").getAsJsonObject("spec").get("networkPropertyType").getAsString() : null;
                     String networkRequests = spec.has("networkRequests") ? spec.get("networkRequests").getAsString() : null;
@@ -373,10 +372,9 @@ public void accessConfigMap(ApiClient client, String namespace, String configMap
         V1ConfigMap configMap = api.readNamespacedConfigMap(configMapName, namespace, null);
         KubernetesNetworkFilteringCondition condition = new KubernetesNetworkFilteringCondition();
 
-        // Stampa i dati della ConfigMap
         if (configMap.getData() != null) {
             String networkIntent = configMap.getData().get("networkIntent");
-            // Convertire la stringa JSON in JsonArray
+
             JsonObject jsonObject = JsonParser.parseString(networkIntent).getAsJsonObject();
             JsonObject source = jsonObject.getAsJsonObject("source");
             JsonObject destination = jsonObject.getAsJsonObject("destination");
