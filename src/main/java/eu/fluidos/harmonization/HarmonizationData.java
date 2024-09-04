@@ -565,16 +565,6 @@ public class HarmonizationData {
 		}
 	}
 
-	public void writeRequestIntents(ITResourceOrchestrationType intent, List<ConfigurationRule> harmonizedRequest) {
-		for (ITResourceType IT_rt : intent.getITResource()) {
-			if (IT_rt.getConfiguration().getClass().equals(RequestIntents.class)) {
-				RequestIntents tmp = (RequestIntents) IT_rt.getConfiguration();
-				tmp.getConfigurationRule().clear();
-				tmp.getConfigurationRule().addAll(harmonizedRequest);
-			}
-		}
-	}
-
 	public void printHarmonizedRules(List<ConfigurationRule> harmonizedRules, String intents, String discordances) {
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100) + Main.ANSI_RESET);
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + "List of " + Main.ANSI_YELLOW

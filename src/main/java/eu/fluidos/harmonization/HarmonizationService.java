@@ -100,11 +100,7 @@ public class HarmonizationService{
          * they can be retrieved
          */
 
-		/*TO DO */
-        //HarmonizationData.writeRequestIntents(this.consumerIntents, harmonizedRequest_Consumer);
-        //HarmonizationData.writeRequestIntents(this.providerIntents, harmonizedRequest_Provider);
-
-        return null;
+        return harmonizedRequest_Consumer;
     }
 
 	public boolean verify(Cluster cluster, AuthorizationIntents authIntents) {
