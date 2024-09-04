@@ -4,79 +4,59 @@ import eu.fluidos.cluster.Cluster;
 import eu.fluidos.cluster.ClusterService;
 import eu.fluidos.cluster.Pod;
 import eu.fluidos.clusterExample.ClusterConsumerVerify;
-import eu.fluidos.clusterExample.ClusterProviderHarmonize;
-import eu.fluidos.clusterExample.ClusterProviderVerify;
 import eu.fluidos.jaxb.*;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
-@Service
 public class HarmonizationService{
-	private final HarmonizationData harmonizationData;
-	private final ClusterService clusterService;
-	private Cluster consumer, provider, consumerVer, providerVer;
-	private ITResourceOrchestrationType providerIntents, consumerIntents;
-	private AuthorizationIntents authIntentsProvider, authIntentsConsumer;
-	private PrivateIntents privateIntentsProvider, privateIntentsConsumer;
-	private RequestIntents requestIntentsProvider, requestIntentsConsumer;
+	private final HarmonizationData harmonizationData = new HarmonizationData();
+	private final ClusterService clusterService = new ClusterService();
     private final Logger loggerInfo = LogManager.getLogger("harmonizationManager");
-	//String arg_1 = "./testfile/provider_MSPL_test.xml";
-	String arg_1 = "./testfile/consumer_MSPL_test.xml";
+	String arg_1 = "./testfile/provider_MSPL_test.xml";
+	String arg_2 = "./testfile/consumer_MSPL_test.xml";
 
-	@Autowired
-	public HarmonizationService(HarmonizationData HarmonizationData, ClusterService clusterService) {
-		this.harmonizationData = HarmonizationData;
-		this.clusterService = clusterService;
-	}
-
-	public List<ConfigurationRule> harmonize(ITResourceOrchestrationType provider,
-			ITResourceOrchestrationType consumer) {
+	public List<ConfigurationRule> harmonize(Cluster cluster, RequestIntents requestIntents) {
         ITResourceOrchestrationType intents_1 = null;
-        ITResourceOrchestrationType intents_2 = null;
+		ITResourceOrchestrationType intents_2 = null;
+		AuthorizationIntents authIntentsProvider;
+		RequestIntents requestIntentsProvider, requestIntentsConsumer;
+		/* Temporary */
+		//Cluster provider = ClusterProviderHarmonize.createProviderCluster();
+		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider = new HashMap<>();
+		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer = new HashMap<>();
+
         try {
             JAXBContext jc = JAXBContext.newInstance("eu.fluidos.jaxb");
             Unmarshaller u = jc.createUnmarshaller();
             Object tmp_1 = u.unmarshal(new FileInputStream(arg_1));
             intents_1 = (ITResourceOrchestrationType) ((JAXBElement<?>) tmp_1).getValue();
-
-            Object tmp_2 = u.unmarshal(new FileInputStream(arg_2));
-            intents_2 = (ITResourceOrchestrationType) ((JAXBElement<?>) tmp_2).getValue();
+			/* Temporary */
+			//Object tmp_2 = u.unmarshal(new FileInputStream(arg_2));
+			//intents_2 = (ITResourceOrchestrationType) ((JAXBElement<?>) tmp_2).getValue();
         } catch (Exception e) {
             System.out.println(e);
             System.exit(1);
         }
 
-        //this.providerIntents = provider;
-        //this.consumerIntents = consumer;
-        this.providerIntents = intents_1;
-        this.consumerIntents = intents_2;
-        this.consumer = ClusterConsumerVerify.createConsumerCluster();
-        this.provider = ClusterProviderHarmonize.createProviderCluster();
 
-        /*
-         * In the current version, all the data about the cluster is hard-coded here
-         * (temporary solution). TODO: final version should retrieve these data from the
-         * API server of peered clusters. need to understand which data is needed.
-         */
+        ITResourceOrchestrationType providerIntents = intents_1;
+		/* Temporary */
+		//ITResourceOrchestrationType consumerIntents = intents_2;
+
+		requestIntentsConsumer = requestIntents;
 
 
-        HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer = clusterService.initializeHashMaps(this.consumer);
-        HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider = clusterService.initializeHashMaps(this.provider);
-
-        //ClusterService.initializeHashMaps(podsByNamespaceAndLabelsProvider, podsByNamespaceAndLabelsConsumer);
-
-        System.out.println("Provider:" + podsByNamespaceAndLabelsProvider);
-        System.out.println("Consumer:" + podsByNamespaceAndLabelsConsumer);
-
+		/* Temporary */
+		//podsByNamespaceAndLabelsProvider = clusterService.initializeHashMaps(provider);
+		podsByNamespaceAndLabelsProvider = clusterService.initializeHashMaps(cluster);
         /*
          * First, the intents are extracted from the given data structure into three
          * different lists (for both provider and consumer): - "AuthorizationIntents" -
@@ -85,28 +65,18 @@ public class HarmonizationService{
 
         loggerInfo.debug(
                 "[harmonization] - parse the received ITResourceOrchestration types to extract the CONSUMER/PROVIDER intent sets.");
-        this.authIntentsProvider = extractAuthorizationIntents(providerIntents);
-        this.privateIntentsProvider = extractPrivateIntents(providerIntents);
-        this.requestIntentsProvider = extractRequestIntents(providerIntents);
+        authIntentsProvider = extractAuthorizationIntents(providerIntents);
+		//* Temporary */
+        //requestIntentsConsumer = extractRequestIntents(consumerIntents);
 
-        this.authIntentsConsumer = extractAuthorizationIntents(consumerIntents);
-        this.privateIntentsConsumer = extractPrivateIntents(consumerIntents);
-        this.requestIntentsConsumer = extractRequestIntents(consumerIntents);
-
-        if (this.requestIntentsConsumer == null) {
-            System.err.println("Error: requestIntentsConsumer is null");
-
-        }
 
         harmonizationData.printDash();
-        harmonizationData.printRequestIntents(this.requestIntentsConsumer, "consumer");
-        harmonizationData.printDash();
-        harmonizationData.printRequestIntents(this.requestIntentsProvider, "provider");
+        harmonizationData.printRequestIntents(requestIntentsConsumer, "consumer");
         harmonizationData.printDash();
         harmonizationData.printAuth();
-        harmonizationData.printAuthorizationIntents(this.authIntentsProvider);
+        harmonizationData.printAuthorizationIntents(authIntentsProvider);
 
-        if (authIntentsProvider.getMandatoryConnectionList().size() > 1 && !requestIntentsConsumer.isAcceptMonitoring()) {
+        if (authIntentsProvider.getMandatoryConnectionList().size() > 1 && !Objects.requireNonNull(requestIntentsConsumer).isAcceptMonitoring()) {
             System.out.println("[Harmonization] - Consumer is not accepting monitoring");
             return null;
         } else
@@ -120,59 +90,65 @@ public class HarmonizationService{
          * service in the provider space and this is not forbidden by host -> these are
          * forced into the final set of "Provider" intents
          */
-        List<ConfigurationRule> harmonizedRequest_Consumer = harmonizationData.solveTypeOneDiscordances(this.requestIntentsConsumer, this.authIntentsProvider,
+        List<ConfigurationRule> harmonizedRequest_Consumer = harmonizationData.solveTypeOneDiscordances(requestIntentsConsumer, authIntentsProvider,
                 podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider);
-        harmonizedRequest_Consumer = harmonizationData.solverTypeTwoDiscordances(harmonizedRequest_Consumer, this.requestIntentsConsumer, this.authIntentsProvider, podsByNamespaceAndLabelsProvider, podsByNamespaceAndLabelsConsumer);
-        List<ConfigurationRule> harmonizedRequest_Provider = harmonizationData.solverTypeThreeDiscordances(harmonizedRequest_Consumer, this.requestIntentsProvider, podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider);
-        //List<ConfigurationRule> = HarmonizationData.HarmonizeDiscordances(harmonizedRequest_Consumer, this.requestIntentsProvider, podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider);
+        harmonizedRequest_Consumer = harmonizationData.solverTypeTwoDiscordances(harmonizedRequest_Consumer, requestIntentsConsumer, authIntentsProvider, podsByNamespaceAndLabelsProvider, podsByNamespaceAndLabelsConsumer);
+        //List<ConfigurationRule> harmonizedRequest_Provider = harmonizationData.solverTypeThreeDiscordances(harmonizedRequest_Consumer, requestIntentsProvider, podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider);
+
         /**
          * Finally, write the resulting Intents in the original data structures so that
          * they can be retrieved
          */
+
+		/*TO DO */
         //HarmonizationData.writeRequestIntents(this.consumerIntents, harmonizedRequest_Consumer);
         //HarmonizationData.writeRequestIntents(this.providerIntents, harmonizedRequest_Provider);
 
         return null;
     }
 
-	public boolean verify(AuthorizationIntents authIntentsProvider) {
-		this.consumerVer = ClusterConsumerVerify.createConsumerCluster();
-		this.providerVer = ClusterProviderVerify.createProviderCluster();
-		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider = new HashMap();
-		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer = new HashMap();
+	public boolean verify(Cluster cluster, AuthorizationIntents authIntents) {
+		AuthorizationIntents authIntentsProvider;
+		RequestIntents requestIntentsConsumer;
+		Cluster consumer = ClusterConsumerVerify.createConsumerCluster();
+		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider = new HashMap<>();
+		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer = new HashMap<>();
 		ITResourceOrchestrationType intents_1 = null;
+		/* Temporary */
 		ITResourceOrchestrationType intents_2 = null;
 		try {
 			JAXBContext jc = JAXBContext.newInstance("eu.fluidos.jaxb");
 			Unmarshaller u = jc.createUnmarshaller();
-			Object tmp_1 = u.unmarshal(new FileInputStream(arg_1));
+			Object tmp_1 = u.unmarshal(new FileInputStream(arg_2));
 			intents_1 = (ITResourceOrchestrationType) ((JAXBElement<?>) tmp_1).getValue();
+
+			/* Temporary */
+			//Object tmp_2 = u.unmarshal(new FileInputStream(arg_1));
+			//intents_2 = (ITResourceOrchestrationType) ((JAXBElement<?>) tmp_2).getValue();
 		} catch (Exception e) {
 			System.out.println(e);
 			System.exit(1);
 		}
-		boolean verify = true;
-		//this.providerIntents = provider;
-		//this.consumerIntents = consumer;
-		//this.providerIntents = intents_1;
-		this.consumerIntents = intents_1;
 
-        HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumerVer = clusterService.initializeHashMaps(this.consumerVer);
-        HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProviderVer = clusterService.initializeHashMaps(this.providerVer);
+		boolean verify;
 
-		this.authIntentsProvider = authIntentsProvider;
-		this.privateIntentsProvider = extractPrivateIntents(providerIntents);
-		this.requestIntentsProvider = extractRequestIntents(providerIntents);
+		ITResourceOrchestrationType consumerIntents = intents_1;
+		/* Temporary */
+		//ITResourceOrchestrationType providerIntents = intents_2;
+		authIntentsProvider = authIntents;
 
-		//this.authIntentsConsumer = extractAuthorizationIntents(consumerIntents);
-		//this.privateIntentsConsumer = extractPrivateIntents(consumerIntents);
-		this.requestIntentsConsumer = extractRequestIntents(consumerIntents);
-
-		harmonizationData.printRequestIntents(this.requestIntentsConsumer, "consumer");
+		requestIntentsConsumer = extractRequestIntents(consumerIntents);
+		/* Temporary */
+		//authIntentsProvider = extractAuthorizationIntents(providerIntents);
+		podsByNamespaceAndLabelsConsumer = clusterService.initializeHashMaps(cluster);
+		/* Temporary */
+		//podsByNamespaceAndLabelsConsumer = clusterService.initializeHashMaps(consumer);
+		harmonizationData.printRequestIntents(requestIntentsConsumer, "consumer");
 		harmonizationData.printDash();
 		harmonizationData.printAuth();
-		harmonizationData.printAuthorizationIntents(this.authIntentsProvider);
+		harmonizationData.printAuthorizationIntents(authIntentsProvider);
 		harmonizationData.printDash();
+
 
 		if (authIntentsProvider.getMandatoryConnectionList().size()>1 && !requestIntentsConsumer.isAcceptMonitoring()) {
 			System.out.println("[Harmonization] - Consumer is not accepting monitoring");
@@ -181,7 +157,7 @@ public class HarmonizationService{
 		else
 			System.out.println("[Harmonization] - Consumer accepted monitoring");
 
-		verify = harmonizationData.verify(this.requestIntentsConsumer, this.authIntentsProvider,
+		verify = harmonizationData.verify(requestIntentsConsumer, authIntentsProvider,
 						podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider);
 
 		System.out.println("[Orchestrator] - verify result: " + verify);
@@ -206,24 +182,5 @@ public class HarmonizationService{
 				.filter(it -> it.getConfiguration().getClass().equals(RequestIntents.class))
 				.map(it -> (RequestIntents) it.getConfiguration()).findFirst().orElse(null);
 	}
-	
-	/* Temporary */
-
-	public ITResourceOrchestrationType getProviderIntents() {
-		return providerIntents;
-	}
-
-	public void setProviderIntents(ITResourceOrchestrationType intents) {
-		this.providerIntents = intents;
-	}
-
-	public ITResourceOrchestrationType getConsumerIntents() {
-		return consumerIntents;
-	}
-
-	public void setConsumerIntents(ITResourceOrchestrationType consumerIntents) {
-		this.consumerIntents = consumerIntents;
-	}
-
 
 }

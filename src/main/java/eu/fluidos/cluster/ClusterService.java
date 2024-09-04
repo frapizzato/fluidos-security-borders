@@ -1,17 +1,11 @@
 package eu.fluidos.cluster;
 
-import org.springframework.stereotype.Service;
-
 import java.util.HashMap;
 import java.util.List;
 
-@Service
 public class ClusterService {
-	private final ClusterData clusterData;
+	private final ClusterData clusterData = new ClusterData();
 
-    public ClusterService(ClusterData clusterData) {
-        this.clusterData = clusterData;
-    }
 
     public Cluster createCluster(List<Pod> pods) {
 		return clusterData.createCluster(pods);

@@ -190,7 +190,7 @@ public class HarmonizationData {
 				List<ConfigurationRule> tmp = harmonizeConfigurationRule(cr_provider, harmonizedRules,
 						podsByNamespaceAndLabelsProvider, podsByNamespaceAndLabelsConsumer);
 				for (ConfigurationRule cr : tmp)
-					harmonizedRules.add(HarmonizationUtils.deepCopyConfigurationRule(cr));
+					harmonizedRules.add(HarmonizationUtils.deepCopyConfigurationAndInvertVCluster(cr));
 			}
 			printHarmonizedRules(harmonizedRules, "harmonized CONSUMER intents"," after type-2 discordances resolution:");
 			return harmonizedRules;
@@ -587,19 +587,5 @@ public class HarmonizationData {
 		}
 		System.out.println(Main.ANSI_PURPLE + "-".repeat(100) + Main.ANSI_RESET);
 	}
-	public void printHarmonizedRulesNew(List<ConfigurationRule> harmonizedRules, String intents, String discordances) {
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(100) + Main.ANSI_RESET);
-		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + "List of " + Main.ANSI_YELLOW
-				+ intents + Main.ANSI_RESET + discordances);
-		for (ConfigurationRule cr : harmonizedRules) {
-			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr
-					.getConfigurationCondition();
-			System.out.print("   (*) " + cr.getName() + " - ");
-			System.out.print(HarmonizationUtils.kubernetesNetworkFilteringConditionToString(cond) + " ");
-			System.out.println(cond.getSource().isIsHostCluster() +" " + cond.getDestination().isIsHostCluster());
-		}
-		System.out.println(Main.ANSI_PURPLE + "-".repeat(100) + Main.ANSI_RESET);
-	}
-
 
 }

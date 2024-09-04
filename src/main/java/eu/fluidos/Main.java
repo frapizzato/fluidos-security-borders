@@ -1,13 +1,17 @@
 package eu.fluidos;
 
+import eu.fluidos.cluster.Cluster;
+import eu.fluidos.harmonization.HarmonizationController;
+import eu.fluidos.jaxb.AuthorizationIntents;
+import eu.fluidos.jaxb.ConfigurationRule;
 import eu.fluidos.jaxb.ITResourceOrchestrationType;
+import eu.fluidos.jaxb.RequestIntents;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import javax.xml.XMLConstants;
@@ -18,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Scanner;
 
 @SpringBootApplication
@@ -36,7 +41,7 @@ public class Main
 
     public static void main( String[] args )
     {
-		SpringApplication.run(Main.class, args);
+		//SpringApplication.run(Main.class, args);
         /* Intents files */
 		//String arg_1 = "./testfile/provider_MSPL_test_dual.xml";
 		//String arg_2 = "./testfile/consumer_MSPL_test_dual.xml";
@@ -70,6 +75,11 @@ public class Main
 			loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_2+"].");
 
 
+			HarmonizationController HarmonizationController = new HarmonizationController();
+
+			Cluster clusterV = null;
+			AuthorizationIntents authorizationIntents = null;
+			boolean verify = HarmonizationController.verify(clusterV, authorizationIntents);
 			/* VERIFY */
 
 			/*loggerInfo.debug("Start of the verify process.");
@@ -88,7 +98,10 @@ public class Main
 			System.out.println("\t\tThe output will be the harmonized sets of intents, free of all discordances."); */
 
         	loggerInfo.debug("Start of the harmonization process.");
-        	//List<ConfigurationRule> res = HarmonizationController.harmonize(intents_1, intents_2);
+			Cluster clusterH = null;
+
+			RequestIntents requestIntents = null;
+			List<ConfigurationRule> res = HarmonizationController.harmonize(clusterH, requestIntents);
 
 			/* OLD HARMONIZATION */
 

@@ -268,18 +268,6 @@
                 <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
                     <isCNF>false</isCNF>
                     <source xsi:type="PodNamespaceSelector">
-                        <isHostCluster>false</isHostCluster>
-                        <pod>
-                            <key>*</key>
-                            <value>*</value>
-                        </pod>
-                        <namespace>
-                            <key>name</key>
-                            <value>fluidos</value>
-                        </namespace>
-                    </source>
-                    <sourcePort>*</sourcePort>
-                    <destination xsi:type="PodNamespaceSelector">
                         <isHostCluster>true</isHostCluster>
                         <pod>
                             <key>app</key>
@@ -288,6 +276,18 @@
                         <namespace>
                             <key>name</key>
                             <value>monitoring</value>
+                        </namespace>
+                    </source>
+                    <sourcePort>*</sourcePort>
+                    <destination xsi:type="PodNamespaceSelector">
+                        <isHostCluster>false</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>name</key>
+                            <value>fluidos</value>
                         </namespace>
                     </destination>
                     <destinationPort>43</destinationPort>
