@@ -71,7 +71,6 @@ public class HarmonizationData {
 					tmp.getProtocolType().value());
 
 			// Step-1.2: check the ports. Detect if the port ranges of res are overlapping with tmp.
-			overlapSrcPort = HarmonizationUtils.computeVerifiedPortRange(resCond.getSourcePort(), tmp.getSourcePort());
 			overlapDstPort = HarmonizationUtils.computeVerifiedPortRange(resCond.getDestinationPort(), tmp.getDestinationPort());
 
 			// Step-1.3: check the source and destination.s
@@ -283,20 +282,17 @@ public class HarmonizationData {
 			// with tmp.
 
 			//System.out.println("-Step-1.2");
-			String[] sourcePortList = HarmonizationUtils.computeHarmonizedPortRange(resCond.getSourcePort(), tmp.getSourcePort())
-					.split(";");
+
 			String[] destinationPortList = HarmonizationUtils
 					.computeHarmonizedPortRange(resCond.getDestinationPort(), tmp.getDestinationPort()).split(";");
 
 
-			if(sourcePortList[0].equals(resCond.getSourcePort()) || destinationPortList[0].equals(resCond.getDestinationPort())){
+			if(destinationPortList[0].equals(resCond.getDestinationPort())){
 				// No overlap with the current rule (tmp), continue and check next one.
 				//System.out.println("No overlap with the current rule (tmp), continue and check next one");
 				continue;
 			}
 
-			//System.out.println("srcPortList" + sourcePortList[0] + " " + resCond.getSourcePort() );
-			//System.out.println("destPortList" + destinationPortList[0] + " " + resCond.getDestinationPort() );
 
 			//Step-1.3: check the source and destination.s
 			PodNamespaceSelector pns1 = (PodNamespaceSelector) resCond.getSource();
@@ -352,35 +348,6 @@ public class HarmonizationData {
 			// two ranges (e.g., if overlap is in the middle of the interval).
 
 			//System.out.println("-Step-2");
-			if (sourcePortList[0].isEmpty()) {
-				// If the port range is empty, it means that it is not possible to harmonize the
-				// current intent (i.e., port range is included in the authorization rule's
-				// one)... just update the flag for the moment.
-				//System.out.println("sourcePortList[0] is empty");
-				flag++;
-			} else if (sourcePortList.length > 1) {
-				// Partial overlap causing the port range to be broke into two ranges. First,
-				// create a new ConfigurationRule, assign one of the two ranges and recursively
-				// call the function...
-				//System.out.println("Source - Partial overlap causing the port range to be broke into two ranges");
-				ConfigurationRule res2 = addHarmonizedRules(res, resCond, sourcePortList[1], loggerInfo, "sourcePort",
-						null);
-				resList.addAll(harmonizeConfigurationRule(res2, connList, map_conn, map_connList));
-
-				// ... then modify the local ConfigurationRule with the other range and
-				// continue.
-				ConfigurationRule res3 = addHarmonizedRules(res, resCond, sourcePortList[0], loggerInfo, "sourcePort",
-						null);
-				resList.addAll(harmonizeConfigurationRule(res3, connList, map_conn, map_connList));
-
-			} else {
-				//System.out.println("Source - Partial overlap, but no need to break the port range into two.");
-				// Partial overlap, but no need to break the port range into two.
-				ConfigurationRule res3 = addHarmonizedRules(res, resCond, sourcePortList[0], loggerInfo, "sourcePort",
-						null);
-				resList.addAll(harmonizeConfigurationRule(res3, connList, map_conn, map_connList));
-			}
-
 			// Repeat the process for the destinationPort range.
 			if (destinationPortList[0].isEmpty()) {
 				//System.out.println("destinationPortList[0] is empty");
@@ -484,9 +451,7 @@ public class HarmonizationData {
 		KubernetesNetworkFilteringCondition resCond1 = (KubernetesNetworkFilteringCondition) res1
 				.getConfigurationCondition();
 
-		if (Objects.equals(overlap, "sourcePort"))
-			resCond1.setSourcePort(protocolList);
-		else if (Objects.equals(overlap, "destinationPort"))
+		if (Objects.equals(overlap, "destinationPort"))
 			resCond1.setDestinationPort(protocolList);
 		else if (Objects.equals(overlap, "transportProtocol"))
 			resCond1.setProtocolType(ProtocolType.fromValue(protocolList));
