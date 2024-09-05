@@ -2339,7 +2339,9 @@ __status__ = "Development"
 		</complexContent>
 	</complexType>
 	
-
+	<!-- To express the DENY/ALLOW action of each intent.
+		 NOTE: IntraVClusterConf. + InterVClusterConf must be all "ALLOW", whereas AuthorizationInt. can use both "ALLOW" and "DENY" 
+	-->
 	<complexType name="KubernetesNetworkFilteringAction">
 		<complexContent>
 			<extension base="ITResource:ConfigurationAction">
