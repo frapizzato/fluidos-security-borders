@@ -5,9 +5,59 @@
 Questo file è stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 Vedere https://eclipse-ee4j.github.io/jaxb-ri 
 Qualsiasi modifica a questo file andrà persa durante la ricompilazione dello schema di origine. 
-Generato il: 2024.09.05 alle 03:17:04 PM CEST 
+Generato il: 2024.06.05 alle 03:54:45 PM CEST 
 
   -->
+  <bindings scd="x-schema::tns" xmlns:tns="http://www.example.org/IoTHoneynetSchema">
+    <schemaBindings map="false">
+      <package name="eu.fluidos.jaxb"/>
+    </schemaBindings>
+    <bindings scd="~tns:ioTHoneyNetType">
+      <class ref="eu.fluidos.jaxb.IoTHoneyNetType"/>
+    </bindings>
+    <bindings scd="~tns:honeyNetType">
+      <class ref="eu.fluidos.jaxb.HoneyNetType"/>
+    </bindings>
+    <bindings scd="~tns:netType">
+      <class ref="eu.fluidos.jaxb.NetType"/>
+    </bindings>
+    <bindings scd="~tns:routerType">
+      <class ref="eu.fluidos.jaxb.RouterType"/>
+    </bindings>
+    <bindings scd="~tns:routeType">
+      <class ref="eu.fluidos.jaxb.RouteType"/>
+    </bindings>
+    <bindings scd="~tns:containmentGatewayType">
+      <class ref="eu.fluidos.jaxb.ContainmentGatewayType"/>
+    </bindings>
+    <bindings scd="~tns:honeyPotType">
+      <class ref="eu.fluidos.jaxb.HoneyPotType"/>
+    </bindings>
+    <bindings scd="~tns:ioTHoneyPotType">
+      <class ref="eu.fluidos.jaxb.IoTHoneyPotType"/>
+    </bindings>
+    <bindings scd="~tns:ioTRouterType">
+      <class ref="eu.fluidos.jaxb.IoTRouterType"/>
+    </bindings>
+    <bindings scd="~tns:physicalLocation">
+      <class ref="eu.fluidos.jaxb.PhysicalLocation"/>
+    </bindings>
+    <bindings scd="~tns:ifType">
+      <class ref="eu.fluidos.jaxb.IfType"/>
+    </bindings>
+    <bindings scd="~tns:operatingSystemType">
+      <class ref="eu.fluidos.jaxb.OperatingSystemType"/>
+    </bindings>
+    <bindings scd="~tns:softwareType">
+      <class ref="eu.fluidos.jaxb.SoftwareType"/>
+    </bindings>
+    <bindings scd="~tns:ioTResourceType">
+      <typesafeEnumClass ref="eu.fluidos.jaxb.IoTResourceType"/>
+    </bindings>
+    <bindings scd="~tns:interactionLevel">
+      <typesafeEnumClass ref="eu.fluidos.jaxb.InteractionLevel"/>
+    </bindings>
+  </bindings>
   <bindings scd="x-schema::tns" xmlns:tns="http://modeliosoft/xsddesigner/a22bd60b-ee3d-425c-8618-beb6a854051a/ITResource.xsd">
     <schemaBindings map="false">
       <package name="eu.fluidos.jaxb"/>
@@ -647,56 +697,6 @@ Generato il: 2024.09.05 alle 03:17:04 PM CEST
     </bindings>
     <bindings scd="~tns:ProtocolType">
       <typesafeEnumClass ref="eu.fluidos.jaxb.ProtocolType"/>
-    </bindings>
-  </bindings>
-  <bindings scd="x-schema::tns" xmlns:tns="http://www.example.org/IoTHoneynetSchema">
-    <schemaBindings map="false">
-      <package name="eu.fluidos.jaxb"/>
-    </schemaBindings>
-    <bindings scd="~tns:ioTHoneyNetType">
-      <class ref="eu.fluidos.jaxb.IoTHoneyNetType"/>
-    </bindings>
-    <bindings scd="~tns:honeyNetType">
-      <class ref="eu.fluidos.jaxb.HoneyNetType"/>
-    </bindings>
-    <bindings scd="~tns:netType">
-      <class ref="eu.fluidos.jaxb.NetType"/>
-    </bindings>
-    <bindings scd="~tns:routerType">
-      <class ref="eu.fluidos.jaxb.RouterType"/>
-    </bindings>
-    <bindings scd="~tns:routeType">
-      <class ref="eu.fluidos.jaxb.RouteType"/>
-    </bindings>
-    <bindings scd="~tns:containmentGatewayType">
-      <class ref="eu.fluidos.jaxb.ContainmentGatewayType"/>
-    </bindings>
-    <bindings scd="~tns:honeyPotType">
-      <class ref="eu.fluidos.jaxb.HoneyPotType"/>
-    </bindings>
-    <bindings scd="~tns:ioTHoneyPotType">
-      <class ref="eu.fluidos.jaxb.IoTHoneyPotType"/>
-    </bindings>
-    <bindings scd="~tns:ioTRouterType">
-      <class ref="eu.fluidos.jaxb.IoTRouterType"/>
-    </bindings>
-    <bindings scd="~tns:physicalLocation">
-      <class ref="eu.fluidos.jaxb.PhysicalLocation"/>
-    </bindings>
-    <bindings scd="~tns:ifType">
-      <class ref="eu.fluidos.jaxb.IfType"/>
-    </bindings>
-    <bindings scd="~tns:operatingSystemType">
-      <class ref="eu.fluidos.jaxb.OperatingSystemType"/>
-    </bindings>
-    <bindings scd="~tns:softwareType">
-      <class ref="eu.fluidos.jaxb.SoftwareType"/>
-    </bindings>
-    <bindings scd="~tns:ioTResourceType">
-      <typesafeEnumClass ref="eu.fluidos.jaxb.IoTResourceType"/>
-    </bindings>
-    <bindings scd="~tns:interactionLevel">
-      <typesafeEnumClass ref="eu.fluidos.jaxb.InteractionLevel"/>
     </bindings>
   </bindings>
 </bindings>

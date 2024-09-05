@@ -1,56 +1,16 @@
 package eu.fluidos.traslator;
 
 import eu.fluidos.LabelsKeyValue;
-import eu.fluidos.Main;
-import eu.fluidos.jaxb.AuthorizationIntents;
-import eu.fluidos.jaxb.CIDRSelector;
-import eu.fluidos.jaxb.ConfigurationRule;
-import eu.fluidos.jaxb.ITResourceOrchestrationType;
-import eu.fluidos.jaxb.InterVClusterConfiguration;
-import eu.fluidos.jaxb.IntraVClusterConfiguration;
-import eu.fluidos.jaxb.KeyValue;
-import eu.fluidos.jaxb.KubernetesNetworkFilteringCondition;
-import eu.fluidos.jaxb.PodNamespaceSelector;
-import eu.fluidos.jaxb.PrivateIntents;
-import eu.fluidos.jaxb.RequestIntents;
-import eu.fluidos.harmonization.HarmonizationUtils;
-
+import eu.fluidos.jaxb.*;
+import io.kubernetes.client.custom.IntOrString;
+import io.kubernetes.client.openapi.models.*;
+import io.kubernetes.client.util.Yaml;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.ObjectUtils.Null;
-import org.yaml.snakeyaml.DumperOptions;
-
-import com.google.gson.Gson;
-
-import io.kubernetes.client.openapi.models.V1NetworkPolicy;
-import io.kubernetes.client.openapi.models.V1NetworkPolicyIngressRule;
-import io.kubernetes.client.openapi.models.V1NetworkPolicyPeer;
-import io.kubernetes.client.openapi.models.V1NetworkPolicyPort;
-import io.kubernetes.client.openapi.models.V1NetworkPolicyEgressRule;
-import io.kubernetes.client.custom.IntOrString;
-import io.kubernetes.client.openapi.models.V1IPBlock;
-import io.kubernetes.client.openapi.models.V1LabelSelector;
-import io.kubernetes.client.openapi.models.V1LabelSelectorRequirement;
-import io.kubernetes.client.openapi.models.V1ObjectMeta;
-import io.kubernetes.client.proto.V1alpha1Admissionregistration.Rule;
-import io.kubernetes.client.proto.V1beta1Extensions.Ingress;
-import io.kubernetes.client.util.Yaml;
-import okhttp3.Request;
-import io.kubernetes.client.openapi.models.V1NetworkPolicySpec;
-import java.util.Arrays;
-import org.yaml.snakeyaml.DumperOptions;
-import eu.fluidos.traslator.Ruleinfo;
+import java.util.*;
 
 
 public class Traslator {

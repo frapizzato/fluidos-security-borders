@@ -5,11 +5,11 @@
  
   <!-- Request Intents -->
   <ITResource>
-    <configuration xsi:type="InterVClusterConfiguration">
+    <configuration xsi:type="RequestIntents">
       <capability>
         <Name>KubernetesNetworkFiltering</Name>
       </capability>
-
+        <acceptMonitoring>true</acceptMonitoring>
       <!-- from "app:order_placement" to ANY, ALL protocols -->
       <configurationRule>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">

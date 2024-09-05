@@ -4,7 +4,7 @@
  xsi:schemaLocation="http://modeliosoft/xsddesigner/a22bd60b-ee3d-425c-8618-beb6a854051a/ITResource.xsd ../xsd/mspl.xsd">
   
  <ITResource>
-    <configuration xsi:type="PrivateIntents">
+    <configuration xsi:type="RequestIntents">
       <capability>
         <Name>KubernetesNetworkFiltering</Name>
       </capability>
@@ -13,7 +13,7 @@
   
   <!-- Private Intents -->
   <ITResource>
-    <configuration xsi:type="InterVClusterConfiguration">
+    <configuration xsi:type="PrivateIntents">
       <capability>
         <Name>KubernetesNetworkFiltering</Name>
       </capability>

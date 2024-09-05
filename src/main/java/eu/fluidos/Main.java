@@ -1,25 +1,18 @@
 package eu.fluidos;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.StringWriter;
-import java.util.Scanner;
-
+import eu.fluidos.Controller.KubernetesController;
+import eu.fluidos.jaxb.ITResourceOrchestrationType;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
 import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import eu.fluidos.Controller.KubernetesController;
-
-import jakarta.xml.bind.*;
-import eu.fluidos.jaxb.*;
-import eu.fluidos.harmonization.HarmonizationUtils;
-import eu.fluidos.traslator.Traslator;
-import eu.fluidos.Module;
+import java.io.File;
+import java.io.FileInputStream;
 public class Main 
 {
 	public static Logger loggerInfo = LogManager.getLogger(Main.class);
