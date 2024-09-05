@@ -74,12 +74,12 @@ public class Main
         	ITResourceOrchestrationType intents_2 = (ITResourceOrchestrationType) ((JAXBElement) tmp_2).getValue();
 			loggerInfo.debug("Successfull unmarshalling of first input file ["+arg_2+"].");
 
-
-			HarmonizationController HarmonizationController = new HarmonizationController();
-
 			Cluster clusterV = null;
+			HarmonizationController HarmonizationController = new HarmonizationController(clusterV);
+
+
 			AuthorizationIntents authorizationIntents = null;
-			boolean verify = HarmonizationController.verify(clusterV, authorizationIntents);
+			boolean verify = HarmonizationController.verify(authorizationIntents);
 			/* VERIFY */
 
 			/*loggerInfo.debug("Start of the verify process.");
@@ -99,9 +99,9 @@ public class Main
 
         	loggerInfo.debug("Start of the harmonization process.");
 			Cluster clusterH = null;
-
+			HarmonizationController HarmonizationControllerNew = new HarmonizationController(clusterH);
 			RequestIntents requestIntents = null;
-			List<ConfigurationRule> res = HarmonizationController.harmonize(clusterH, requestIntents);
+			List<ConfigurationRule> res = HarmonizationController.harmonize( requestIntents);
 
 			/* OLD HARMONIZATION */
 
