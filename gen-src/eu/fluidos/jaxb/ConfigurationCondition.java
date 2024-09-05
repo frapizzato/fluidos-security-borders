@@ -2,7 +2,7 @@
 // Questo file è stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
 // Qualsiasi modifica a questo file andrà persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.06.01 alle 03:05:52 PM CEST 
+// Generato il: 2024.09.05 alle 04:55:50 PM CEST 
 //
 
 
@@ -78,6 +78,7 @@ public class ConfigurationCondition {
     public boolean isIsCNF() {
         return isCNF;
     }
+
     /**
      * Imposta il valore della proprietà isCNF.
      * 

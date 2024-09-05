@@ -5,7 +5,7 @@
 Questo file è stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 Vedere https://eclipse-ee4j.github.io/jaxb-ri 
 Qualsiasi modifica a questo file andrà persa durante la ricompilazione dello schema di origine. 
-Generato il: 2024.03.28 alle 11:20:02 AM GMT+01:00 
+Generato il: 2024.09.05 alle 03:17:04 PM CEST 
 
   -->
   <bindings scd="x-schema::tns" xmlns:tns="http://modeliosoft/xsddesigner/a22bd60b-ee3d-425c-8618-beb6a854051a/ITResource.xsd">
@@ -573,11 +573,11 @@ Generato il: 2024.03.28 alle 11:20:02 AM GMT+01:00
     <bindings scd="~tns:HTTPCondition">
       <class ref="eu.fluidos.jaxb.HTTPCondition"/>
     </bindings>
-    <bindings scd="~tns:IntraVClusterConfiguration">
-      <class ref="eu.fluidos.jaxb.IntraVClusterConfiguration"/>
+    <bindings scd="~tns:PrivateIntents">
+      <class ref="eu.fluidos.jaxb.PrivateIntents"/>
     </bindings>
-    <bindings scd="~tns:InterVClusterConfiguration">
-      <class ref="eu.fluidos.jaxb.InterVClusterConfiguration"/>
+    <bindings scd="~tns:RequestIntents">
+      <class ref="eu.fluidos.jaxb.RequestIntents"/>
     </bindings>
     <bindings scd="~tns:AuthorizationIntents">
       <class ref="eu.fluidos.jaxb.AuthorizationIntents"/>

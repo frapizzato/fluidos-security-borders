@@ -11,7 +11,9 @@ import eu.fluidos.jaxb.IntraVClusterConfiguration;
 import eu.fluidos.jaxb.KeyValue;
 import eu.fluidos.jaxb.KubernetesNetworkFilteringCondition;
 import eu.fluidos.jaxb.PodNamespaceSelector;
-import eu.fluidos.harmonization.Utils;
+import eu.fluidos.jaxb.PrivateIntents;
+import eu.fluidos.jaxb.RequestIntents;
+import eu.fluidos.harmonization.HarmonizationUtils;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -44,6 +46,7 @@ import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import io.kubernetes.client.proto.V1alpha1Admissionregistration.Rule;
 import io.kubernetes.client.proto.V1beta1Extensions.Ingress;
 import io.kubernetes.client.util.Yaml;
+import okhttp3.Request;
 import io.kubernetes.client.openapi.models.V1NetworkPolicySpec;
 import java.util.Arrays;
 import org.yaml.snakeyaml.DumperOptions;
@@ -53,8 +56,8 @@ import eu.fluidos.traslator.Ruleinfo;
 public class Traslator {
     private ITResourceOrchestrationType intents;
     private AuthorizationIntents authIntents;
-	private IntraVClusterConfiguration intraVCluster;
-	private InterVClusterConfiguration interVCluster;
+	private PrivateIntents intraVCluster;
+	private RequestIntents interVCluster;
     private List<V1NetworkPolicy> networkPolicies;
     private Map<String,String> localNamespaces;
     private Map<String,String> remoteNamespaces;
@@ -74,11 +77,11 @@ public class Traslator {
             .filter(it -> it.getConfiguration().getClass().equals(AuthorizationIntents.class))
             .map(it -> (AuthorizationIntents) it.getConfiguration()).findFirst().orElse(null);
         this.intraVCluster = intents.getITResource().stream()
-            .filter(it -> it.getConfiguration().getClass().equals(IntraVClusterConfiguration.class))
-            .map(it -> (IntraVClusterConfiguration) it.getConfiguration()).findFirst().orElse(null);
+            .filter(it -> it.getConfiguration().getClass().equals(PrivateIntents.class))
+            .map(it -> (PrivateIntents) it.getConfiguration()).findFirst().orElse(null);
         this.interVCluster = intents.getITResource().stream()
-            .filter(it -> it.getConfiguration().getClass().equals(InterVClusterConfiguration.class))
-            .map(it -> (InterVClusterConfiguration) it.getConfiguration()).findFirst().orElse(null);
+            .filter(it -> it.getConfiguration().getClass().equals(RequestIntents.class))
+            .map(it -> (RequestIntents) it.getConfiguration()).findFirst().orElse(null);
                     
             
             if (this.intraVCluster != null){

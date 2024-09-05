@@ -1,5 +1,6 @@
 package eu.fluidos.Controller;
 
+import eu.fluidos.Cluster;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
@@ -18,11 +19,13 @@ import io.kubernetes.client.openapi.models.V1NetworkPolicyPeer;
 import io.kubernetes.client.openapi.models.V1NetworkPolicySpec;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import io.kubernetes.client.openapi.models.V1Pod;
+import io.kubernetes.client.openapi.models.V1PodList;
 import io.kubernetes.client.util.ClientBuilder;
 import io.kubernetes.client.util.Config;
 import io.kubernetes.client.util.Watch;
 import io.kubernetes.client.util.Yaml;
 import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -64,7 +67,10 @@ import org.jose4j.json.internal.json_simple.JSONObject;
 import org.jose4j.json.internal.json_simple.parser.JSONParser;
 
 import eu.fluidos.Crds.TunnelEndpoint;
-
+import eu.fluidos.harmonization.HarmonizationController;
+import eu.fluidos.harmonization.HarmonizationService;
+import eu.fluidos.Namespace;
+import eu.fluidos.Pod;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -82,6 +88,7 @@ import com.google.gson.JsonSyntaxException;
 
 import ch.qos.logback.classic.joran.action.ConfigurationAction;
 import ch.qos.logback.core.Context;
+import eu.fluidos.harmonization.*;;
 
 public class KubernetesController {
 
@@ -94,6 +101,7 @@ public class KubernetesController {
     //Aggiunto per il controller che si autentica automaticamente
     private ApiClient client;
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private HarmonizationController harmController;
     public KubernetesController(ITResourceOrchestrationType intents) {
         this.intents=intents;
         try {
@@ -133,6 +141,7 @@ public class KubernetesController {
         }catch(Exception e){
             
         }*/
+        this.harmController = new HarmonizationController(createCluster(client));
         CoreV1Api api = new CoreV1Api(client);
         Thread namespaceThread = new Thread(() -> {
             try {
@@ -366,6 +375,47 @@ public class KubernetesController {
         }
     }
     
+public Cluster createCluster (ApiClient client){
+    CoreV1Api api = new CoreV1Api(client);
+    Cluster myCluster = new Cluster(null,null);
+    try {
+    V1NamespaceList namespaceList = api.listNamespace(null,null,null,null,null,null,null,null,null,null);
+    List <Namespace> NamespaceList = new ArrayList<>();
+    List <Pod> PodList = new ArrayList<>();
+    for (V1Namespace namespace : namespaceList.getItems()){
+        Namespace nm = new Namespace();
+        HashMap<String, String> hashMapLabels = new HashMap<>(namespace.getMetadata().getLabels());
+        nm.setLabels(hashMapLabels);
+        NamespaceList.add(nm);
+        V1PodList podList = api.listNamespacedPod(namespace.getMetadata().getName(), null, null, null, null, null, null, null, null, null, null);
+        for (V1Pod pod : podList.getItems()) {
+            Pod pd = new Pod();
+            HashMap<String, String> podHashMapLabels = new HashMap<>(pod.getMetadata().getLabels());
+            pd.setLabels(podHashMapLabels);
+            pd.setNamespace(nm);
+            PodList.add(pd);
+        }
+    }
+
+   for (Namespace nm : NamespaceList){
+        System.out.println("Namespace: "+nm.getLabels());
+   }
+
+   for (Pod pd : PodList){
+        System.out.println("Pod: "+pd.getLabels()+"Pod namespace:"+pd.getNamespace());
+   }
+    myCluster.setNamespaces(NamespaceList);
+    myCluster.setPods(PodList);
+    //Lui dovrà fare l' Epurate dei namespace
+    
+} catch (ApiException e) {
+    System.err.println("Errore: ");
+    e.printStackTrace();
+    System.err.println("Errore durante la chiamata all'API Kubernetes nel metodo CreateCluster: " + e.getResponseBody());
+}
+return myCluster;
+}
+
 public void accessConfigMap(ApiClient client, String namespace, String configMapName) throws Exception {
     try {
         CoreV1Api api = new CoreV1Api(client);
@@ -419,7 +469,9 @@ public void accessConfigMap(ApiClient client, String namespace, String configMap
             }
             AuthorizationIntents authInt = new AuthorizationIntents();
             authInt.getMandatoryConnectionList().add(rule);
-            StampaAuthIntents(authInt);
+            //System.out.println("Stampa della ConfigMap:");
+
+            //StampaAuthIntents(authInt);
             //Adesso l' ho testato così, ossia ho aggiunto la lista delle configurationRule ad una lista preesistente di mandatoryconnection, tuttavia l' obbiettico è inviare la lsita delle configuration RUle all armonizzatore essendo solo quelle ad essere Request Intent
         }
 
@@ -489,20 +541,23 @@ public void accessConfigMap(ApiClient client, String namespace, String configMap
                             JsonObject externalDataJson = characteristics.getAsJsonObject("externalData");
                             prio.setValue(externalDataJson.getAsJsonObject("priority").getAsBigInteger());
                         }
-                        if (characteristics.has("deniedCommunications")) {
+                        if (characteristics.has("deniedCommunications") && characteristics.has("mandatoryCommunications")) {
                             JsonArray deniedCommunications = characteristics.getAsJsonArray("deniedCommunications");
                             System.out.println("Denied Communications: " + deniedCommunications);
                             populateAuthorizationIntents(deniedCommunications, forbiddenConnectionList,action,prio,isCNF);
-                        } else {
-                            System.out.println("Denied Communications not found.");
-                        }
-
-                        if (characteristics.has("mandatoryCommunications")) {
                             JsonArray mandatoryCommunications = characteristics.getAsJsonArray("mandatoryCommunications");
                             System.out.println("Mandatory Communications: " + mandatoryCommunications);
                             populateAuthorizationIntents(mandatoryCommunications, mandatoryConnectionList,action,prio,isCNF);
-                        } else {
-                            System.out.println("Mandatory Communications not found.");
+                        } else if (characteristics.has("mandatoryCommunications")) {
+                            JsonArray mandatoryCommunications = characteristics.getAsJsonArray("mandatoryCommunications");
+                            System.out.println("Mandatory Communications: " + mandatoryCommunications);
+                            populateAuthorizationIntents(mandatoryCommunications, mandatoryConnectionList,action,prio,isCNF);
+                        } else if (characteristics.has("deniedCommunications")) {
+                            JsonArray deniedCommunications = characteristics.getAsJsonArray("deniedCommunications");
+                            System.out.println("Denied Communications: " + deniedCommunications);
+                            populateAuthorizationIntents(deniedCommunications, forbiddenConnectionList,action,prio,isCNF);
+                        }else {
+                            System.out.println("Mandatory Communications and Denied communications not found.");
                         }
                     } else {
                         System.out.println("Characteristics not found.");
@@ -511,7 +566,11 @@ public void accessConfigMap(ApiClient client, String namespace, String configMap
                     System.out.println("TypeData not found.");
                 }
             }
-            StampaAuthIntents(authorizationIntents); //Stampa di prova da commentare
+            System.out.println("Stampa del flavour:");
+            StampaAuthIntents(authorizationIntents);
+            if (authorizationIntents != null && authorizationIntents.getForbiddenConnectionList()!= null && authorizationIntents.getMandatoryConnectionList()!= null){
+                System.out.println("Valore dalla chiamata del verifier:" + this.harmController.verify(authorizationIntents));
+            }
         }
     } catch (ApiException e) {
         System.err.println("Errore durante la chiamata all'API Kubernetes per cercare i flavor: " + e.getMessage());
@@ -611,15 +670,12 @@ private ResourceSelector parseResourceSelector(JsonObject resourceSelectors) {
 }
     //Stampa di prova, da commentare
     void StampaAuthIntents(AuthorizationIntents authorizationIntents) {
-        System.out.println("Entro nella stampa");
+        System.out.println(" ");
         if (authorizationIntents != null) {
-            
+            System.out.println("Mandatory communications: ");
             List<ConfigurationRule> mandatoryConnectionList = authorizationIntents.getMandatoryConnectionList();
             if (mandatoryConnectionList != null) {
-                System.out.println("Non è nullo");
-                System.out.println(mandatoryConnectionList.toString());
                 for (ConfigurationRule cr : mandatoryConnectionList) {
-                    System.out.println("Non è nullo2");
                         KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
                         System.out.println("Source:");
                         if(cond.getSource().getClass().equals(PodNamespaceSelector.class)){
@@ -633,7 +689,50 @@ private ResourceSelector parseResourceSelector(JsonObject resourceSelectors) {
                                 System.out.println("key:"+pod.getKey()+" "+"value: "+pod.getValue());
                             }
                         } else {
-                            System.out.println("cidrSource: "+(CIDRSelector) cond.getSource());
+                            CIDRSelector CIDRAddress = (CIDRSelector) cond.getSource();
+                            System.out.println("cidrDestination: "+CIDRAddress.getAddressRange());
+
+                        }
+                        System.out.println("Destination:");
+                        if(cond.getDestination().getClass().equals(PodNamespaceSelector.class)){
+                            PodNamespaceSelector pns = (PodNamespaceSelector) cond.getDestination();
+                            for (KeyValue namespace: pns.getNamespace()){
+                                System.out.println("namespace");
+                                System.out.println("key:"+namespace.getKey()+" "+"value: "+namespace.getValue());
+                            }
+                            for (KeyValue pod: pns.getPod()){
+                                System.out.println("pod");
+                                System.out.println("key:"+pod.getKey()+" "+"value: "+pod.getValue());
+                            }
+                        } else {
+                            CIDRSelector CIDRAddress = (CIDRSelector) cond.getDestination();
+                            System.out.println("cidrDestination: "+CIDRAddress.getAddressRange());
+
+                        }
+                        String destPort = cond.getDestinationPort();
+                        System.out.println("DestinationPort: "+destPort);
+                        
+                }
+            }
+            System.out.println("Denied communications: ");
+            List<ConfigurationRule> deniedConnectionList = authorizationIntents.getForbiddenConnectionList();
+            if (deniedConnectionList != null) {
+                for (ConfigurationRule cr : deniedConnectionList) {
+                        KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
+                        System.out.println("Source:");
+                        if(cond.getSource().getClass().equals(PodNamespaceSelector.class)){
+                            PodNamespaceSelector pns = (PodNamespaceSelector) cond.getSource();
+                            for (KeyValue namespace: pns.getNamespace()){
+                                System.out.println("namespace");
+                                System.out.println("key:"+namespace.getKey()+" "+"value: "+namespace.getValue());
+                            }
+                            for (KeyValue pod: pns.getPod()){
+                                System.out.println("pod");
+                                System.out.println("key:"+pod.getKey()+" "+"value: "+pod.getValue());
+                            }
+                        } else {
+                            CIDRSelector CIDRAddress = (CIDRSelector) cond.getSource();
+                            System.out.println("cidrDestination: "+CIDRAddress.getAddressRange());
 
                         }
                         System.out.println("Destination:");
@@ -658,6 +757,7 @@ private ResourceSelector parseResourceSelector(JsonObject resourceSelectors) {
                 }
             }
         }
+        System.out.println(" ");
     }
 
     

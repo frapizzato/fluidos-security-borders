@@ -1,7 +1,9 @@
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\ExternalData.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\LawfulInterceptionCapability.java
+C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\src\main\java\eu\fluidos\harmonization\HarmonizationData.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\Site2SiteNetworkConfiguration.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\MSTP.java
+C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\src\main\java\eu\fluidos\cluster\ClusterService.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\AuthenticationCondition.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\KubernetesNetworkFilterCondition.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\LoggingAction.java
@@ -57,6 +59,7 @@ C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\TechnologyActionSecurityProperty.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\src\main\java\eu\fluidos\Namespace.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\GenericChannelProtectionTechnologyParameter.java
+C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\src\main\java\eu\fluidos\cluster\ClusterData.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\AuthzDecisionCapabiliy.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\NetworkSlicingConditionParameters.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\IPSCapability.java
@@ -72,6 +75,8 @@ C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\FMR.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\ReencryptNetworkConfiguration.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\RuleParameters.java
+C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\src\main\java\eu\fluidos\harmonization\HarmonizationService.java
+C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\src\main\java\eu\fluidos\cluster\ClusterController.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\DataAggregationAction.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\DataProtectionCapability.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\TLSVPNTechnologyParameter.java
@@ -140,6 +145,7 @@ C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\SecuredService.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\StatefulCondition.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\ForwardProxyCapabiity.java
+C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\src\main\java\eu\fluidos\harmonization\HarmonizationUtils.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\src\main\java\eu\fluidos\Crds\TunnelEndpoint.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\ResourceSelector.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\FiveGSecuritySlice.java
@@ -165,6 +171,7 @@ C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\IdentityProtectionCapability.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\TimeCondition.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\RoutingCapability.java
+C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\PrivateIntents.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\Configuration.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\IntegrationFabricParameters.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\InterVClusterConfiguration.java
@@ -175,7 +182,6 @@ C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\TrafficAnalysisCapability.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\Vancouver.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\NetworkSlicingActionType.java
-C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\src\main\java\eu\fluidos\harmonization\HarmonizationManager.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\NattingCapability.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\Topics.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\src\main\java\eu\fluidos\Cluster.java
@@ -184,6 +190,7 @@ C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\RouteType.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\TechnologySpecificParameters.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\Count.java
+C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\RequestIntents.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\package-info.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\src\main\java\eu\fluidos\LabelsKeyValue.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\PolicyDependency.java
@@ -206,8 +213,6 @@ C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\LocalConnectionParameters.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\TrafficDivertActionType.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\VIoTHoneyNetActionType.java
-C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\VIoTHoneyNetAction.java
-C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\src\main\java\eu\fluidos\harmonization\Utils.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\FirewallConfigurationCondition.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\AuthorizationAction.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\VulnerabilitiesScannerCapability.java
@@ -215,6 +220,7 @@ C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\PrivacyConfigurationCondition.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\ICRA.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\EncryptionCapability.java
+C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\src\main\java\eu\fluidos\harmonization\HarmonizationController.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\src\main\java\eu\fluidos\Controller\KubernetesController.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\src\main\java\eu\fluidos\traslator\Ruleinfo.java
 C:\Users\salva\Desktop\traslator\fluidos-security-orchestrator\fluidos-security-orchestrator\gen-src\eu\fluidos\jaxb\KubernetesNetworkFilteringAction.java

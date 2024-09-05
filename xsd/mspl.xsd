@@ -2287,7 +2287,7 @@ __status__ = "Development"
 <!-- FLUIDOS extension for border protection (POLITO)  -->
 
 	<!-- Used to define the Private intents, i.e., those regarding communications internal to the VCluster and not requiring any authorization. -->
-	<complexType name="IntraVClusterConfiguration">
+	<complexType name="PrivateIntents">
 		<complexContent>
 			<extension base="ITResource:Configuration">
 				<sequence>
@@ -2303,10 +2303,11 @@ __status__ = "Development"
 	</complexType>
 	
 	<!-- Used to define the Request intents, i.e., those regarding communications crossing the VCluster border and that MUST be authorized by hosting cluster. -->
-	<complexType name="InterVClusterConfiguration">
+	<complexType name="RequestIntents">
 		<complexContent>
 			<extension base="ITResource:Configuration">
 				<sequence>
+					<element maxOccurs="1" minOccurs="1" name="acceptMonitoring" type="boolean"/>
 					<element maxOccurs="unbounded" minOccurs="0" name="configurationRule" type="ITResource:ConfigurationRule"> </element>
 					<!-- 
 					<element maxOccurs="unbounded" minOccurs="0" name="NetworkSlicingConditionParameters" type="ITResource:NetworkSlicingConditionParameters"> </element>

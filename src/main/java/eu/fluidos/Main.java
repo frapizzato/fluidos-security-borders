@@ -16,9 +16,8 @@ import javax.xml.validation.SchemaFactory;
 import eu.fluidos.Controller.KubernetesController;
 
 import jakarta.xml.bind.*;
-import eu.fluidos.harmonization.HarmonizationManager;
 import eu.fluidos.jaxb.*;
-import eu.fluidos.harmonization.Utils;
+import eu.fluidos.harmonization.HarmonizationUtils;
 import eu.fluidos.traslator.Traslator;
 import eu.fluidos.Module;
 public class Main 
