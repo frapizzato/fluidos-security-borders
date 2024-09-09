@@ -25,11 +25,13 @@ public class HarmonizationService{
 
 	public List<ConfigurationRule> harmonize(Cluster cluster, RequestIntents requestIntents) {
 		ITResourceOrchestrationType intents_1 = null;
+		ITResourceOrchestrationType intents_2 = null;
 		AuthorizationIntents authIntentsProvider;
 		RequestIntents requestIntentsConsumer;
 		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider = new HashMap<>();
 		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer = new HashMap<>();
-		String arg_1 = "/app/testfile/provider_MSPL_test.xml";
+		String arg_1 = "/app/testfile/provider_MSPL_demo.xml";
+		String arg_2 = "/app/testfile/consumer_MSPL_demo.xml";
 		try {
 			JAXBContext jc = JAXBContext.newInstance("eu.fluidos.jaxb");
 			Unmarshaller u = jc.createUnmarshaller();
@@ -94,9 +96,9 @@ public class HarmonizationService{
 		AuthorizationIntents authIntentsProvider;
 		RequestIntents requestIntentsConsumer;
 		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider = new HashMap<>();
-		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer = new HashMap<>();
+		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer;
 		ITResourceOrchestrationType intents_1 = null;
-		String arg_1 = "/app/testfile/provider_MSPL_test.xml";
+		String arg_1 = "/app/testfile/provider_MSPL_demo.xml";
 		boolean verify;
 		try {
 			JAXBContext jc = JAXBContext.newInstance("eu.fluidos.jaxb");
