@@ -5,7 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e06c4273-881c-4010-953e-5a1bae5a2cd8" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/java/eu/fluidos/harmonization/HarmonizationData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/eu/fluidos/harmonization/HarmonizationData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/eu/fluidos/harmonization/HarmonizationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/eu/fluidos/harmonization/HarmonizationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testfile/consumer_MSPL_demo.xml" beforeDir="false" afterPath="$PROJECT_DIR$/testfile/consumer_MSPL_demo.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testfile/provider_MSPL_demo.xml" beforeDir="false" afterPath="$PROJECT_DIR$/testfile/provider_MSPL_demo.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testfile/provider_MSPL_test.xml" beforeDir="false" afterPath="$PROJECT_DIR$/testfile/provider_MSPL_test.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
