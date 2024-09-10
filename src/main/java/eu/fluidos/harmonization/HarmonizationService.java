@@ -4,6 +4,7 @@ import eu.fluidos.cluster.Cluster;
 import eu.fluidos.cluster.ClusterService;
 import eu.fluidos.cluster.Pod;
 import eu.fluidos.clusterExample.ClusterConsumerVerify;
+import eu.fluidos.clusterExample.ClusterProviderHarmonize;
 import eu.fluidos.jaxb.*;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
@@ -14,22 +15,23 @@ import org.apache.logging.log4j.Logger;
 import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class HarmonizationService{
 	private final HarmonizationData harmonizationData = new HarmonizationData();
 	private final ClusterService clusterService = new ClusterService();
     private final Logger loggerInfo = LogManager.getLogger("harmonizationManager");
-	String arg_1 = "./testfile/provider_MSPL_test.xml";
-	String arg_2 = "./testfile/consumer_MSPL_test.xml";
+	String arg_1 = "./testfile/provider_MSPL_demo.xml";
+	String arg_2 = "./testfile/consumer_MSPL_demo.xml";
 
 	public List<ConfigurationRule> harmonize(Cluster cluster, RequestIntents requestIntents) {
         ITResourceOrchestrationType intents_1 = null;
 		ITResourceOrchestrationType intents_2 = null;
 		AuthorizationIntents authIntentsProvider;
-		RequestIntents requestIntentsProvider, requestIntentsConsumer;
+		RequestIntents requestIntentsConsumer;
 		/* Temporary */
-		//Cluster provider = ClusterProviderHarmonize.createProviderCluster();
+		Cluster provider = ClusterProviderHarmonize.createProviderCluster();
 		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider = new HashMap<>();
 		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer = new HashMap<>();
 
@@ -39,8 +41,8 @@ public class HarmonizationService{
             Object tmp_1 = u.unmarshal(new FileInputStream(arg_1));
             intents_1 = (ITResourceOrchestrationType) ((JAXBElement<?>) tmp_1).getValue();
 			/* Temporary */
-			//Object tmp_2 = u.unmarshal(new FileInputStream(arg_2));
-			//intents_2 = (ITResourceOrchestrationType) ((JAXBElement<?>) tmp_2).getValue();
+			Object tmp_2 = u.unmarshal(new FileInputStream(arg_2));
+			intents_2 = (ITResourceOrchestrationType) ((JAXBElement<?>) tmp_2).getValue();
         } catch (Exception e) {
             System.out.println(e);
             System.exit(1);
@@ -49,14 +51,32 @@ public class HarmonizationService{
 
         ITResourceOrchestrationType providerIntents = intents_1;
 		/* Temporary */
-		//ITResourceOrchestrationType consumerIntents = intents_2;
+		ITResourceOrchestrationType consumerIntents = intents_2;
 
-		requestIntentsConsumer = requestIntents;
+		//requestIntentsConsumer = requestIntents;
 
 
 		/* Temporary */
-		//podsByNamespaceAndLabelsProvider = clusterService.initializeHashMaps(provider);
-		podsByNamespaceAndLabelsProvider = clusterService.initializeHashMaps(cluster);
+		podsByNamespaceAndLabelsProvider = clusterService.initializeHashMaps(provider);
+		for (Map.Entry<String, HashMap<String, List<Pod>>> namespaceEntry : podsByNamespaceAndLabelsProvider.entrySet()) {
+			String namespace = namespaceEntry.getKey();
+			HashMap<String, List<Pod>> labelsMap = namespaceEntry.getValue();
+
+			System.out.println("Namespace: " + namespace);
+			for (Map.Entry<String, List<Pod>> labelsEntry : labelsMap.entrySet()) {
+				String labels = labelsEntry.getKey();
+				List<Pod> pods = labelsEntry.getValue();
+
+				System.out.println("  Labels: " + labels);
+				for (Pod pod : pods) {
+					System.out.println("    Pod: " + pod.getLabels());
+					// Aggiungi qui altre informazioni sul pod se necessario
+				}
+			}
+			System.out.println("");
+			System.out.println("");
+		}
+		//podsByNamespaceAndLabelsProvider = clusterService.initializeHashMaps(cluster);
         /*
          * First, the intents are extracted from the given data structure into three
          * different lists (for both provider and consumer): - "AuthorizationIntents" -
@@ -67,7 +87,7 @@ public class HarmonizationService{
                 "[harmonization] - parse the received ITResourceOrchestration types to extract the CONSUMER/PROVIDER intent sets.");
         authIntentsProvider = extractAuthorizationIntents(providerIntents);
 		//* Temporary */
-        //requestIntentsConsumer = extractRequestIntents(consumerIntents);
+        requestIntentsConsumer = extractRequestIntents(consumerIntents);
 
 
         harmonizationData.printDash();
@@ -136,9 +156,9 @@ public class HarmonizationService{
 		requestIntentsConsumer = extractRequestIntents(consumerIntents);
 		/* Temporary */
 		//authIntentsProvider = extractAuthorizationIntents(providerIntents);
-		podsByNamespaceAndLabelsConsumer = clusterService.initializeHashMaps(cluster);
+		//podsByNamespaceAndLabelsConsumer = clusterService.initializeHashMaps(cluster);
 		/* Temporary */
-		//podsByNamespaceAndLabelsConsumer = clusterService.initializeHashMaps(consumer);
+		podsByNamespaceAndLabelsConsumer = clusterService.initializeHashMaps(consumer);
 		harmonizationData.printRequestIntents(requestIntentsConsumer, "consumer");
 		harmonizationData.printDash();
 		harmonizationData.printAuth();

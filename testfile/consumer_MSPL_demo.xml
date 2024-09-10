@@ -9,8 +9,8 @@
             <capability>
                 <Name>KubernetesNetworkFiltering</Name>
             </capability>
-             <acceptMonitoring>true</acceptMonitoring>
-            <!-- from "app:order_placement" to "app:product_catalogue", ALL  -->
+            <acceptMonitoring>true</acceptMonitoring>
+            <!-- from "app:order_placement" to "name:default", ALL  -->
             <configurationRule>
                 <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
                     <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
@@ -25,15 +25,15 @@
                         </pod>
                         <namespace>
                             <key>name</key>
-                            <value>fluidos</value>
+                            <value>turin</value>
                         </namespace>
                     </source>
                     <sourcePort>*</sourcePort>
                     <destination xsi:type="PodNamespaceSelector">
                         <isHostCluster>true</isHostCluster>
                         <pod>
-                            <key>app</key>
-                            <value>product_catalogue</value>
+                            <key>*</key>
+                            <value>*</value>
                         </pod>
                         <namespace>
                             <key>name</key>
@@ -65,7 +65,7 @@
                         </pod>
                         <namespace>
                             <key>name</key>
-                            <value>fluidos</value>
+                            <value>rome</value>
                         </namespace>
                     </source>
                     <sourcePort>*</sourcePort>
@@ -76,8 +76,8 @@
                             <value>*</value>
                         </pod>
                         <namespace>
-                            <key>name</key>
-                            <value>default</value>
+                            <key>*</key>
+                            <value>*</value>
                         </namespace>
                     </destination>
                     <destinationPort>*</destinationPort>
@@ -105,7 +105,7 @@
                         </pod>
                         <namespace>
                             <key>name</key>
-                            <value>fluidos</value>
+                            <value>rome</value>
                         </namespace>
                     </source>
                     <sourcePort>*</sourcePort>
@@ -122,57 +122,6 @@
                 <Name>RequestIntent_3</Name>
                 <isCNF>false</isCNF>
             </configurationRule>
-
-            <!-- from ANY ("monitoring") to "app:order_placement", ALL  -->
-            <configurationRule>
-                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
-                    <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
-                </configurationRuleAction>
-                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
-                    <isCNF>false</isCNF>
-                    <source xsi:type="PodNamespaceSelector">
-                        <isHostCluster>true</isHostCluster>
-                        <pod>
-                            <key>*</key>
-                            <value>*</value>
-                        </pod>
-                        <namespace>
-                            <key>name</key>
-                            <value>monitoring</value>
-                        </namespace>
-                    </source>
-                    <sourcePort>*</sourcePort>
-                    <destination xsi:type="PodNamespaceSelector">
-                        <isHostCluster>false</isHostCluster>
-                        <pod>
-                            <key>app</key>
-                            <value>order_placement</value>
-                        </pod>
-                        <namespace>
-                            <key>name</key>
-                            <value>fluidos</value>
-                        </namespace>
-                    </destination>
-                    <destinationPort>*</destinationPort>
-                    <protocolType>ALL</protocolType>
-                </configurationCondition>
-                <externalData xsi:type="Priority">
-                    <value>60000</value>
-                </externalData>
-                <Name>RequestIntent_4</Name>
-                <isCNF>false</isCNF>
-            </configurationRule>
-        </configuration>
-    </ITResource>
-
-
-
-    <!-- Now define Authorization Intents -->
-    <ITResource>
-        <configuration xsi:type="AuthorizationIntents">
-            <capability>
-                <Name>KubernetesNetworkFiltering</Name>
-            </capability>
         </configuration>
     </ITResource>
 </ITResourceOrchestration>

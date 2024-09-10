@@ -2403,7 +2403,7 @@ __status__ = "Development"
 		<restriction base="string">
 			<enumeration value="TCP"/>
 			<enumeration value="UDP"/>
-			<enumeration value="STCP"/>
+			<enumeration value="SCTP"/>
 			<enumeration value="ALL"/>
 		</restriction>
 	</simpleType>

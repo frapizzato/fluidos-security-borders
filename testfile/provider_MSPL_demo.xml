@@ -3,63 +3,6 @@
                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="omspl_5b0fd7359a5e40fe92399710c1152ed9"
                          xsi:schemaLocation="http://modeliosoft/xsddesigner/a22bd60b-ee3d-425c-8618-beb6a854051a/ITResource.xsd ../xsd/mspl.xsd">
 
-    <ITResource>
-        <configuration xsi:type="PrivateIntents">
-            <capability>
-                <Name>KubernetesNetworkFiltering</Name>
-            </capability>
-        </configuration>
-    </ITResource>
-
-    <!-- Request Intents -->
-    <ITResource>
-        <configuration xsi:type="RequestIntents">
-            <capability>
-                <Name>KubernetesNetworkFiltering</Name>
-            </capability>
-            <acceptMonitoring>true</acceptMonitoring>
-            <!-- from ANY to "app:product_catalogue", TCP:80 -->
-            <configurationRule>
-                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
-                    <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
-                </configurationRuleAction>
-                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
-                    <isCNF>false</isCNF>
-                    <source xsi:type="PodNamespaceSelector">
-                        <isHostCluster>true</isHostCluster>
-                        <pod>
-                            <key>*</key>
-                            <value>*</value>
-                        </pod>
-                        <namespace>
-                            <key>*</key>
-                            <value>*</value>
-                        </namespace>
-                    </source>
-                    <sourcePort>*</sourcePort>
-                    <destination xsi:type="PodNamespaceSelector">
-                        <isHostCluster>false</isHostCluster>
-                        <pod>
-                            <key>app</key>
-                            <value>product_catalogue</value>
-                        </pod>
-                        <namespace>
-                            <key>name</key>
-                            <value>default</value>
-                        </namespace>
-                    </destination>
-                    <destinationPort>80</destinationPort>
-                    <protocolType>TCP</protocolType>
-                </configurationCondition>
-                <externalData xsi:type="Priority">
-                    <value>60000</value>
-                </externalData>
-                <Name>PrivateIntent_1</Name>
-                <isCNF>false</isCNF>
-            </configurationRule>
-        </configuration>
-    </ITResource>
-
     <!-- Authorization Intents -->
     <ITResource>
         <configuration xsi:type="AuthorizationIntents">
@@ -77,12 +20,12 @@
                     <source xsi:type="PodNamespaceSelector">
                         <isHostCluster>true</isHostCluster>
                         <pod>
-                            <key>app</key>
-                            <value>bank_payment</value>
-                        </pod>
-                        <namespace>
                             <key>*</key>
                             <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>name</key>
+                            <value>turin</value>
                         </namespace>
                     </source>
                     <sourcePort>*</sourcePort>
@@ -98,7 +41,7 @@
                         </namespace>
                     </destination>
                     <destinationPort>*</destinationPort>
-                    <protocolType>ALL</protocolType>
+                    <protocolType>UDP</protocolType>
                 </configurationCondition>
                 <externalData xsi:type="Priority">
                     <value>60000</value>
@@ -155,24 +98,24 @@
                             <value>*</value>
                         </pod>
                         <namespace>
-                            <key>*</key>
-                            <value>*</value>
+                            <key>name</key>
+                            <value>turin</value>
                         </namespace>
                     </source>
                     <sourcePort>*</sourcePort>
                     <destination xsi:type="PodNamespaceSelector">
                         <isHostCluster>false</isHostCluster>
                         <pod>
-                            <key>app</key>
-                            <value>product_catalogue</value>
+                            <key>*</key>
+                            <value>*</value>
                         </pod>
                         <namespace>
-                            <key>name</key>
-                            <value>default</value>
+                            <key>*</key>
+                            <value>*</value>
                         </namespace>
                     </destination>
                     <destinationPort>*</destinationPort>
-                    <protocolType>STCP</protocolType>
+                    <protocolType>SCTP</protocolType>
                 </configurationCondition>
                 <externalData xsi:type="Priority">
                     <value>60000</value>
@@ -194,20 +137,20 @@
                             <value>*</value>
                         </pod>
                         <namespace>
-                            <key>*</key>
-                            <value>*</value>
+                            <key>name</key>
+                            <value>turin</value>
                         </namespace>
                     </source>
                     <sourcePort>*</sourcePort>
                     <destination xsi:type="PodNamespaceSelector">
                         <isHostCluster>false</isHostCluster>
                         <pod>
-                            <key>app</key>
-                            <value>product_catalogue</value>
+                            <key>*</key>
+                            <value>*</value>
                         </pod>
                         <namespace>
-                            <key>name</key>
-                            <value>default</value>
+                            <key>*</key>
+                            <value>*</value>
                         </namespace>
                     </destination>
                     <destinationPort>*</destinationPort>
@@ -233,20 +176,20 @@
                             <value>*</value>
                         </pod>
                         <namespace>
-                            <key>*</key>
-                            <value>*</value>
+                            <key>name</key>
+                            <value>turin</value>
                         </namespace>
                     </source>
                     <sourcePort>*</sourcePort>
                     <destination xsi:type="PodNamespaceSelector">
                         <isHostCluster>false</isHostCluster>
                         <pod>
-                            <key>app</key>
-                            <value>product_catalogue</value>
+                            <key>*</key>
+                            <value>*</value>
                         </pod>
                         <namespace>
-                            <key>name</key>
-                            <value>default</value>
+                            <key>*</key>
+                            <value>*</value>
                         </namespace>
                     </destination>
                     <destinationPort>0-79</destinationPort>
@@ -272,20 +215,20 @@
                             <value>*</value>
                         </pod>
                         <namespace>
-                            <key>*</key>
-                            <value>*</value>
+                            <key>name</key>
+                            <value>turin</value>
                         </namespace>
                     </source>
                     <sourcePort>*</sourcePort>
                     <destination xsi:type="PodNamespaceSelector">
                         <isHostCluster>false</isHostCluster>
                         <pod>
-                            <key>app</key>
-                            <value>product_catalogue</value>
+                            <key>*</key>
+                            <value>*</value>
                         </pod>
                         <namespace>
-                            <key>name</key>
-                            <value>default</value>
+                            <key>*</key>
+                            <value>*</value>
                         </namespace>
                     </destination>
                     <destinationPort>81-65535</destinationPort>
@@ -298,46 +241,6 @@
                 <isCNF>false</isCNF>
             </forbiddenConnectionList>
 
-            <!-- from "ANY" to "app:database", ALL -->
-            <forbiddenConnectionList>
-                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
-                    <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
-                </configurationRuleAction>
-                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
-                    <isCNF>false</isCNF>
-                    <source xsi:type="PodNamespaceSelector">
-                        <isHostCluster>true</isHostCluster>
-                        <pod>
-                            <key>*</key>
-                            <value>*</value>
-                        </pod>
-                        <namespace>
-                            <key>*</key>
-                            <value>*</value>
-                        </namespace>
-                    </source>
-                    <sourcePort>*</sourcePort>
-                    <destination xsi:type="PodNamespaceSelector">
-                        <isHostCluster>false</isHostCluster>
-                        <pod>
-                            <key>app</key>
-                            <value>database</value>
-                        </pod>
-                        <namespace>
-                            <key>name</key>
-                            <value>default</value>
-                        </namespace>
-                    </destination>
-                    <destinationPort>*</destinationPort>
-                    <protocolType>ALL</protocolType>
-                </configurationCondition>
-                <externalData xsi:type="Priority">
-                    <value>60000</value>
-                </externalData>
-                <Name>AuthorizationDeny_7</Name>
-                <isCNF>false</isCNF>
-            </forbiddenConnectionList>
-
             <!-- MandatoryConnectionList (action = ALLOW) -->
             <!-- from "app:resource_monitor" to ANY:43, TCP  -->
             <mandatoryConnectionList>
@@ -347,7 +250,7 @@
                 <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
                     <isCNF>false</isCNF>
                     <source xsi:type="PodNamespaceSelector">
-                        <isHostCluster>false</isHostCluster>
+                        <isHostCluster>true</isHostCluster>
                         <pod>
                             <key>app</key>
                             <value>resource_monitor</value>
@@ -359,55 +262,20 @@
                     </source>
                     <sourcePort>*</sourcePort>
                     <destination xsi:type="PodNamespaceSelector">
-                        <isHostCluster>true</isHostCluster>
+                        <isHostCluster>false</isHostCluster>
                         <pod>
                             <key>*</key>
                             <value>*</value>
                         </pod>
                         <namespace>
                             <key>name</key>
-                            <value>fluidos</value>
+                            <value>turin</value>
                         </namespace>
                     </destination>
                     <destinationPort>43</destinationPort>
                     <protocolType>TCP</protocolType>
                 </configurationCondition>
                 <Name>AuthorizationMandatory_1</Name>
-                <isCNF>false</isCNF>
-            </mandatoryConnectionList>
-            <mandatoryConnectionList>
-                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
-                    <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
-                </configurationRuleAction>
-                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
-                    <isCNF>false</isCNF>
-                    <source xsi:type="PodNamespaceSelector">
-                        <isHostCluster>false</isHostCluster>
-                        <pod>
-                            <key>app</key>
-                            <value>database</value>
-                        </pod>
-                        <namespace>
-                            <key>name</key>
-                            <value>default</value>
-                        </namespace>
-                    </source>
-                    <sourcePort>*</sourcePort>
-                    <destination xsi:type="PodNamespaceSelector">
-                        <isHostCluster>true</isHostCluster>
-                        <pod>
-                            <key>*</key>
-                            <value>*</value>
-                        </pod>
-                        <namespace>
-                            <key>name</key>
-                            <value>fluidos</value>
-                        </namespace>
-                    </destination>
-                    <destinationPort>44</destinationPort>
-                    <protocolType>TCP</protocolType>
-                </configurationCondition>
-                <Name>AuthorizationMandatory_2</Name>
                 <isCNF>false</isCNF>
             </mandatoryConnectionList>
         </configuration>
