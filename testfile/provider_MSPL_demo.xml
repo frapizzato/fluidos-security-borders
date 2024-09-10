@@ -25,7 +25,7 @@
           	</pod>
           	<namespace>
           		<key>name</key>
-          		<value>rome</value>
+          		<value>turin</value>
           	</namespace>
           </source>
           <sourcePort>*</sourcePort>
@@ -110,12 +110,12 @@
           		<value>*</value>
           	</pod>
           	<namespace>
-          		<key>name</key>
-          		<value>milan</value>
+          		<key>*</key>
+          		<value>*</value>
           	</namespace>
           </destination>
           <destinationPort>*</destinationPort>
-          <protocolType>SCTP</protocolType>
+          <protocolType>STCP</protocolType>
         </configurationCondition>
         <externalData xsi:type="Priority">
           <value>60000</value>
@@ -149,8 +149,8 @@
           		<value>*</value>
           	</pod>
           	<namespace>
-          		<key>name</key>
-          		<value>milan</value>
+          		<key>*</key>
+          		<value>*</value>
           	</namespace>
           </destination>
           <destinationPort>*</destinationPort>
@@ -188,8 +188,8 @@
           		<value>*</value>
           	</pod>
           	<namespace>
-          		<key>name</key>
-          		<value>milan</value>
+          		<key>*</key>
+          		<value>*</value>
           	</namespace>
           </destination>
           <destinationPort>0-79</destinationPort>
@@ -227,8 +227,8 @@
           		<value>*</value>
           	</pod>
           	<namespace>
-          		<key>name</key>
-          		<value>milan</value>
+          		<key>*</key>
+          		<value>*</value>
           	</namespace>
           </destination>
           <destinationPort>81-65535</destinationPort>
@@ -269,7 +269,7 @@
           	</pod>
           	<namespace>
           		<key>name</key>
-          		<value>turin</value>
+          		<value>rome</value>
           	</namespace>
           </destination>
           <destinationPort>43</destinationPort>

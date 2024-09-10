@@ -195,7 +195,7 @@ public class Traslator {
                 protocol="UDP";
                 break;
             case STCP:
-                protocol="STCP";
+                protocol="SCTP";
                 break;
             case ALL:
                 protocol="*";
