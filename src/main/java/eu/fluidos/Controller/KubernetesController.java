@@ -327,7 +327,7 @@ public class KubernetesController {
     // Timer di 10 secondi
     ScheduledFuture<?> future = scheduler.schedule(() -> {
         // Azioni da eseguire dopo 10 secondi
-        HarmonizationController harmController_new = new HarmonizationController(createCluster(client));
+        HarmonizationController harmController_new = new HarmonizationController(createCluster(client,"provider"),createCluster(client,"consumer"));
         System.out.println("10 secondi passati, avvio modulo");
         List<RequestIntents> requestIntentsHarmonizedList = new ArrayList<>();
         for (RequestIntents reqIntent : reqIntentsList) {
@@ -454,12 +454,18 @@ public class KubernetesController {
         }
     }
     
-public Cluster createCluster (ApiClient client){
+public Cluster createCluster (ApiClient client,String whoIs){
     CoreV1Api api = new CoreV1Api(client);
     Cluster myCluster = new Cluster(null,null);
     try {
     V1NamespaceList namespaceList = api.listNamespace(null,null,null,null,null,null,null,null,null,null);
-    V1NamespaceList epuratedNamespaceList = providerNamespaceList;
+    V1NamespaceList epuratedNamespaceList = new V1NamespaceList();
+    if (whoIs.equals("provider")){
+        epuratedNamespaceList=providerNamespaceList;
+    }else if (whoIs.equals("consumer")){
+        epuratedNamespaceList=consumerNamespaceList;
+    }
+    
     List <Namespace> NamespaceList = new ArrayList<>();
     List <Pod> PodList = new ArrayList<>();
     for (V1Namespace namespace : epuratedNamespaceList.getItems()){
