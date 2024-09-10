@@ -250,7 +250,7 @@
         <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
           <isCNF>false</isCNF>
           <source xsi:type="PodNamespaceSelector">
-          	<isHostCluster>false</isHostCluster>
+          	<isHostCluster>true</isHostCluster>
           	<pod>
           		<key>app</key>
           		<value>resource_monitor</value>
@@ -262,7 +262,7 @@
           </source>
           <sourcePort>*</sourcePort>
           <destination xsi:type="PodNamespaceSelector">
-          	<isHostCluster>true</isHostCluster>
+          	<isHostCluster>false</isHostCluster>
           	<pod>
           		<key>*</key>
           		<value>*</value>

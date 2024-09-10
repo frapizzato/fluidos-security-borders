@@ -109,6 +109,19 @@ public class KubernetesController {
     private ApiClient client;
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private HarmonizationController harmController;
+    private V1NamespaceList providerNamespaceList = new V1NamespaceList();
+    private V1NamespaceList consumerNamespaceList = new V1NamespaceList();
+    List<String> namespacesToExclude = new ArrayList<>(Arrays.asList(
+        "calico-apiserver",
+        "calico-system",
+        "kube-node-lease",
+        "kube-public",
+        "kube-system",
+        "local-path-storage",
+        "tigera-operator",
+        "cert-manager",
+        "fluidos"
+    ));
     public KubernetesController(ITResourceOrchestrationType intents) {
         this.intents=intents;
         try {
@@ -259,18 +272,22 @@ public class KubernetesController {
             boolean firstNamespace = false;
             for (Watch.Response<V1Namespace> item : namespaceWatch) {
                 V1Namespace namespace = item.object;
-
+                if(firstNamespace == false){
+                    firstNamespace = true;
+                    startModuleTimer(client);
+                }
                 if (item.type.equals("ADDED") && isNamespaceOffloaded(namespace)) {
                     System.out.println("Nuovo Namespace offloadato: " + namespace.getMetadata().getName());
-                    if(firstNamespace == false){
-                        firstNamespace = true;
-                        startModuleTimer(client);
-                    }
                     //Module module = new Module(this.intents, client);
                     CreateNetworkPolicies(client, namespace.getMetadata().getName());
                     CreateDefaultDenyNetworkPolicies(client, namespace.getMetadata().getName());
                 } else if (item.type.equals("DELETED") && isNamespaceOffloaded(namespace)) {
                     System.out.println("Namespace offloadato cancellato: " + namespace.getMetadata().getName());
+                } else {
+                    if (!namespacesToExclude.contains(namespace.getMetadata().getName())&& !namespace.getMetadata().getName().contains("liqo")){
+                        CreateNetworkPolicies(client, namespace.getMetadata().getName());
+                        CreateDefaultDenyNetworkPolicies(client, namespace.getMetadata().getName());
+                    }
                 }
             }
     }catch(ApiException e){
@@ -442,7 +459,7 @@ public Cluster createCluster (ApiClient client){
     Cluster myCluster = new Cluster(null,null);
     try {
     V1NamespaceList namespaceList = api.listNamespace(null,null,null,null,null,null,null,null,null,null);
-    V1NamespaceList epuratedNamespaceList = Epurate1(namespaceList);
+    V1NamespaceList epuratedNamespaceList = providerNamespaceList;
     List <Namespace> NamespaceList = new ArrayList<>();
     List <Pod> PodList = new ArrayList<>();
     for (V1Namespace namespace : epuratedNamespaceList.getItems()){
@@ -482,20 +499,8 @@ public Cluster createCluster (ApiClient client){
 return myCluster;
 }
 
-private V1NamespaceList Epurate1(V1NamespaceList namespaceList){
-    List<String> namespacesToExclude = new ArrayList<>(Arrays.asList(
-        "calico-apiserver",
-        "calico-system",
-        "kube-node-lease",
-        "kube-public",
-        "kube-system",
-        "local-path-storage",
-        "tigera-operator",
-        "cert-manager",
-        "fluidos"
-    ));
+private void Epurate1(V1NamespaceList namespaceList){
 
-    V1NamespaceList NamespaceList = new V1NamespaceList();
     for (V1Namespace namespace : namespaceList.getItems()) {
         if (!namespacesToExclude.contains(namespace.getMetadata().getName()) && !namespace.getMetadata().getName().contains("liqo")) {
             //Questa chiave è contenuta nei pod del cluster locale che vengono offloadati, mentre nel cluster host i pod offloadati hanno altre label, potrei usare un flag che dato in ingresso al modulo permette di settare se il cluster è locale o l' host in modo poi da discriminare queste cose
@@ -510,12 +515,13 @@ private V1NamespaceList Epurate1(V1NamespaceList namespaceList){
                 */
             
             if (!namespace.getMetadata().equals(null) && !namespace.getMetadata().getLabels().containsKey("liqo.io/remote-cluster-id")){
-                NamespaceList.addItemsItem(namespace);
+                providerNamespaceList.addItemsItem(namespace);
+            }else{
+                consumerNamespaceList.addItemsItem(namespace);
             }
             //namespaces.add(namespace.getMetadata().getName());
 }
 }
-    return NamespaceList;
 }
 
 public RequestIntents accessConfigMap(ApiClient client, String namespace, String configMapName) throws Exception {

@@ -207,7 +207,9 @@ public class Module {
             "kube-public",
             "kube-system",
             "local-path-storage",
-            "tigera-operator"
+            "tigera-operator",
+            "cert-manager",
+            "fluidos"
         ));
 
         List<String> namespaces = new ArrayList<String>();

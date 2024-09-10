@@ -226,8 +226,10 @@ public class Traslator {
         List <String> namespacesListToUse = new ArrayList<>();
         if (rule.isSourceHost()){
             namespacesListToUse.addAll(localNamespaces.keySet());
+            System.out.println("Source da usare locale");
         }else{
             namespacesListToUse.addAll(remoteNamespaces.keySet());
+            System.out.println("Source da usare remota");
         }
         List<KeyValue> sourcePods = rule.getSourcePod();
         for (KeyValue value : rule.getSourceNamespace()){
@@ -375,8 +377,10 @@ public class Traslator {
             List<String> namespacesListToUse = new ArrayList<>();
             if (rule.isDestinationHost()){
                 namespacesListToUse.addAll(localNamespaces.keySet());
+                System.out.println("Destination da usare locale");
             }else{
                 namespacesListToUse.addAll(remoteNamespaces.keySet());
+                System.out.println("Destination da usare remota");
             }
             for (Map.Entry<String, String> entry : matchLabelsDestinationNamespace.entrySet()) {
                 String key = entry.getKey();
@@ -742,7 +746,7 @@ public class Traslator {
     private List <V1NetworkPolicyPeer> addNamespaceToLabeSourcePeer (Ruleinfo rule,V1LabelSelector sourceSelector){
         List <V1NetworkPolicyPeer> listSourcePeer = new ArrayList<>();
         List<String> namespacesListToUse = new ArrayList<>();
-        if (rule.isSourceHost()){
+        if (rule.isDestinationHost()){
             namespacesListToUse.addAll(localNamespaces.keySet());
         }else {
             namespacesListToUse.addAll(remoteNamespaces.keySet());
