@@ -19,11 +19,6 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
-
-import javax.xml.XMLConstants;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 
 public class HarmonizationService{
 	private final HarmonizationData harmonizationData = new HarmonizationData();
@@ -58,9 +53,8 @@ public static Pod createPod(String value, Namespace namespace) {
         return pod;
     }
 
-	public RequestIntents harmonize(Cluster cluster, RequestIntents requestIntents) {
+	public RequestIntents harmonize(Cluster cluster, Cluster consumer,  RequestIntents requestIntents) {
         ITResourceOrchestrationType intents_1 = null;
-		ITResourceOrchestrationType intents_2 = null;
 		AuthorizationIntents authIntentsProvider;
 		RequestIntents requestIntentsConsumer;
 		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider = new HashMap<>();
@@ -71,24 +65,15 @@ public static Pod createPod(String value, Namespace namespace) {
             Unmarshaller u = jc.createUnmarshaller();
             Object tmp_1 = u.unmarshal(new FileInputStream(arg_1));
             intents_1 = (ITResourceOrchestrationType) ((JAXBElement<?>) tmp_1).getValue();
-			/* Temporary */
-			//Object tmp_2 = u.unmarshal(new FileInputStream(arg_2));
-			//intents_2 = (ITResourceOrchestrationType) ((JAXBElement<?>) tmp_2).getValue();
         } catch (Exception e) {
             System.out.println(e);
             System.exit(1);
         }
 
-
         ITResourceOrchestrationType providerIntents = intents_1;
-		/* Temporary */
-		//ITResourceOrchestrationType consumerIntents = intents_2;
-
 		requestIntentsConsumer = requestIntents;
 
-
-		/* Temporary */
-		//podsByNamespaceAndLabelsProvider = clusterService.initializeHashMaps(provider);
+		podsByNamespaceAndLabelsConsumer = clusterService.initializeHashMaps(consumer);
 		podsByNamespaceAndLabelsProvider = clusterService.initializeHashMaps(cluster);
 
 		for (HashMap.Entry<String, HashMap<String, List<Pod>>> namespaceEntry : podsByNamespaceAndLabelsProvider.entrySet()) {
@@ -118,9 +103,6 @@ public static Pod createPod(String value, Namespace namespace) {
         loggerInfo.debug(
                 "[harmonization] - parse the received ITResourceOrchestration types to extract the CONSUMER/PROVIDER intent sets.");
         authIntentsProvider = extractAuthorizationIntents(providerIntents);
-		//* Temporary */
-        //requestIntentsConsumer = extractRequestIntents(consumerIntents);
-
 
 		harmonizationData.printDash();
 		harmonizationData.printRequestIntents(requestIntentsConsumer, "consumer");
@@ -139,6 +121,7 @@ public static Pod createPod(String value, Namespace namespace) {
 			System.out.println("authIntentsProvider is null");
 			return null;
 		}
+
 		/*
 		 * Then, the lists are processed to resolve any possible discordances: 1)
 		 * consumer asks for a connection not permitted by the provider -> these are
