@@ -25,13 +25,14 @@ import io.kubernetes.client.util.Config;
 import io.kubernetes.client.util.Watch;
 import io.kubernetes.client.util.Yaml;
 import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
-
+import okhttp3.Request;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.rmi.server.ExportException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,6 +40,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import io.kubernetes.client.util.Yaml;
 import eu.fluidos.Module;
@@ -56,6 +59,7 @@ import eu.fluidos.jaxb.KubernetesNetworkFilteringCondition;
 import eu.fluidos.jaxb.PodNamespaceSelector;
 import eu.fluidos.jaxb.Priority;
 import eu.fluidos.jaxb.ProtocolType;
+import eu.fluidos.jaxb.RequestIntents;
 import eu.fluidos.jaxb.ResourceSelector;
 import eu.fluidos.traslator.Ruleinfo;
 
@@ -99,6 +103,7 @@ public class KubernetesController {
     private List<String> offloadedNamespace;
     private Map<String,List<String>> allowedIpList; //Questa mappa contiene Cluster ID e la lista degl' IP allowed per il cluster ID che ha fatto con me il peering, mi serve per creare le network policies per abilitare il traffico fra le risorse locali del cluster consumer e quelle offlodate
     //Aggiunto per il controller che si autentica automaticamente
+    private List<RequestIntents> reqIntentsList = new ArrayList<>(); //Lista di requestIntent da installare
     private ApiClient client;
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private HarmonizationController harmController;
@@ -231,7 +236,7 @@ public class KubernetesController {
                 V1Pod pod = item.object;
                 if (item.type.equals("ADDED") && this.offloadedNamespace.contains(pod.getMetadata().getNamespace())) {
                     System.out.println("Nuovo Pod creato: " + pod.getMetadata().getName() + " nel Namespace: " + pod.getMetadata().getNamespace());
-                    Module module = new Module(this.intents, client);
+                    //Module module = new Module(this.intents, client);
                     CreateNetworkPolicies(client, pod.getMetadata().getNamespace());
                 } else if (item.type.equals("DELETED")) {
                     System.out.println("Pod cancellato: " + pod.getMetadata().getName() + " dal Namespace: " + pod.getMetadata().getNamespace());
@@ -249,13 +254,17 @@ public class KubernetesController {
                 api.listNamespaceCall(null, null, null, null, null, null, null, null, null, Boolean.TRUE, null),
                 new TypeToken<Watch.Response<V1Namespace>>() {}.getType()
             );
-
+            boolean firstNamespace = false;
             for (Watch.Response<V1Namespace> item : namespaceWatch) {
                 V1Namespace namespace = item.object;
 
                 if (item.type.equals("ADDED") && isNamespaceOffloaded(namespace)) {
                     System.out.println("Nuovo Namespace offloadato: " + namespace.getMetadata().getName());
-                    Module module = new Module(this.intents, client);
+                    if(firstNamespace == false){
+                        firstNamespace = true;
+                        startModuleTimer(client);
+                    }
+                    //Module module = new Module(this.intents, client);
                     CreateNetworkPolicies(client, namespace.getMetadata().getName());
                     CreateDefaultDenyNetworkPolicies(client, namespace.getMetadata().getName());
                 } else if (item.type.equals("DELETED") && isNamespaceOffloaded(namespace)) {
@@ -270,6 +279,28 @@ public class KubernetesController {
     }
     }
 
+    private void startModuleTimer(ApiClient client) {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        // Timer di 30 secondi
+        scheduler.schedule(() -> {
+            // Azioni da eseguire dopo 30 secondi
+            HarmonizationController harmController_new = new HarmonizationController(createCluster(client));
+            System.out.println("30 secondi passati, avvio modulo");
+            // Chiamata al metodo del modulo
+            List<RequestIntents> requestIntentsHarmonizedList = new ArrayList<>();
+            for (RequestIntents reqIntent : reqIntentsList){
+                requestIntentsHarmonizedList.add(harmController_new.harmonize(reqIntent));
+            }
+            try{
+                System.out.println("Chiamata al modulo");
+                Module module = new Module(requestIntentsHarmonizedList, client);
+            } catch (Exception e) {
+                System.out.println("Errore nella chimata del modulo");
+                e.printStackTrace();
+            }
+  
+        }, 10, TimeUnit.SECONDS);
+    }
 
     public void watchTunnelEndpoint(ApiClient client) throws Exception {
         try {
@@ -360,7 +391,7 @@ public class KubernetesController {
                     String buyerClusterID = spec.has("buyerClusterID") ? spec.get("buyerClusterID").getAsString() : null;
     
                     if (networkPropertyType.equals("AuthorizationIntent")){
-                        accessConfigMap(client,"fluidos",networkRequests);
+                        reqIntentsList.add(accessConfigMap(client,"fluidos",networkRequests));
                     }
                     System.out.println("networkPropertyType: " + networkPropertyType);
                     System.out.println("networkRequests: " + networkRequests);
@@ -380,9 +411,10 @@ public Cluster createCluster (ApiClient client){
     Cluster myCluster = new Cluster(null,null);
     try {
     V1NamespaceList namespaceList = api.listNamespace(null,null,null,null,null,null,null,null,null,null);
+    V1NamespaceList epuratedNamespaceList = Epurate1(namespaceList);
     List <Namespace> NamespaceList = new ArrayList<>();
     List <Pod> PodList = new ArrayList<>();
-    for (V1Namespace namespace : namespaceList.getItems()){
+    for (V1Namespace namespace : epuratedNamespaceList.getItems()){
         Namespace nm = new Namespace();
         HashMap<String, String> hashMapLabels = new HashMap<>(namespace.getMetadata().getLabels());
         nm.setLabels(hashMapLabels);
@@ -397,13 +429,6 @@ public Cluster createCluster (ApiClient client){
         }
     }
 
-   for (Namespace nm : NamespaceList){
-        System.out.println("Namespace: "+nm.getLabels());
-   }
-
-   for (Pod pd : PodList){
-        System.out.println("Pod: "+pd.getLabels()+"Pod namespace:"+pd.getNamespace());
-   }
     myCluster.setNamespaces(NamespaceList);
     myCluster.setPods(PodList);
     //Lui dovrà fare l' Epurate dei namespace
@@ -416,59 +441,107 @@ public Cluster createCluster (ApiClient client){
 return myCluster;
 }
 
-public void accessConfigMap(ApiClient client, String namespace, String configMapName) throws Exception {
+private V1NamespaceList Epurate1(V1NamespaceList namespaceList){
+    List<String> namespacesToExclude = new ArrayList<>(Arrays.asList(
+        "calico-apiserver",
+        "calico-system",
+        "kube-node-lease",
+        "kube-public",
+        "kube-system",
+        "local-path-storage",
+        "tigera-operator",
+        "cert-manager",
+        "fluidos"
+    ));
+
+    V1NamespaceList NamespaceList = new V1NamespaceList();
+    for (V1Namespace namespace : namespaceList.getItems()) {
+        if (!namespacesToExclude.contains(namespace.getMetadata().getName()) && !namespace.getMetadata().getName().contains("liqo")) {
+            //Questa chiave è contenuta nei pod del cluster locale che vengono offloadati, mentre nel cluster host i pod offloadati hanno altre label, potrei usare un flag che dato in ingresso al modulo permette di settare se il cluster è locale o l' host in modo poi da discriminare queste cose
+            /*
+            if (this.isLocal){
+            if (namespace.getMetadata().getLabels().containsKey("liqo.io/scheduling-enabled") && (namespace.getMetadata().getLabels().containsValue("true"))){
+                namespaces.put(namespace.getMetadata().getName(),"remote");
+            }else{
+                namespaces.put(namespace.getMetadata().getName(),"local");
+            }
+            }else{
+                */
+            
+            if (!namespace.getMetadata().equals(null) && !namespace.getMetadata().getLabels().containsKey("liqo.io/remote-cluster-id")){
+                NamespaceList.addItemsItem(namespace);
+            }
+            //namespaces.add(namespace.getMetadata().getName());
+}
+}
+    return NamespaceList;
+}
+
+public RequestIntents accessConfigMap(ApiClient client, String namespace, String configMapName) throws Exception {
+    RequestIntents requestIntent = new RequestIntents();
     try {
         CoreV1Api api = new CoreV1Api(client);
         V1ConfigMap configMap = api.readNamespacedConfigMap(configMapName, namespace, null);
-        KubernetesNetworkFilteringCondition condition = new KubernetesNetworkFilteringCondition();
 
         if (configMap.getData() != null) {
-            String networkIntent = configMap.getData().get("networkIntent");
+            String networkIntent = configMap.getData().get("networkIntents");
 
-            JsonObject jsonObject = JsonParser.parseString(networkIntent).getAsJsonObject();
-            JsonObject source = jsonObject.getAsJsonObject("source");
-            JsonObject destination = jsonObject.getAsJsonObject("destination");
+            JsonArray jsonArray = JsonParser.parseString(networkIntent).getAsJsonArray();
+            for (JsonElement jsonElement : jsonArray){
+                KubernetesNetworkFilteringCondition condition = new KubernetesNetworkFilteringCondition();
+                JsonObject jsonObject = jsonElement.getAsJsonObject();
+                JsonObject source = jsonObject.getAsJsonObject("source");
+                JsonObject destination = jsonObject.getAsJsonObject("destination");
 
-            condition.setSource(parseResourceSelector(source.getAsJsonObject("resourceSelectors")));
-            condition.setDestination(parseResourceSelector(destination.getAsJsonObject("resourceSelectors")));
-            if (source.has("sourcePort") && !source.get("sourcePort").isJsonNull()){
-                condition.setSourcePort(source.get("sourcePort").getAsString());
-            }
-    
-            if (jsonObject.has("destinationPort") && !jsonObject.get("destinationPort").isJsonNull()){
-                condition.setDestinationPort(jsonObject.get("destinationPort").getAsString());
-                System.out.println("ce l'ha: "+jsonObject.get("destinationPort").getAsString());
-            }
-    
-            if (jsonObject.has("protocolType") && !jsonObject.get("protocolType").isJsonNull()){
-                condition.setProtocolType(ProtocolType.valueOf(jsonObject.get("protocolType").getAsString()));
-            }
-            ConfigurationRule rule = new ConfigurationRule();
-            rule.setConfigurationCondition(condition);
-            rule.setName(configMap.getData().get("name"));
-
-            KubernetesNetworkFilteringAction action = new KubernetesNetworkFilteringAction();
-            if (configMap.getData().get("action") != null){
-                action.setKubernetesNetworkFilteringActionType(configMap.getData().get("action"));
-                rule.setConfigurationRuleAction(action);
-            }
-
-            if(configMap.getData().get("isCNF") != null){
-                boolean isCNF=false;
-                if(configMap.getData().get("isCNF").equals(true)){
-                    isCNF=true;
+                condition.setSource(parseResourceSelector(source.getAsJsonObject("resourceSelectors")));
+                condition.setDestination(parseResourceSelector(destination.getAsJsonObject("resourceSelectors")));
+                if (source.has("sourcePort") && !source.get("sourcePort").isJsonNull()){
+                    condition.setSourcePort(source.get("sourcePort").getAsString());
                 }
-                rule.setIsCNF(isCNF);
+        
+                if (jsonObject.has("destinationPort") && !jsonObject.get("destinationPort").isJsonNull()){
+                    condition.setDestinationPort(jsonObject.get("destinationPort").getAsString());
+                    System.out.println("ce l'ha: "+jsonObject.get("destinationPort").getAsString());
+                }
+        
+                if (jsonObject.has("protocolType") && !jsonObject.get("protocolType").isJsonNull()){
+                    condition.setProtocolType(ProtocolType.valueOf(jsonObject.get("protocolType").getAsString()));
+                }
+                ConfigurationRule rule = new ConfigurationRule();
+                rule.setConfigurationCondition(condition);
+                rule.setName(configMap.getData().get("name"));
+
+                KubernetesNetworkFilteringAction action = new KubernetesNetworkFilteringAction();
+                if (configMap.getData().get("action") != null){
+                    action.setKubernetesNetworkFilteringActionType(configMap.getData().get("action"));
+                    rule.setConfigurationRuleAction(action);
+                }
+
+                if(configMap.getData().get("isCNF") != null){
+                    boolean isCNF=false;
+                    if(configMap.getData().get("isCNF").equals(true)){
+                        isCNF=true;
+                    }
+                    rule.setIsCNF(isCNF);
+                }
+                
+                if(configMap.getData().get("acceptMonitoring") != null){
+                    boolean acceptMonitoring=false;
+                    if(configMap.getData().get("acceptMonitoring").equals("true")){
+                        acceptMonitoring=true;
+                    }
+                    requestIntent.setAcceptMonitoring(acceptMonitoring);
+                }
+
+                if(configMap.getData().get("priority") != null){
+                    Priority prio = new Priority();
+                    BigInteger bigPrio = new BigInteger(configMap.getData().get("priority"));
+                    prio.setValue(bigPrio);
+                    rule.setExternalData(prio);
+                }
+                
+                requestIntent.getConfigurationRule().add(rule);
             }
-            
-            if(configMap.getData().get("priority") != null){
-                Priority prio = new Priority();
-                BigInteger bigPrio = new BigInteger(configMap.getData().get("priority"));
-                prio.setValue(bigPrio);
-                rule.setExternalData(prio);
-            }
-            AuthorizationIntents authInt = new AuthorizationIntents();
-            authInt.getMandatoryConnectionList().add(rule);
             //System.out.println("Stampa della ConfigMap:");
 
             //StampaAuthIntents(authInt);
@@ -481,6 +554,8 @@ public void accessConfigMap(ApiClient client, String namespace, String configMap
         System.err.println("Corpo della risposta: " + e.getResponseBody());
         e.printStackTrace();
     }
+    return requestIntent;
+
 }
 
  public void watchFlavors(ApiClient client) throws Exception {
@@ -543,18 +618,14 @@ public void accessConfigMap(ApiClient client, String namespace, String configMap
                         }
                         if (characteristics.has("deniedCommunications") && characteristics.has("mandatoryCommunications")) {
                             JsonArray deniedCommunications = characteristics.getAsJsonArray("deniedCommunications");
-                            System.out.println("Denied Communications: " + deniedCommunications);
                             populateAuthorizationIntents(deniedCommunications, forbiddenConnectionList,action,prio,isCNF);
                             JsonArray mandatoryCommunications = characteristics.getAsJsonArray("mandatoryCommunications");
-                            System.out.println("Mandatory Communications: " + mandatoryCommunications);
                             populateAuthorizationIntents(mandatoryCommunications, mandatoryConnectionList,action,prio,isCNF);
                         } else if (characteristics.has("mandatoryCommunications")) {
                             JsonArray mandatoryCommunications = characteristics.getAsJsonArray("mandatoryCommunications");
-                            System.out.println("Mandatory Communications: " + mandatoryCommunications);
                             populateAuthorizationIntents(mandatoryCommunications, mandatoryConnectionList,action,prio,isCNF);
                         } else if (characteristics.has("deniedCommunications")) {
                             JsonArray deniedCommunications = characteristics.getAsJsonArray("deniedCommunications");
-                            System.out.println("Denied Communications: " + deniedCommunications);
                             populateAuthorizationIntents(deniedCommunications, forbiddenConnectionList,action,prio,isCNF);
                         }else {
                             System.out.println("Mandatory Communications and Denied communications not found.");
@@ -568,7 +639,7 @@ public void accessConfigMap(ApiClient client, String namespace, String configMap
             }
             System.out.println("Stampa del flavour:");
             StampaAuthIntents(authorizationIntents);
-            if (authorizationIntents != null && authorizationIntents.getForbiddenConnectionList()!= null && authorizationIntents.getMandatoryConnectionList()!= null){
+            if (authorizationIntents != null && authorizationIntents.getForbiddenConnectionList().size() > 0 && authorizationIntents.getMandatoryConnectionList().size() > 0){
                 System.out.println("Valore dalla chiamata del verifier:" + this.harmController.verify(authorizationIntents));
             }
         }
@@ -662,7 +733,8 @@ private ResourceSelector parseResourceSelector(JsonObject resourceSelectors) {
         selector = podNamespaceSelector;
     }
 
-    if (selector != null && resourceSelectors.has("isHotCluster")) {
+    if (resourceSelectors.has("isHotCluster")) {
+        System.out.println("Valore isHostCluster: " + resourceSelectors.get("isHotCluster").getAsBoolean());
         selector.setIsHostCluster(resourceSelectors.get("isHotCluster").getAsBoolean());
     }
 

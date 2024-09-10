@@ -11,8 +11,10 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.xml.XMLConstants;
@@ -23,10 +25,28 @@ public class HarmonizationService{
 	private final HarmonizationData harmonizationData = new HarmonizationData();
 	private final ClusterService clusterService = new ClusterService();
     private final Logger loggerInfo = LogManager.getLogger("harmonizationManager");
-	String arg_1 = "/app/testfile/provider_MSPL_test.xml";
-	String arg_2 = "/app/testfile/consumer_MSPL_test.xml";
+	String arg_1 = "/app/testfile/provider_MSPL_demo.xml";
+	String arg_2 = "/app/testfile/consumer_MSPL_demo.xml";
 
-	public List<ConfigurationRule> harmonize(Cluster cluster, RequestIntents requestIntents) {
+	public static Cluster createProviderCluster() {
+        List<Pod> podsProvider = new ArrayList<>();
+        // Configure the CONSUMER cluster data
+        Namespace nsP1 = new Namespace();
+        nsP1.setSingleLabel("", "");
+
+        Pod pP1 = createPod("*", nsP1);
+        podsProvider.add(pP1);
+
+        return new Cluster(podsProvider, null);
+    }
+    public static Pod createPod(String value, Namespace namespace) {
+        Pod pod = new Pod();
+        pod.setSingleLabel("app", value);
+        pod.setNamespace(namespace);
+        return pod;
+    }
+
+	public RequestIntents harmonize(Cluster cluster, RequestIntents requestIntents) {
         ITResourceOrchestrationType intents_1 = null;
 		ITResourceOrchestrationType intents_2 = null;
 		AuthorizationIntents authIntentsProvider;
@@ -35,10 +55,13 @@ public class HarmonizationService{
 		//Cluster provider = ClusterProviderHarmonize.createProviderCluster();
 		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider = new HashMap<>();
 		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer = new HashMap<>();
-
+		
         try {
             JAXBContext jc = JAXBContext.newInstance("eu.fluidos.jaxb");
             Unmarshaller u = jc.createUnmarshaller();
+			SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        	Schema sc = sf.newSchema(new File("/app/xsd/mspl.xsd"));
+        	u.setSchema(sc);
             Object tmp_1 = u.unmarshal(new FileInputStream(arg_1));
             intents_1 = (ITResourceOrchestrationType) ((JAXBElement<?>) tmp_1).getValue();
 			/* Temporary */
@@ -49,7 +72,7 @@ public class HarmonizationService{
             System.exit(1);
         }
 
-
+		Cluster clusterProva = createProviderCluster();
         ITResourceOrchestrationType providerIntents = intents_1;
 		/* Temporary */
 		//ITResourceOrchestrationType consumerIntents = intents_2;
@@ -59,13 +82,32 @@ public class HarmonizationService{
 
 		/* Temporary */
 		//podsByNamespaceAndLabelsProvider = clusterService.initializeHashMaps(provider);
-		podsByNamespaceAndLabelsProvider = clusterService.initializeHashMaps(cluster);
+		podsByNamespaceAndLabelsProvider = clusterService.initializeHashMaps(clusterProva);
         /*
          * First, the intents are extracted from the given data structure into three
          * different lists (for both provider and consumer): - "AuthorizationIntents" -
          * "PrivateIntents" - "RequestIntents"
          */
+		for (Map.Entry<String, HashMap<String, List<Pod>>> namespaceEntry : podsByNamespaceAndLabelsProvider.entrySet()) {
+            String namespace = namespaceEntry.getKey();
+            HashMap<String, List<Pod>> labelsMap = namespaceEntry.getValue();
 
+            System.out.println("Namespace: " + namespace);
+            for (Map.Entry<String, List<Pod>> labelsEntry : labelsMap.entrySet()) {
+                String labels = labelsEntry.getKey();
+                List<Pod> pods = labelsEntry.getValue();
+
+                System.out.println("  Labels: " + labels);
+                for (Pod pod : pods) {
+                    System.out.println("    Pod: " + pod.getLabels());
+                    // Aggiungi qui altre informazioni sul pod se necessario
+                }
+            }
+			System.out.println("");
+			System.out.println("");
+        }
+
+		System.out.println("podsByNsAnd LAbels consumer:"+podsByNamespaceAndLabelsConsumer);
         loggerInfo.debug(
                 "[harmonization] - parse the received ITResourceOrchestration types to extract the CONSUMER/PROVIDER intent sets.");
         authIntentsProvider = extractAuthorizationIntents(providerIntents);
@@ -102,8 +144,12 @@ public class HarmonizationService{
          * Finally, write the resulting Intents in the original data structures so that
          * they can be retrieved
          */
-
-        return harmonizedRequest_Consumer;
+		RequestIntents reqIntent = new RequestIntents();
+		for (ConfigurationRule confRule : harmonizedRequest_Consumer){
+			reqIntent.getConfigurationRule().add(confRule);
+		}
+		
+        return reqIntent;
     }
 
 	public boolean verify(Cluster cluster, AuthorizationIntents authIntents) {

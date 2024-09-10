@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import eu.fluidos.jaxb.KeyValue;
+import eu.fluidos.jaxb.RequestIntents;
 import eu.fluidos.jaxb.ITResourceOrchestrationType;
 import eu.fluidos.traslator.Traslator;
 import io.kubernetes.client.openapi.ApiClient;
@@ -40,7 +41,6 @@ import eu.fluidos.Controller.*;
 
 import java.io.File;
 public class Module {
-    private ITResourceOrchestrationType intents;
     private boolean isLocal;
     private ApiClient client;
     private Map<String,String> localNamespaces;
@@ -68,7 +68,7 @@ public class Module {
         
     // }
 
-    public Module(ITResourceOrchestrationType intentsToTraslate,ApiClient client) throws Exception {
+    public Module(List<RequestIntents> reqIntentsListHarmonized,ApiClient client) throws Exception {
         this.isLocal=false;
         this.client=client;
         this.localNamespaces = new HashMap<>();
@@ -166,7 +166,7 @@ public class Module {
                 System.out.println("");
             }
             System.out.println("");
-            Traslator intent_traslation = new Traslator(intentsToTraslate,this.localNamespaces,this.remoteNamespaces,availablePodsMap,this.isLocal);
+            Traslator intent_traslation = new Traslator(reqIntentsListHarmonized,this.localNamespaces,this.remoteNamespaces,availablePodsMap,this.isLocal);
             //CreateNetworkPolicies(client);
             
 

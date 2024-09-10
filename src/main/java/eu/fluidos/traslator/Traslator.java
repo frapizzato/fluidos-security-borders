@@ -14,10 +14,7 @@ import java.util.*;
 
 
 public class Traslator {
-    private ITResourceOrchestrationType intents;
-    private AuthorizationIntents authIntents;
-	private PrivateIntents intraVCluster;
-	private RequestIntents interVCluster;
+    private List<RequestIntents> reqIntentsListHarmonized;
     private List<V1NetworkPolicy> networkPolicies;
     private Map<String,String> localNamespaces;
     private Map<String,String> remoteNamespaces;
@@ -25,15 +22,15 @@ public class Traslator {
     private int index;
     private boolean isLocal;
 
-    public Traslator(ITResourceOrchestrationType intentsToTraslate, Map<String,String> localNamespaces,Map<String,String> remoteNamespaces,Map <LabelsKeyValue,String> availablePodsMap,boolean isLocal ) {
+    public Traslator(List<RequestIntents> reqIntentsListHarmonized, Map<String,String> localNamespaces,Map<String,String> remoteNamespaces,Map <LabelsKeyValue,String> availablePodsMap,boolean isLocal ) {
         this.index=0;
-        this.intents = intentsToTraslate;
+        this.reqIntentsListHarmonized = reqIntentsListHarmonized;
         this.networkPolicies = new ArrayList<>();
         this.localNamespaces=localNamespaces;
         this.remoteNamespaces=remoteNamespaces;
         this.availablePodsMap = availablePodsMap;
         this.isLocal=isLocal;
-        this.authIntents = intents.getITResource().stream()
+        /*this.authIntents = intents.getITResource().stream()
             .filter(it -> it.getConfiguration().getClass().equals(AuthorizationIntents.class))
             .map(it -> (AuthorizationIntents) it.getConfiguration()).findFirst().orElse(null);
         this.intraVCluster = intents.getITResource().stream()
@@ -42,45 +39,48 @@ public class Traslator {
         this.interVCluster = intents.getITResource().stream()
             .filter(it -> it.getConfiguration().getClass().equals(RequestIntents.class))
             .map(it -> (RequestIntents) it.getConfiguration()).findFirst().orElse(null);
-                    
+            */
             
-            if (this.intraVCluster != null){
-                for(ConfigurationRule cr: this.intraVCluster.getConfigurationRule()) {
-                    KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
-                    Ruleinfo rule = retrieveInfo(cond);
-                    
-                    //Caso in cui non ho ne un indirizzo IP come source, ne come destinazione
-                    if (rule.getCidrDestination().getAddressRange() == null && rule.getCidrSource().getAddressRange() == null){
-                        //V1NetworkPolicy createdEgressNetworkPolicy = createEgressAllowNetworkPolicy(cr.getName(),rule);
-                        //V1NetworkPolicy createdIngressNetworkPolicy = createIngressAllowNetworkPolicy(cr.getName(),rule);
-                        List<V1NetworkPolicy> createdListIngressNetworkPolicy = createHeaderIngressAllowPolicyForNamespace(cr.getName(),rule);
-                        List<V1NetworkPolicy> createdListEgressNetworkPolicy = createEgressAllowPolicyForNamespace(cr.getName(),rule);
-                        for (V1NetworkPolicy createdNetworkPolicy : createdListEgressNetworkPolicy){
-                            networkPolicies.add(createdNetworkPolicy);
+            if (this.reqIntentsListHarmonized != null){
+                for (RequestIntents reqIntent : reqIntentsListHarmonized){
+                    for(ConfigurationRule cr: reqIntent.getConfigurationRule()) {
+                        KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
+                        Ruleinfo rule = retrieveInfo(cond);
+                        
+                        //Caso in cui non ho ne un indirizzo IP come source, ne come destinazione
+                        if (rule.getCidrDestination().getAddressRange() == null && rule.getCidrSource().getAddressRange() == null){
+                            //V1NetworkPolicy createdEgressNetworkPolicy = createEgressAllowNetworkPolicy(cr.getName(),rule);
+                            //V1NetworkPolicy createdIngressNetworkPolicy = createIngressAllowNetworkPolicy(cr.getName(),rule);
+                            List<V1NetworkPolicy> createdListIngressNetworkPolicy = createHeaderIngressAllowPolicyForNamespace(cr.getName(),rule);
+                            List<V1NetworkPolicy> createdListEgressNetworkPolicy = createEgressAllowPolicyForNamespace(cr.getName(),rule);
+                            for (V1NetworkPolicy createdNetworkPolicy : createdListEgressNetworkPolicy){
+                                networkPolicies.add(createdNetworkPolicy);
+                            }
+                            
+                            for (V1NetworkPolicy createdIngressNetworkPolicy : createdListIngressNetworkPolicy){
+                                networkPolicies.add(createdIngressNetworkPolicy);
+                            }
+                        } else if (rule.getCidrDestination().getAddressRange() == null && rule.getCidrSource().getAddressRange() != null){
+                            // V1NetworkPolicy createdIngressNetworkPolicy = createIngressAllowNetworkPolicy(cr.getName(),rule);
+                            // networkPolicies.add(createdIngressNetworkPolicy);
+                            List<V1NetworkPolicy> createdListIngressNetworkPolicy = createHeaderIngressAllowPolicyForNamespace(cr.getName(),rule);
+                            for (V1NetworkPolicy createdIngressNetworkPolicy : createdListIngressNetworkPolicy){
+                                networkPolicies.add(createdIngressNetworkPolicy);
+                            }     
+                        } else if (rule.getCidrDestination().getAddressRange() != null && rule.getCidrSource().getAddressRange() == null){
+                            // V1NetworkPolicy createdEgressNetworkPolicy = createEgressAllowNetworkPolicy(cr.getName(),rule);
+                            // networkPolicies.add(createdEgressNetworkPolicy);
+                            List<V1NetworkPolicy> createdListEgressNetworkPolicy = createEgressAllowPolicyForNamespace(cr.getName(),rule);
+                            for (V1NetworkPolicy createdNetworkPolicy : createdListEgressNetworkPolicy){
+                                networkPolicies.add(createdNetworkPolicy);
+                            }     
                         }
                         
-                        for (V1NetworkPolicy createdIngressNetworkPolicy : createdListIngressNetworkPolicy){
-                            networkPolicies.add(createdIngressNetworkPolicy);
-                        }
-                    } else if (rule.getCidrDestination().getAddressRange() == null && rule.getCidrSource().getAddressRange() != null){
-                        // V1NetworkPolicy createdIngressNetworkPolicy = createIngressAllowNetworkPolicy(cr.getName(),rule);
-                        // networkPolicies.add(createdIngressNetworkPolicy);
-                        List<V1NetworkPolicy> createdListIngressNetworkPolicy = createHeaderIngressAllowPolicyForNamespace(cr.getName(),rule);
-                        for (V1NetworkPolicy createdIngressNetworkPolicy : createdListIngressNetworkPolicy){
-                            networkPolicies.add(createdIngressNetworkPolicy);
-                        }     
-                    } else if (rule.getCidrDestination().getAddressRange() != null && rule.getCidrSource().getAddressRange() == null){
-                        // V1NetworkPolicy createdEgressNetworkPolicy = createEgressAllowNetworkPolicy(cr.getName(),rule);
-                        // networkPolicies.add(createdEgressNetworkPolicy);
-                        List<V1NetworkPolicy> createdListEgressNetworkPolicy = createEgressAllowPolicyForNamespace(cr.getName(),rule);
-                        for (V1NetworkPolicy createdNetworkPolicy : createdListEgressNetworkPolicy){
-                            networkPolicies.add(createdNetworkPolicy);
-                        }     
+                        
                     }
-                    
-                    
                 }               
             }
+            /*
             if (this.interVCluster != null){
                 for(ConfigurationRule cr: this.interVCluster.getConfigurationRule()) {
                     KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
@@ -152,7 +152,7 @@ public class Traslator {
                     }
                 }
             }
-            
+            */
             writeNetworkPoliciesToFile1(networkPolicies);
     }
 

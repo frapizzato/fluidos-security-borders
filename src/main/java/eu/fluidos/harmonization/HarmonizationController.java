@@ -18,7 +18,7 @@ public class HarmonizationController {
 	
 	private ITResourceOrchestrationType providerIntents, consumerIntents;
 
-	public List<ConfigurationRule> harmonize(RequestIntents requestIntents) {
+	public  RequestIntents harmonize(RequestIntents requestIntents) {
 		return harmonizationService.harmonize(this.cluster, requestIntents);
 	}
 
