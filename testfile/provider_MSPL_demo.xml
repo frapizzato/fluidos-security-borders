@@ -36,8 +36,8 @@
           		<value>*</value>
           	</pod>
           	<namespace>
-          		<key>name</key>
-          		<value>milan</value>
+          		<key>*</key>
+          		<value>*</value>
           	</namespace>
           </destination>
           <destinationPort>*</destinationPort>
