@@ -115,7 +115,7 @@
           	</namespace>
           </destination>
           <destinationPort>*</destinationPort>
-          <protocolType>STCP</protocolType>
+          <protocolType>SCTP</protocolType>
         </configurationCondition>
         <externalData xsi:type="Priority">
           <value>60000</value>

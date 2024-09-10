@@ -1,6 +1,7 @@
 package eu.fluidos.harmonization;
 
 import eu.fluidos.Cluster;
+import eu.fluidos.Namespace;
 import eu.fluidos.Pod;
 import eu.fluidos.cluster.ClusterService;
 import eu.fluidos.jaxb.*;
@@ -28,10 +29,36 @@ public class HarmonizationService{
 	private final HarmonizationData harmonizationData = new HarmonizationData();
 	private final ClusterService clusterService = new ClusterService();
     private final Logger loggerInfo = LogManager.getLogger("harmonizationManager");
-	String arg_1 = "/app/testfile/provider_MSPL_test.xml";
-	String arg_2 = "/app/testfile/consumer_MSPL_test.xml";
+	String arg_1 = "/app/testfile/provider_MSPL_demo.xml";
+	String arg_2 = "/app/testfile/consumer_MSPL_demo.xml";
 
-	public List<ConfigurationRule> harmonize(Cluster cluster, RequestIntents requestIntents) {
+	public static Cluster createProviderCluster() {
+        List<Pod> podsProvider = new ArrayList<>();
+        // Configure the CONSUMER cluster data
+        Namespace nsP1 = new Namespace();
+        nsP1.setSingleLabel("name", "default");
+        Namespace nsP2 = new Namespace();
+        nsP2.setSingleLabel("name", "monitoring");
+
+        Pod pP1 = createPod("database", nsP1);
+        podsProvider.add(pP1);
+
+        Pod pP2 = createPod("product_catalogue", nsP1);
+        podsProvider.add(pP2);
+
+        Pod pP3 = createPod("resource_monitor", nsP2);
+        podsProvider.add(pP3);
+
+        return new Cluster(podsProvider, null);
+    }
+public static Pod createPod(String value, Namespace namespace) {
+        Pod pod = new Pod();
+        pod.setSingleLabel("app", value);
+        pod.setNamespace(namespace);
+        return pod;
+    }
+
+	public RequestIntents harmonize(Cluster cluster, RequestIntents requestIntents) {
         ITResourceOrchestrationType intents_1 = null;
 		ITResourceOrchestrationType intents_2 = null;
 		AuthorizationIntents authIntentsProvider;
@@ -63,6 +90,25 @@ public class HarmonizationService{
 		/* Temporary */
 		//podsByNamespaceAndLabelsProvider = clusterService.initializeHashMaps(provider);
 		podsByNamespaceAndLabelsProvider = clusterService.initializeHashMaps(cluster);
+
+		for (HashMap.Entry<String, HashMap<String, List<Pod>>> namespaceEntry : podsByNamespaceAndLabelsProvider.entrySet()) {
+            String namespace = namespaceEntry.getKey();
+            HashMap<String, List<Pod>> labelsMap = namespaceEntry.getValue();
+
+            System.out.println("Namespace: " + namespace);
+            for (HashMap.Entry<String, List<Pod>> labelsEntry : labelsMap.entrySet()) {
+                String labels = labelsEntry.getKey();
+                List<Pod> pods = labelsEntry.getValue();
+
+                System.out.println("  Labels: " + labels);
+                for (Pod pod : pods) {
+                    System.out.println("    Pod: " + pod.getLabels());
+                    // Aggiungi qui altre informazioni sul pod se necessario
+                }
+            }
+            System.out.println("");
+            System.out.println("");
+        }
         /*
          * First, the intents are extracted from the given data structure into three
          * different lists (for both provider and consumer): - "AuthorizationIntents" -
@@ -111,8 +157,9 @@ public class HarmonizationService{
          * Finally, write the resulting Intents in the original data structures so that
          * they can be retrieved
          */
-
-        return harmonizedRequest_Consumer;
+		RequestIntents requestIntent = new RequestIntents();
+		requestIntent.getConfigurationRule().addAll(harmonizedRequest_Consumer);
+        return requestIntent;
     }
 
 	public boolean verify(Cluster cluster, AuthorizationIntents authIntents) {

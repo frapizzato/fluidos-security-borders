@@ -115,7 +115,6 @@ public class Module {
                     System.out.println("Si lo contniene");
                 }
             }*/
-            System.out.println("ciao");
             List<String> namespaces = Epurate(namespaceList);
             Epurate1(namespaceList);
 

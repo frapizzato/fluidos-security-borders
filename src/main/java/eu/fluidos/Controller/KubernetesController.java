@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import io.kubernetes.client.util.Yaml;
 import eu.fluidos.Module;
@@ -66,6 +67,7 @@ import eu.fluidos.traslator.Ruleinfo;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.logging.log4j.core.tools.picocli.CommandLine.ExecutionException;
 import org.jose4j.json.internal.json_simple.JSONArray;
 import org.jose4j.json.internal.json_simple.JSONObject;
 import org.jose4j.json.internal.json_simple.parser.JSONParser;
@@ -279,7 +281,7 @@ public class KubernetesController {
     }
     }
 
-    private void startModuleTimer(ApiClient client) {
+    /*private void startModuleTimer(ApiClient client) {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         // Timer di 30 secondi
         scheduler.schedule(() -> {
@@ -294,13 +296,42 @@ public class KubernetesController {
             try{
                 System.out.println("Chiamata al modulo");
                 Module module = new Module(requestIntentsHarmonizedList, client);
+                
             } catch (Exception e) {
                 System.out.println("Errore nella chimata del modulo");
                 e.printStackTrace();
             }
   
         }, 10, TimeUnit.SECONDS);
+    }*/
+
+    private void startModuleTimer(ApiClient client) throws java.util.concurrent.ExecutionException {
+    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    // Timer di 10 secondi
+    ScheduledFuture<?> future = scheduler.schedule(() -> {
+        // Azioni da eseguire dopo 10 secondi
+        HarmonizationController harmController_new = new HarmonizationController(createCluster(client));
+        System.out.println("10 secondi passati, avvio modulo");
+        List<RequestIntents> requestIntentsHarmonizedList = new ArrayList<>();
+        for (RequestIntents reqIntent : reqIntentsList) {
+            requestIntentsHarmonizedList.add(harmController_new.harmonize(reqIntent));
+        }
+        try {
+            System.out.println("Chiamata al modulo");
+            Module module = new Module(requestIntentsHarmonizedList, client);
+        } catch (Exception e) {
+            System.out.println("Errore nella chimata del modulo");
+            e.printStackTrace();
+        }
+    }, 10, TimeUnit.SECONDS);
+    
+    try {
+        // Attendi il completamento del timer prima di procedere
+        future.get();  // Questo bloccherà il flusso fino a che il task non è completato
+    } catch (InterruptedException | ExecutionException e) {
+        e.printStackTrace();
     }
+}
 
     public void watchTunnelEndpoint(ApiClient client) throws Exception {
         try {
@@ -417,13 +448,23 @@ public Cluster createCluster (ApiClient client){
     for (V1Namespace namespace : epuratedNamespaceList.getItems()){
         Namespace nm = new Namespace();
         HashMap<String, String> hashMapLabels = new HashMap<>(namespace.getMetadata().getLabels());
-        nm.setLabels(hashMapLabels);
+        //nm.setLabels(hashMapLabels);
+        //setto solo la prima label:
+        HashMap<String, String> hashMapSingleLabels = new HashMap<>();
+        Map.Entry<String, String> firstLabel = hashMapLabels.entrySet().iterator().next();
+        hashMapSingleLabels.put(firstLabel.getKey(), firstLabel.getValue());
+        nm.setLabels(hashMapSingleLabels);
         NamespaceList.add(nm);
         V1PodList podList = api.listNamespacedPod(namespace.getMetadata().getName(), null, null, null, null, null, null, null, null, null, null);
         for (V1Pod pod : podList.getItems()) {
             Pod pd = new Pod();
             HashMap<String, String> podHashMapLabels = new HashMap<>(pod.getMetadata().getLabels());
-            pd.setLabels(podHashMapLabels);
+            ////setto solo la prima label:
+            //pd.setLabels(podHashMapLabels);
+            HashMap<String, String> hashMapSinglePodsLabels = new HashMap<>();
+            Map.Entry<String, String> firstLabelPod = podHashMapLabels.entrySet().iterator().next();
+            hashMapSinglePodsLabels.put(firstLabelPod.getKey(), firstLabelPod.getValue());
+            pd.setLabels(hashMapSinglePodsLabels);
             pd.setNamespace(nm);
             PodList.add(pd);
         }
@@ -872,6 +913,7 @@ private ResourceSelector parseResourceSelector(JsonObject resourceSelectors) {
             }
         }
     }
+
 
         public List<File> getFilesInFolder(String folderPath) {
         List<File> files = new ArrayList<>();

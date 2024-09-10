@@ -103,10 +103,10 @@ public class HarmonizationUtils {
 		} else if(value.equals("ALL")) {
 			// inner set is whole domain, return it minus the second set.
 			if(value2.equals("TCP")){
-				return new String[]{"UDP", "STCP"};
+				return new String[]{"UDP", "SCTP"};
 			} else if(value2.equals("UDP")){
-				return new String[]{"TCP","STCP"};
-			} else if(value2.equals("STCP")){
+				return new String[]{"TCP","SCTP"};
+			} else if(value2.equals("SCTP")){
 				return new String[]{"TCP", "UDP"};
 			}
 		}

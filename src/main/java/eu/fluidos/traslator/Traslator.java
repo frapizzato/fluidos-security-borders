@@ -42,6 +42,7 @@ public class Traslator {
             */
             
             if (this.reqIntentsListHarmonized != null){
+                System.out.println("reIntent non è null");
                 for (RequestIntents reqIntent : reqIntentsListHarmonized){
                     for(ConfigurationRule cr: reqIntent.getConfigurationRule()) {
                         KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr.getConfigurationCondition();
@@ -1009,8 +1010,10 @@ public class Traslator {
             
             if (networkPolicy.getSpec().getEgress() != null) {
                 for (V1NetworkPolicyEgressRule entry : networkPolicy.getSpec().getEgress()) {
-                    for (V1NetworkPolicyPort port : entry.getPorts()) {
-                        string_to_hash.append(port);
+                    if (entry.getPorts()!= null) {
+                        for (V1NetworkPolicyPort port : entry.getPorts()) {
+                            string_to_hash.append(port);
+                        }
                     }
                     for (V1NetworkPolicyPeer peer : entry.getTo()) {
                         if (peer.getIpBlock() != null) {
@@ -1034,8 +1037,10 @@ public class Traslator {
             
             if (networkPolicy.getSpec().getIngress() != null) {
                 for (V1NetworkPolicyIngressRule entry : networkPolicy.getSpec().getIngress()) {
-                    for (V1NetworkPolicyPort port : entry.getPorts()) {
-                        string_to_hash.append(port);
+                    if (entry.getPorts()!= null) {
+                        for (V1NetworkPolicyPort port : entry.getPorts()) {
+                            string_to_hash.append(port);
+                        }
                     }
                     for (V1NetworkPolicyPeer peer : entry.getFrom()) {
                         if (peer.getIpBlock() != null) {
