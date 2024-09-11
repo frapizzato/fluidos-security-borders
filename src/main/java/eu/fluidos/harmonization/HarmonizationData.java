@@ -132,6 +132,10 @@ public class HarmonizationData {
 		// External loop over the consumer's Request Intents.
 		for (ConfigurationRule cr : requestIntent.getConfigurationRule()) {
 			System.out.println("Interno for tipo 1");
+			System.out.println("[harmonization/harmonizeForbiddenConnectionIntent] - processing rule { [" + cr.getName()
+			+ "]" + HarmonizationUtils.kubernetesNetworkFilteringConditionToString(
+			(KubernetesNetworkFilteringCondition) cr.getConfigurationCondition())
+			+ "}");
 			loggerInfo.debug("[harmonization/harmonizeForbiddenConnectionIntent] - processing rule { [" + cr.getName()
 					+ "]" + HarmonizationUtils.kubernetesNetworkFilteringConditionToString(
 					(KubernetesNetworkFilteringCondition) cr.getConfigurationCondition())
@@ -265,6 +269,10 @@ public class HarmonizationData {
 			+ HarmonizationUtils.kubernetesNetworkFilteringConditionToString(resCond) + " vs. "
 			+ HarmonizationUtils.kubernetesNetworkFilteringConditionToString(tmp)
 			);*/
+			System.out.println("[harmonization/harmonizeForbiddenConnectionIntent] - processing rule "
+			+ HarmonizationUtils.kubernetesNetworkFilteringConditionToString(resCond) + " vs. "
+			+ HarmonizationUtils.kubernetesNetworkFilteringConditionToString(tmp));
+
 
 			loggerInfo.debug("[harmonization/harmonizeForbiddenConnectionIntent] - processing rule "
 					+ HarmonizationUtils.kubernetesNetworkFilteringConditionToString(resCond) + " vs. "

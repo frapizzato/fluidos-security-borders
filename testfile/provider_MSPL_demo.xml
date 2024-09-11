@@ -253,7 +253,7 @@
           	<isHostCluster>true</isHostCluster>
           	<pod>
           		<key>app</key>
-          		<value>resource_monitor</value>
+          		<value>resource-monitor</value>
           	</pod>
           	<namespace>
           		<key>name</key>

@@ -109,8 +109,8 @@ public class KubernetesController {
     private ApiClient client;
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private HarmonizationController harmController;
-    private V1NamespaceList providerNamespaceList = new V1NamespaceList();
-    private V1NamespaceList consumerNamespaceList = new V1NamespaceList();
+    private V1NamespaceList providerNamespaceList;
+    private V1NamespaceList consumerNamespaceList;
     List<String> namespacesToExclude = new ArrayList<>(Arrays.asList(
         "calico-apiserver",
         "calico-system",
@@ -120,7 +120,8 @@ public class KubernetesController {
         "local-path-storage",
         "tigera-operator",
         "cert-manager",
-        "fluidos"
+        "fluidos",
+        "calico-apiserver"
     ));
     public KubernetesController(ITResourceOrchestrationType intents) {
         this.intents=intents;
@@ -161,7 +162,6 @@ public class KubernetesController {
         }catch(Exception e){
             
         }*/
-        this.harmController = new HarmonizationController(createCluster(client));
         CoreV1Api api = new CoreV1Api(client);
         Thread namespaceThread = new Thread(() -> {
             try {
@@ -460,6 +460,7 @@ public Cluster createCluster (ApiClient client,String whoIs){
     try {
     V1NamespaceList namespaceList = api.listNamespace(null,null,null,null,null,null,null,null,null,null);
     V1NamespaceList epuratedNamespaceList = new V1NamespaceList();
+    Epurate1(namespaceList);
     if (whoIs.equals("provider")){
         epuratedNamespaceList=providerNamespaceList;
     }else if (whoIs.equals("consumer")){
@@ -471,6 +472,7 @@ public Cluster createCluster (ApiClient client,String whoIs){
     for (V1Namespace namespace : epuratedNamespaceList.getItems()){
         Namespace nm = new Namespace();
         HashMap<String, String> hashMapLabels = new HashMap<>(namespace.getMetadata().getLabels());
+        System.out.println("Chiamata per il namespace:"+namespace.getMetadata().getName());
         //nm.setLabels(hashMapLabels);
         //setto solo la prima label:
         HashMap<String, String> hashMapSingleLabels = new HashMap<>();
@@ -490,6 +492,7 @@ public Cluster createCluster (ApiClient client,String whoIs){
             pd.setLabels(hashMapSinglePodsLabels);
             pd.setNamespace(nm);
             PodList.add(pd);
+            System.out.println("Pod:" + pd.getLabels() + "Namespace" + pd.getNamespace().getLabels());
         }
     }
 
@@ -506,6 +509,8 @@ return myCluster;
 }
 
 private void Epurate1(V1NamespaceList namespaceList){
+    providerNamespaceList=new V1NamespaceList();
+    consumerNamespaceList = new V1NamespaceList();
 
     for (V1Namespace namespace : namespaceList.getItems()) {
         if (!namespacesToExclude.contains(namespace.getMetadata().getName()) && !namespace.getMetadata().getName().contains("liqo")) {

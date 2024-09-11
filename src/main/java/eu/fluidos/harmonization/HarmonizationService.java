@@ -54,6 +54,7 @@ public static Pod createPod(String value, Namespace namespace) {
     }
 
 	public RequestIntents harmonize(Cluster cluster, Cluster consumer,  RequestIntents requestIntents) {
+		System.out.println("Entra nell' harmonize");
         ITResourceOrchestrationType intents_1 = null;
 		AuthorizationIntents authIntentsProvider;
 		RequestIntents requestIntentsConsumer;
@@ -77,6 +78,28 @@ public static Pod createPod(String value, Namespace namespace) {
 		podsByNamespaceAndLabelsProvider = clusterService.initializeHashMaps(cluster);
 
 		for (HashMap.Entry<String, HashMap<String, List<Pod>>> namespaceEntry : podsByNamespaceAndLabelsProvider.entrySet()) {
+			System.out.println("Pod Provider");
+            String namespace = namespaceEntry.getKey();
+            HashMap<String, List<Pod>> labelsMap = namespaceEntry.getValue();
+
+            System.out.println("Namespace: " + namespace);
+            for (HashMap.Entry<String, List<Pod>> labelsEntry : labelsMap.entrySet()) {
+                String labels = labelsEntry.getKey();
+                List<Pod> pods = labelsEntry.getValue();
+
+                System.out.println("  Labels: " + labels);
+                for (Pod pod : pods) {
+                    System.out.println("    Pod: " + pod.getLabels());
+                    // Aggiungi qui altre informazioni sul pod se necessario
+                }
+            }
+            System.out.println("");
+            System.out.println("");
+        }
+
+
+		for (HashMap.Entry<String, HashMap<String, List<Pod>>> namespaceEntry : podsByNamespaceAndLabelsConsumer.entrySet()) {
+			System.out.println("Pod Consumer");
             String namespace = namespaceEntry.getKey();
             HashMap<String, List<Pod>> labelsMap = namespaceEntry.getValue();
 
