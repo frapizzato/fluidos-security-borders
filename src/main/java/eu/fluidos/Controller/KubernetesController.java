@@ -473,23 +473,24 @@ public Cluster createCluster (ApiClient client,String whoIs){
         Namespace nm = new Namespace();
         HashMap<String, String> hashMapLabels = new HashMap<>(namespace.getMetadata().getLabels());
         System.out.println("Chiamata per il namespace:"+namespace.getMetadata().getName());
-        //nm.setLabels(hashMapLabels);
+        nm.setLabels(hashMapLabels);
         //setto solo la prima label:
-        HashMap<String, String> hashMapSingleLabels = new HashMap<>();
-        Map.Entry<String, String> firstLabel = hashMapLabels.entrySet().iterator().next();
-        hashMapSingleLabels.put(firstLabel.getKey(), firstLabel.getValue());
-        nm.setLabels(hashMapSingleLabels);
+        //HashMap<String, String> hashMapSingleLabels = new HashMap<>();
+        //Map.Entry<String, String> firstLabel = hashMapLabels.entrySet().iterator().next();
+        //hashMapSingleLabels.put(firstLabel.getKey(), firstLabel.getValue());
+        //nm.setLabels(hashMapSingleLabels);
         NamespaceList.add(nm);
         V1PodList podList = api.listNamespacedPod(namespace.getMetadata().getName(), null, null, null, null, null, null, null, null, null, null);
         for (V1Pod pod : podList.getItems()) {
             Pod pd = new Pod();
             HashMap<String, String> podHashMapLabels = new HashMap<>(pod.getMetadata().getLabels());
             ////setto solo la prima label:
-            //pd.setLabels(podHashMapLabels);
-            HashMap<String, String> hashMapSinglePodsLabels = new HashMap<>();
+            pd.setLabels(podHashMapLabels);
+            /*HashMap<String, String> hashMapSinglePodsLabels = new HashMap<>();
             Map.Entry<String, String> firstLabelPod = podHashMapLabels.entrySet().iterator().next();
             hashMapSinglePodsLabels.put(firstLabelPod.getKey(), firstLabelPod.getValue());
             pd.setLabels(hashMapSinglePodsLabels);
+            */
             pd.setNamespace(nm);
             PodList.add(pd);
             System.out.println("Pod:" + pd.getLabels() + "Namespace" + pd.getNamespace().getLabels());
