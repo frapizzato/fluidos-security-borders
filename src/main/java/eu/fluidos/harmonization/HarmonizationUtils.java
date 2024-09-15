@@ -121,7 +121,7 @@ public class HarmonizationUtils {
 	 * @return true if value is overlapping with value2.
 	 */
 	public static boolean computeVerifyProtocolType(String value, String value2) {
-        return value.equals(value2) || value2.equals("ALL");
+        return value.equals(value2) || value.equals("ALL") || value2.equals("ALL") || value.equals("*") || value2.equals("*");
 	}
 
 	/**
@@ -166,7 +166,8 @@ public class HarmonizationUtils {
 	public static List<ResourceSelector> computeHarmonizedResourceSelector(ResourceSelector sel_1, ResourceSelector sel_2, HashMap<String, HashMap<String, List<Pod>>> map_1, HashMap<String, HashMap<String, List<Pod>>> map_2) {
 		Boolean isCIDR_1 = false, isCIDR_2 = false;
 		List<ResourceSelector> res = new ArrayList<ResourceSelector>();
-
+		System.out.println("map1:" + map_1);
+		System.out.println("map2:" + map_2);
 		if(sel_1.getClass().equals(PodNamespaceSelector.class)){
 			isCIDR_1 = false;
 		} else {
@@ -229,7 +230,8 @@ public class HarmonizationUtils {
 		ArrayList<Pod> pns2SelectedPods = new ArrayList<Pod>();
 
 		//Case-1: pns2 selects all pods and namespaces, so pns1 - pns2 = 0
-
+		System.out.println("pns1:" + pns1.getNamespace().get(0).getKey() +":"+pns1.getNamespace().get(0).getValue());
+		System.out.println("pns2:" + pns2.getNamespace().get(0).getKey() +":"+pns2.getNamespace().get(0).getValue());
 		if(pns2.getNamespace().get(0).getKey().equals("*") && pns2.getPod().get(0).getValue().equals("*")){
 			return new ArrayList<PodNamespaceSelector>();
 		}
@@ -237,11 +239,11 @@ public class HarmonizationUtils {
 		//Case-2: possibility of having none or partial overlap between pns1 and pns2. Need to move to Pods.
 
 		pns1SelectedPods = selectPods(pns1, clusterMap);
-
+		System.out.println("pns1SelectedPods:" + pns1SelectedPods);
 		// Repeat everything for pns2...
 
 		pns2SelectedPods = selectPods(pns2, clusterMap);
-
+		System.out.println("pn2SelectedPods" + pns2SelectedPods);
 
 		//Change the list.
 
@@ -251,7 +253,7 @@ public class HarmonizationUtils {
 
 		//Now we have the list of pods. We need to convert it into a list of PodNamespaceSelectors.
 		resSelectors = convertPods(pns1, pns1SelectedPods, clusterMap);
-
+		System.out.println("resSelectors:" + resSelectors);
 		return resSelectors;
 	}
 
@@ -349,7 +351,7 @@ public class HarmonizationUtils {
 	public static boolean computeOverlapResourceSelector(ResourceSelector sel_1, ResourceSelector sel_2) {
 		Boolean isCIDR_1 = sel_1 instanceof CIDRSelector;
 		Boolean isCIDR_2 = sel_2 instanceof CIDRSelector;
-
+		System.out.println("In");
 		if (isCIDR_1 && isCIDR_2) {
 			CIDRSelector cidr1 = (CIDRSelector) sel_1;
 			CIDRSelector cidr2 = (CIDRSelector) sel_2;
@@ -357,27 +359,98 @@ public class HarmonizationUtils {
 		} else if (!isCIDR_1 && !isCIDR_2) {
 			PodNamespaceSelector pns1 = (PodNamespaceSelector) sel_1;
 			PodNamespaceSelector pns2 = (PodNamespaceSelector) sel_2;
-
-			if (pns1.isIsHostCluster() != pns2.isIsHostCluster()) {
+			System.out.println("In2");
+			System.out.println("pns1:" + pns1.isIsHostCluster());
+			System.out.println("pns2:" + pns2.isIsHostCluster());
+			if (pns1.isIsHostCluster() == pns2.isIsHostCluster()) {
 				return false;
 			}
+			String pns1PodKey = pns1.getPod().get(0).getKey();
+			String pns1PodValue = pns1.getPod().get(0).getValue();
+			String pns2PodKey = pns2.getPod().get(0).getKey();
+			String pns2PodValue = pns2.getPod().get(0).getValue();
+			String pns1NamespaceKey = pns1.getNamespace().get(0).getKey();
+			String pns1NamespaceValue = pns1.getNamespace().get(0).getValue();
+			String pns2NamespaceKey = pns2.getNamespace().get(0).getKey();
+			String pns2NamespaceValue = pns2.getNamespace().get(0).getValue();
 
-			if (pns1.getNamespace().get(0).getKey().equals("*") && pns1.getNamespace().get(0).getValue().equals("*") &&
-					pns1.getPod().get(0).getKey().equals("*") && pns1.getPod().get(0).getValue().equals("*")) {
-				return true;
+			System.out.println(pns1PodKey + ":" + pns1PodValue);
+			System.out.println(pns1NamespaceKey + ":" + pns1NamespaceValue);
+			System.out.println(pns2PodKey + ":" + pns2PodValue);
+			System.out.println(pns2NamespaceKey + ":" + pns2NamespaceValue);
+
+			if(areEqual(pns1NamespaceKey, pns1NamespaceValue, pns2NamespaceKey, pns2NamespaceValue)){
+				return areEqual(pns1PodKey, pns1PodValue, pns2PodKey, pns2PodValue);
 			}
-
-			if (pns2.getNamespace().get(0).getKey().equals("*") && pns2.getNamespace().get(0).getValue().equals("*") &&
-					pns2.getPod().get(0).getKey().equals("*") && pns2.getPod().get(0).getValue().equals("*")) {
-				return true;
-			}
-
-			return pns1.getNamespace().equals(pns2.getNamespace()) && pns1.getPod().equals(pns2.getPod());
+			else
+				return false;
 		} else {
 			return false;
 		}
 	}
 
+	public static boolean areEqual(String key1, String value1, String key2, String value2) {
+
+		boolean keysEqual = key1.equals(key2) || "*".equals(key1) || "*".equals(key2);
+
+		boolean valuesEqual = value1.equals(value2) || "*".equals(value1) || "*".equals(value2);
+
+		return keysEqual && valuesEqual;
+	}
+
+	public static boolean compareOverlapResourceSelector(ResourceSelector rs_1, ResourceSelector rs_2) {
+		boolean found;
+
+		if (rs_1 instanceof PodNamespaceSelector && rs_2 instanceof PodNamespaceSelector) {
+			PodNamespaceSelector pns_1 = (PodNamespaceSelector) rs_1;
+			PodNamespaceSelector pns_2 = (PodNamespaceSelector) rs_2;
+
+
+			if (pns_1.getNamespace().size() == 1 && pns_1.getNamespace().get(0).getKey().equals("*") && pns_1.getNamespace().get(0).getValue().equals("*") &&
+					pns_1.getPod().size() == 1 && pns_1.getPod().get(0).getKey().equals("*") && pns_1.getPod().get(0).getValue().equals("*")|| pns_2.getNamespace().size() == 1 && pns_2.getNamespace().get(0).getKey().equals("*") && pns_2.getNamespace().get(0).getValue().equals("*") &&
+					pns_2.getPod().size() == 1 && pns_2.getPod().get(0).getKey().equals("*") && pns_2.getPod().get(0).getValue().equals("*")) {
+				return true;
+			}
+
+			if (pns_1.getPod().size() != pns_2.getPod().size() || pns_1.getNamespace().size() != pns_2.getNamespace().size()) {
+				return false;
+			}
+
+			for (KeyValue kv_1 : pns_1.getPod()) {
+				found = false;
+				for (KeyValue kv_2 : pns_2.getPod()) {
+					if (kv_1.getKey().equals(kv_2.getKey()) && kv_1.getValue().equals(kv_2.getValue())) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					return false;
+				}
+			}
+
+			for (KeyValue kv_1 : pns_1.getNamespace()) {
+				found = false;
+				for (KeyValue kv_2 : pns_2.getNamespace()) {
+					if (kv_1.getKey().equals(kv_2.getKey()) && kv_1.getValue().equals(kv_2.getValue())) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					return false;
+				}
+			}
+
+			return true;
+		} else if (rs_1 instanceof CIDRSelector && rs_2 instanceof CIDRSelector) {
+			CIDRSelector cidr_1 = (CIDRSelector) rs_1;
+			CIDRSelector cidr_2 = (CIDRSelector) rs_2;
+			return cidr_1.getAddressRange().equals(cidr_2.getAddressRange());
+		} else {
+			return false;
+		}
+	}
 
 	public static boolean checkWildcard(ResourceSelector rs){
 		boolean isCIDR_1 = !rs.getClass().equals(PodNamespaceSelector.class);
@@ -624,59 +697,6 @@ public class HarmonizationUtils {
 
 			return true;
 		} else if(rs_1.getClass().equals(CIDRSelector.class) && rs_2.getClass().equals(CIDRSelector.class)){
-			CIDRSelector cidr_1 = (CIDRSelector) rs_1;
-			CIDRSelector cidr_2 = (CIDRSelector) rs_2;
-			return cidr_1.getAddressRange().equals(cidr_2.getAddressRange());
-		} else {
-			return false;
-		}
-	}
-	public static boolean compareOverlapResourceSelector(ResourceSelector rs_1, ResourceSelector rs_2) {
-		boolean found;
-
-		if (rs_1 instanceof PodNamespaceSelector && rs_2 instanceof PodNamespaceSelector) {
-			PodNamespaceSelector pns_1 = (PodNamespaceSelector) rs_1;
-			PodNamespaceSelector pns_2 = (PodNamespaceSelector) rs_2;
-
-
-			if (pns_1.getNamespace().size() == 1 && pns_1.getNamespace().get(0).getKey().equals("*") && pns_1.getNamespace().get(0).getValue().equals("*") &&
-					pns_1.getPod().size() == 1 && pns_1.getPod().get(0).getKey().equals("*") && pns_1.getPod().get(0).getValue().equals("*")|| pns_2.getNamespace().size() == 1 && pns_2.getNamespace().get(0).getKey().equals("*") && pns_2.getNamespace().get(0).getValue().equals("*") &&
-					pns_2.getPod().size() == 1 && pns_2.getPod().get(0).getKey().equals("*") && pns_2.getPod().get(0).getValue().equals("*")) {
-				return true;
-			}
-
-			if (pns_1.getPod().size() != pns_2.getPod().size() || pns_1.getNamespace().size() != pns_2.getNamespace().size()) {
-				return false;
-			}
-
-			for (KeyValue kv_1 : pns_1.getPod()) {
-				found = false;
-				for (KeyValue kv_2 : pns_2.getPod()) {
-					if (kv_1.getKey().equals(kv_2.getKey()) && kv_1.getValue().equals(kv_2.getValue())) {
-						found = true;
-						break;
-					}
-				}
-				if (!found) {
-					return false;
-				}
-			}
-
-			for (KeyValue kv_1 : pns_1.getNamespace()) {
-				found = false;
-				for (KeyValue kv_2 : pns_2.getNamespace()) {
-					if (kv_1.getKey().equals(kv_2.getKey()) && kv_1.getValue().equals(kv_2.getValue())) {
-						found = true;
-						break;
-					}
-				}
-				if (!found) {
-					return false;
-				}
-			}
-
-			return true;
-		} else if (rs_1 instanceof CIDRSelector && rs_2 instanceof CIDRSelector) {
 			CIDRSelector cidr_1 = (CIDRSelector) rs_1;
 			CIDRSelector cidr_2 = (CIDRSelector) rs_2;
 			return cidr_1.getAddressRange().equals(cidr_2.getAddressRange());

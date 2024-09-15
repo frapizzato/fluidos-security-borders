@@ -13,18 +13,21 @@ public class ClusterProviderHarmonize {
         List<Pod> podsProvider = new ArrayList<>();
         // Configure the CONSUMER cluster data
         Namespace nsP1 = new Namespace();
-        nsP1.setSingleLabel("name", "default");
+        nsP1.setSingleLabel("name", "handle-payments");
         Namespace nsP2 = new Namespace();
         nsP2.setSingleLabel("name", "monitoring");
 
-        Pod pP1 = createPod("database", nsP1);
+        Pod pP1 = createPod("bank-1", nsP1);
         podsProvider.add(pP1);
 
-        Pod pP2 = createPod("product_catalogue", nsP1);
+        Pod pP2 = createPod("bank-2", nsP1);
         podsProvider.add(pP2);
 
-        Pod pP3 = createPod("resource_monitor", nsP2);
+        Pod pP3 = createPod("bank-3", nsP1);
         podsProvider.add(pP3);
+
+        Pod pP4 = createPod("resource_monitor", nsP2);
+        podsProvider.add(pP4);
 
         return new Cluster(podsProvider, null);
     }

@@ -22,8 +22,8 @@ public class HarmonizationService{
 	private final HarmonizationData harmonizationData = new HarmonizationData();
 	private final ClusterService clusterService = new ClusterService();
     private final Logger loggerInfo = LogManager.getLogger("harmonizationManager");
-	String arg_1 = "./testfile/provider_MSPL_demo.xml";
-	String arg_2 = "./testfile/consumer_MSPL_demo.xml";
+	String arg_1 = "./testfile/provider_MSPL_err.xml";
+	String arg_2 = "./testfile/consumer_MSPL_err.xml";
 
 	public List<ConfigurationRule> harmonize(Cluster cluster, RequestIntents requestIntents) {
         ITResourceOrchestrationType intents_1 = null;
@@ -32,6 +32,7 @@ public class HarmonizationService{
 		RequestIntents requestIntentsConsumer;
 		/* Temporary */
 		Cluster provider = ClusterProviderHarmonize.createProviderCluster();
+		Cluster consumer = ClusterConsumerVerify.createConsumerCluster();
 		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider = new HashMap<>();
 		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer = new HashMap<>();
 
@@ -58,6 +59,8 @@ public class HarmonizationService{
 
 		/* Temporary */
 		podsByNamespaceAndLabelsProvider = clusterService.initializeHashMaps(provider);
+		//podsByNamespaceAndLabelsConsumer = clusterService.initializeHashMaps(consumer);
+
 		for (Map.Entry<String, HashMap<String, List<Pod>>> namespaceEntry : podsByNamespaceAndLabelsProvider.entrySet()) {
 			String namespace = namespaceEntry.getKey();
 			HashMap<String, List<Pod>> labelsMap = namespaceEntry.getValue();
@@ -139,8 +142,8 @@ public class HarmonizationService{
 			intents_1 = (ITResourceOrchestrationType) ((JAXBElement<?>) tmp_1).getValue();
 
 			/* Temporary */
-			//Object tmp_2 = u.unmarshal(new FileInputStream(arg_1));
-			//intents_2 = (ITResourceOrchestrationType) ((JAXBElement<?>) tmp_2).getValue();
+			Object tmp_2 = u.unmarshal(new FileInputStream(arg_1));
+			intents_2 = (ITResourceOrchestrationType) ((JAXBElement<?>) tmp_2).getValue();
 		} catch (Exception e) {
 			System.out.println(e);
 			System.exit(1);
@@ -150,10 +153,11 @@ public class HarmonizationService{
 
 		ITResourceOrchestrationType consumerIntents = intents_1;
 		/* Temporary */
-		//ITResourceOrchestrationType providerIntents = intents_2;
-		authIntentsProvider = authIntents;
+		ITResourceOrchestrationType providerIntents = intents_2;
+
 
 		requestIntentsConsumer = extractRequestIntents(consumerIntents);
+		authIntentsProvider =extractAuthorizationIntents(providerIntents);
 		/* Temporary */
 		//authIntentsProvider = extractAuthorizationIntents(providerIntents);
 		//podsByNamespaceAndLabelsConsumer = clusterService.initializeHashMaps(cluster);

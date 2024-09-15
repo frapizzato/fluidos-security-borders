@@ -15,20 +15,20 @@ public class ClusterConsumerVerify {
         List<Pod> podsConsumer = new ArrayList<>();
         // Configure the CONSUMER cluster data
         Namespace nsC1 = new Namespace();
-        nsC1.setSingleLabel("name", "fluidos");
+        nsC1.setSingleLabel("name", "payments");
         Namespace nsC2 = new Namespace();
-        nsC2.setSingleLabel("name", "turin");
+        nsC2.setSingleLabel("name", "products");
 
-        Pod pC1 = createPod("order_placement", nsC1);
+        Pod pC1 = createPod("app-payment-1", nsC1);
         podsConsumer.add(pC1);
 
-        Pod pC2 = createPod("help_desk", nsC2);
+        Pod pC2 = createPod("app-payment-2", nsC1);
         podsConsumer.add(pC2);
 
-        Pod pC3 = createPod("consumer_resource", nsC1);
+        Pod pC3 = createPod("mobile-products", nsC2);
         podsConsumer.add(pC3);
 
-        Pod pC4 = createPod("bank_payment", nsC2);
+        Pod pC4 = createPod("desktop-products", nsC2);
         podsConsumer.add(pC4);
 
         return new Cluster(podsConsumer, null);
