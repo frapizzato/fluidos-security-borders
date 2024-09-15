@@ -10,8 +10,7 @@
                 <Name>KubernetesNetworkFiltering</Name>
             </capability>
             <acceptMonitoring>true</acceptMonitoring>
-
-            <!-- from "app:order_placement" to "*", ALL  -->
+            <!-- from "app:order_placement" to "name:default", ALL  -->
             <configurationRule>
                 <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
                     <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
@@ -22,11 +21,11 @@
                         <isHostCluster>false</isHostCluster>
                         <pod>
                             <key>app</key>
-                            <value>order_placement</value>
+                            <value>app-payment-1</value>
                         </pod>
                         <namespace>
                             <key>name</key>
-                            <value>fluidos</value>
+                            <value>payments</value>
                         </namespace>
                     </source>
                     <sourcePort>*</sourcePort>
@@ -41,8 +40,8 @@
                             <value>*</value>
                         </namespace>
                     </destination>
-                    <destinationPort>*</destinationPort>
-                    <protocolType>ALL</protocolType>
+                    <destinationPort>80</destinationPort>
+                    <protocolType>TCP</protocolType>
                 </configurationCondition>
                 <externalData xsi:type="Priority">
                     <value>60000</value>
@@ -50,45 +49,7 @@
                 <Name>RequestIntent_1</Name>
                 <isCNF>false</isCNF>
             </configurationRule>
-            <!-- from "app:help_desk" to "*", ALL  -->
-            <configurationRule>
-                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
-                    <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
-                </configurationRuleAction>
-                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
-                    <isCNF>false</isCNF>
-                    <source xsi:type="PodNamespaceSelector">
-                        <isHostCluster>false</isHostCluster>
-                        <pod>
-                            <key>app</key>
-                            <value>help_desk</value>
-                        </pod>
-                        <namespace>
-                            <key>name</key>
-                            <value>turin</value>
-                        </namespace>
-                    </source>
-                    <sourcePort>*</sourcePort>
-                    <destination xsi:type="PodNamespaceSelector">
-                        <isHostCluster>true</isHostCluster>
-                        <pod>
-                            <key>*</key>
-                            <value>*</value>
-                        </pod>
-                        <namespace>
-                            <key>*</key>
-                            <value>*</value>
-                        </namespace>
-                    </destination>
-                    <destinationPort>*</destinationPort>
-                    <protocolType>ALL</protocolType>
-                </configurationCondition>
-                <externalData xsi:type="Priority">
-                    <value>60000</value>
-                </externalData>
-                <Name>RequestIntent_2</Name>
-                <isCNF>false</isCNF>
-            </configurationRule>
+
             <!-- from "app:bank_payment" to ANY, ALL -->
             <configurationRule>
                 <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
@@ -100,17 +61,57 @@
                         <isHostCluster>false</isHostCluster>
                         <pod>
                             <key>app</key>
-                            <value>bank_payment</value>
+                            <value>app-payment-2</value>
                         </pod>
                         <namespace>
                             <key>name</key>
-                            <value>turin</value>
+                            <value>payments</value>
+                        </namespace>
+                    </source>
+                    <sourcePort>*</sourcePort>
+                    <destination xsi:type="PodNamespaceSelector">
+                        <isHostCluster>true</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>*</key>
+                            <value>*</value>
+                        </namespace>
+                    </destination>
+                    <destinationPort>90</destinationPort>
+                    <protocolType>TCP</protocolType>
+                </configurationCondition>
+                <externalData xsi:type="Priority">
+                    <value>60000</value>
+                </externalData>
+                <Name>RequestIntent_2</Name>
+                <isCNF>false</isCNF>
+            </configurationRule>
+
+            <!-- from "app:mobile-products" to 0.0.0.0/0, ALL -->
+            <configurationRule>
+                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+                    <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
+                </configurationRuleAction>
+                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+                    <isCNF>false</isCNF>
+                    <source xsi:type="PodNamespaceSelector">
+                        <isHostCluster>false</isHostCluster>
+                        <pod>
+                            <key>app</key>
+                            <value>mobile-products</value>
+                        </pod>
+                        <namespace>
+                            <key>name</key>
+                            <value>products</value>
                         </namespace>
                     </source>
                     <sourcePort>*</sourcePort>
                     <destination xsi:type="CIDRSelector">
                         <isHostCluster>true</isHostCluster>
-                        <addressRange>0.0.0.0/0</addressRange>
+                        <addressRange>142.250.0.0/15</addressRange>
                     </destination>
                     <destinationPort>*</destinationPort>
                     <protocolType>ALL</protocolType>
@@ -121,15 +122,45 @@
                 <Name>RequestIntent_3</Name>
                 <isCNF>false</isCNF>
             </configurationRule>
-
-        </configuration>
-    </ITResource>
-    <!-- Now define Authorization Intents -->
-    <ITResource>
-        <configuration xsi:type="AuthorizationIntents">
-            <capability>
-                <Name>KubernetesNetworkFiltering</Name>
-            </capability>
+            <!-- from "app:bank_payment" to 0.0.0.0/0, ALL -->
+            <configurationRule>
+                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+                    <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
+                </configurationRuleAction>
+                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+                    <isCNF>false</isCNF>
+                    <source xsi:type="PodNamespaceSelector">
+                        <isHostCluster>false</isHostCluster>
+                        <pod>
+                            <key>app</key>
+                            <value>desktop-products</value>
+                        </pod>
+                        <namespace>
+                            <key>name</key>
+                            <value>products</value>
+                        </namespace>
+                    </source>
+                    <sourcePort>*</sourcePort>
+                    <destination xsi:type="PodNamespaceSelector">
+                        <isHostCluster>true</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>*</key>
+                            <value>*</value>
+                        </namespace>
+                    </destination>
+                    <destinationPort>85</destinationPort>
+                    <protocolType>UDP</protocolType>
+                </configurationCondition>
+                <externalData xsi:type="Priority">
+                    <value>60000</value>
+                </externalData>
+                <Name>RequestIntent_4</Name>
+                <isCNF>false</isCNF>
+            </configurationRule>
         </configuration>
     </ITResource>
 </ITResourceOrchestration>
