@@ -49,11 +49,10 @@ public class HarmonizationData {
 
 		// Loop over the forbiddenConnectionList.
 		for (ConfigurationRule confRule : connList) {
-			boolean overlap = false;
-			boolean overlapSrcPort = false;
-			boolean overlapDstPort = false;
-			boolean overlapSrc = false;
-			boolean overlapDst = false;
+			boolean overlap;
+			boolean overlapDstPort;
+			boolean overlapSrc;
+			boolean overlapDst;
 
 			KubernetesNetworkFilteringCondition tmp = (KubernetesNetworkFilteringCondition) confRule
 					.getConfigurationCondition();
@@ -78,22 +77,12 @@ public class HarmonizationData {
 			overlapSrc = HarmonizationUtils.computeOverlapResourceSelector(resCond.getSource(),
 					tmp.getSource());
 
-			if(!overlapSrc){
-				if(HarmonizationUtils.compareOverlapResourceSelector(resCond.getSource(),
-						tmp.getSource()))
-					overlapSrc = true;
-			}
 
 			overlapDst = HarmonizationUtils.computeOverlapResourceSelector(resCond.getDestination(),
 					tmp.getDestination());
 
-			if(!overlapDst){
-				if(HarmonizationUtils.compareOverlapResourceSelector(resCond.getDestination(),
-						tmp.getDestination()))
-					overlapDst = true;
-			}
 
-			if(overlap && overlapSrc && overlapDst && overlapSrcPort && overlapDstPort) {
+			if(overlap && overlapSrc && overlapDst && overlapDstPort) {
 				System.out.println("Overlap between these two intents: " );
 				printDash();
 				System.out.print(" (*) " + confRule.getName() + " - ");

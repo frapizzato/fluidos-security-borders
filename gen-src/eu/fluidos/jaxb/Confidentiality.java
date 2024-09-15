@@ -2,7 +2,7 @@
 // Questo file è stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
 // Qualsiasi modifica a questo file andrà persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.09.10 alle 04:35:03 PM CEST 
+// Generato il: 2024.09.15 alle 03:13:54 PM CEST 
 //
 
 
