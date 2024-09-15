@@ -15,9 +15,9 @@ public class HarmonizationData {
 	private static final Logger loggerInfo = LogManager.getLogger("harmonization");
 	private final Scanner scan = new Scanner(System.in);
 	public boolean verify(RequestIntents requestIntent,
-                                 AuthorizationIntents authIntent,
-                                 HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer,
-                                 HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider) {
+						  AuthorizationIntents authIntent,
+						  HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer,
+						  HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider) {
 
 		System.out.println(Main.ANSI_PURPLE + "[VERIFY] " + Main.ANSI_RESET + "Process started");
 		printDash();
@@ -25,19 +25,18 @@ public class HarmonizationData {
 			KubernetesNetworkFilteringCondition cond = (KubernetesNetworkFilteringCondition) cr
 					.getConfigurationCondition();
 
+			/*
 			System.out.println(Main.ANSI_BLUE +"[Request Intent]" + Main.ANSI_RESET);
 			System.out.print(" (*) " + cr.getName() + " - ");
-			System.out.print(HarmonizationUtils.kubernetesNetworkFilteringConditionToString(cond) + "\n");
+			System.out.print(HarmonizationUtils.kubernetesNetworkFilteringConditionToString(cond) + "\n");*/
 
 			if(!verifyConfigurationRule(cr, authIntent.getForbiddenConnectionList(),
 					podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider)){
 
-				/* System.out.print(" (*) " + cr.getName() + " - ");
-				System.out.print(Utils.kubernetesNetworkFilteringConditionToString(cond) + "\n");*/
 				return false;
 			}
 		}
-			return true;
+		return true;
 	}
 
 	/* Se almeno uno dei campi non ha sovrapposizione, non ci può essere sovrapposizione -> true */
@@ -52,17 +51,12 @@ public class HarmonizationData {
 		// Loop over the forbiddenConnectionList.
 		for (ConfigurationRule confRule : connList) {
 			boolean overlap = false;
-			boolean overlapSrcPort = false;
 			boolean overlapDstPort = false;
 			boolean overlapSrc = false;
 			boolean overlapDst = false;
 
 			KubernetesNetworkFilteringCondition tmp = (KubernetesNetworkFilteringCondition) confRule
 					.getConfigurationCondition();
-
-			System.out.println(Main.ANSI_BLUE +"[Authorization Intent]" +Main.ANSI_RESET);
-			System.out.print(" (*) " + confRule.getName() + " - ");
-			System.out.print(HarmonizationUtils.kubernetesNetworkFilteringConditionToString(tmp) + "\n");
 
 			loggerInfo.debug("[verify] - processing rule "
 					+ HarmonizationUtils.kubernetesNetworkFilteringConditionToString(resCond) + " vs. "
@@ -79,24 +73,9 @@ public class HarmonizationData {
 
 			overlapSrc = HarmonizationUtils.computeOverlapResourceSelector(resCond.getSource(),
 					tmp.getSource());
-			System.out.println("overlapDst: " + overlapSrc);
-			/*
-			if(!overlapSrc){
-				if(HarmonizationUtils.compareOverlapResourceSelector(resCond.getSource(),
-						tmp.getSource()))
-					overlapSrc = true;
-			}*/
 
 			overlapDst = HarmonizationUtils.computeOverlapResourceSelector(resCond.getDestination(),
 					tmp.getDestination());
-			System.out.println("overlapDst: " + overlapDst);
-
-			/*
-			if(!overlapDst){
-				if(HarmonizationUtils.compareOverlapResourceSelector(resCond.getDestination(),
-						tmp.getDestination()))
-					overlapDst = true;
-			} */
 
 			if(overlap && overlapSrc && overlapDst && overlapDstPort) {
 				System.out.println("Overlap between these two intents: " );
@@ -122,26 +101,23 @@ public class HarmonizationData {
 	 */
 
 	public List<ConfigurationRule> solveTypeOneDiscordances(RequestIntents requestIntent,
-                                                            AuthorizationIntents authIntent,
-                                                            HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer,
-                                                            HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider) {
+															AuthorizationIntents authIntent,
+															HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer,
+															HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider) {
 		printDash();
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW
 				+ "TYPE-1 DISCORDANCES" + Main.ANSI_RESET + /*
 		 * " = when Requested intents (CONSUMER) are not authorized by the Authorization intents (PROVIDER)"
 		 */"...press ENTER to continue.");
 
-		printDash();
+		//printDash();
 		//scan.nextLine();
 
 		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
 
 		// External loop over the consumer's Request Intents.
 		for (ConfigurationRule cr : requestIntent.getConfigurationRule()) {
-			System.out.println(Main.ANSI_YELLOW + "[harmonization/harmonizeForbiddenConnectionIntent] - processing rule { [" + cr.getName()
-					+ "]" + HarmonizationUtils.kubernetesNetworkFilteringConditionToString(
-					(KubernetesNetworkFilteringCondition) cr.getConfigurationCondition())
-					+ "}" + Main.ANSI_RESET);
+
 			loggerInfo.debug("[harmonization/harmonizeForbiddenConnectionIntent] - processing rule { [" + cr.getName()
 					+ "]" + HarmonizationUtils.kubernetesNetworkFilteringConditionToString(
 					(KubernetesNetworkFilteringCondition) cr.getConfigurationCondition())
@@ -162,9 +138,9 @@ public class HarmonizationData {
 	 */
 
 	public List<ConfigurationRule> solverTypeTwoDiscordances(List<ConfigurationRule> harmonizedRequestConsumerRules,
-                                                                    RequestIntents requestIntent, AuthorizationIntents authIntent,
-                                                                    HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider,
-                                                                    HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer) {
+															 RequestIntents requestIntent, AuthorizationIntents authIntent,
+															 HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider,
+															 HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer) {
 		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
 		printDash();
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW
@@ -174,7 +150,7 @@ public class HarmonizationData {
 		 * completely satisfied by the set of Request Intents (CONSUMER)
 		 */"...press ENTER to continue.");
 
-		printDash();
+		//printDash();
 		//scan.nextLine();
 
 		/* Monitoring */
@@ -191,10 +167,7 @@ public class HarmonizationData {
 			for (ConfigurationRule cr_provider : authIntent.getMandatoryConnectionList()) {
 				KubernetesNetworkFilteringCondition tmp1 = (KubernetesNetworkFilteringCondition) cr_provider
 						.getConfigurationCondition();
-				/*System.out.println(Main.ANSI_BLUE + cr_provider.getName()
-						+ "]" + Utils.kubernetesNetworkFilteringConditionToString(
-						(KubernetesNetworkFilteringCondition) cr_provider.getConfigurationCondition())
-						+ "}"+ Main.ANSI_RESET);*/
+
 				List<ConfigurationRule> tmp = harmonizeConfigurationRule(cr_provider, harmonizedRules,
 						podsByNamespaceAndLabelsProvider, podsByNamespaceAndLabelsConsumer);
 				for (ConfigurationRule cr : tmp)
@@ -211,8 +184,8 @@ public class HarmonizationData {
 	 */
 
 	public List<ConfigurationRule> solverTypeThreeDiscordances(List<ConfigurationRule> harmonizedRequestConsumerRules,
-                                                                      RequestIntents requestIntent, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer,
-                                                                      HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider) {
+															   RequestIntents requestIntent, HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer,
+															   HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider) {
 		List<ConfigurationRule> harmonizedRules = new ArrayList<>();
 		printDash();
 		System.out.println(Main.ANSI_PURPLE + "[DEMO_INFO]    " + Main.ANSI_RESET + " Resolution of " + Main.ANSI_YELLOW
@@ -248,8 +221,8 @@ public class HarmonizationData {
 	}
 
 	private List<ConfigurationRule> harmonizeConfigurationRule(ConfigurationRule conn, List<ConfigurationRule> connList,
-                                                                      HashMap<String, HashMap<String, List<Pod>>> map_conn,
-                                                                      HashMap<String, HashMap<String, List<Pod>>> map_connList) {
+															   HashMap<String, HashMap<String, List<Pod>>> map_conn,
+															   HashMap<String, HashMap<String, List<Pod>>> map_connList) {
 		// Initialize the resulting list.
 		List<ConfigurationRule> resList = new ArrayList<>();
 		// Create a deep copy of the current ConfigurationRule to be modified and
@@ -267,9 +240,7 @@ public class HarmonizationData {
 			flag = 0;
 			KubernetesNetworkFilteringCondition tmp = (KubernetesNetworkFilteringCondition) confRule
 					.getConfigurationCondition();
-			System.out.println(Main.ANSI_PURPLE +"[harmonization/harmonizeForbiddenConnectionIntent] - processing rule "
-					+ HarmonizationUtils.kubernetesNetworkFilteringConditionToString(resCond) + " vs. "
-					+ HarmonizationUtils.kubernetesNetworkFilteringConditionToString(tmp)+Main.ANSI_RESET);
+
 			loggerInfo.debug("[harmonization/harmonizeForbiddenConnectionIntent] - processing rule "
 					+ HarmonizationUtils.kubernetesNetworkFilteringConditionToString(resCond) + " vs. "
 					+ HarmonizationUtils.kubernetesNetworkFilteringConditionToString(tmp));
@@ -280,40 +251,31 @@ public class HarmonizationData {
 			// protocol types of res are overlapping with tmp.
 
 
-			//System.out.println("-Step-1.1");
+
 
 			String[] protocolList = HarmonizationUtils.computeHarmonizedProtocolType(resCond.getProtocolType().value(),
 					tmp.getProtocolType().value());
 
 			if (protocolList.length == 1 && protocolList[0].equals(resCond.getProtocolType().value())) {
 				// No overlap with the current rule (tmp), continue and check next one.
-				//System.out.println(" No overlap with the current rule (tmp), continue and check next one ");
 				continue;
 			}
 
 			// Step-1.2: check the ports. Detect if the port ranges of res are overlapping
 			// with tmp.
 
-			//System.out.println("-Step-1.2");
-			String[] sourcePortList = HarmonizationUtils.computeHarmonizedPortRange(resCond.getSourcePort(), tmp.getSourcePort())
-					.split(";");
 			String[] destinationPortList = HarmonizationUtils
 					.computeHarmonizedPortRange(resCond.getDestinationPort(), tmp.getDestinationPort()).split(";");
 
-
-			if(sourcePortList[0].equals(resCond.getSourcePort()) || destinationPortList[0].equals(resCond.getDestinationPort())){
+			if(destinationPortList[0].equals(resCond.getDestinationPort())){
 				// No overlap with the current rule (tmp), continue and check next one.
-				//System.out.println("No overlap with the current rule (tmp), continue and check next one");
 				continue;
 			}
 
-			//System.out.println("srcPortList" + sourcePortList[0] + " " + resCond.getSourcePort() );
-			//System.out.println("destPortList" + destinationPortList[0] + " " + resCond.getDestinationPort() );
 
 			//Step-1.3: check the source and destination.s
 			PodNamespaceSelector pns1 = (PodNamespaceSelector) resCond.getSource();
 			PodNamespaceSelector pns2 = (PodNamespaceSelector) tmp.getSource();
-			//System.out.println("-Step-1.3");
 
 			List<ResourceSelector> source = HarmonizationUtils.computeHarmonizedResourceSelector(resCond.getSource(),
 					tmp.getSource(), map_conn, map_connList);
@@ -321,7 +283,6 @@ public class HarmonizationData {
 			if (source == null) {
 				// There was a comparison problem...likely trying to perform a CIDR/PodNamespace
 				// comparison
-				//System.out.println(" There was a comparison problem...likely trying to perform a CIDR/PodNamespace comparison ");
 				continue;
 			}
 
@@ -330,7 +291,6 @@ public class HarmonizationData {
 				// No overlap with the current authorization rule (tmp), continue and check next
 				// one.
 				if(result) {
-					//System.out.println(" No overlap with the current authorization rule (tmp), continue and check next one ");
 					continue;
 				}
 			}
@@ -341,7 +301,6 @@ public class HarmonizationData {
 			if (destination == null) {
 				// There was a comparison problem...likely trying to perform a CIDR/PodNamespace
 				// comparison
-				//System.out.println(" There was a comparison problem...likely trying to perform a CIDR/PodNamespace comparison ");
 				continue;
 			}
 
@@ -349,11 +308,9 @@ public class HarmonizationData {
 					&& HarmonizationUtils.compareResourceSelector(destination.get(0), resCond.getDestination())) {
 				// No overlap with the current authorization rule (tmp), continue and check next
 				// one.
-				//System.out.println(" No overlap with the current authorization rule (tmp), continue and check next ");
 				continue;
 			}
 			//if(!destination.isEmpty())
-				//System.out.println("resourceSelector" + destination.get(0) + " " + resCond.getDestination());
 			// Step-2: if this point is reached, both source, sourcePort, destination, and
 			// destinationPort have an overlap (partial or complete) with the current
 			// authorization rule.
@@ -363,39 +320,9 @@ public class HarmonizationData {
 			// Note that if there is a partial overlap, the port range could be broken into
 			// two ranges (e.g., if overlap is in the middle of the interval).
 
-			//System.out.println("-Step-2");
-			if (sourcePortList[0].isEmpty()) {
-				// If the port range is empty, it means that it is not possible to harmonize the
-				// current intent (i.e., port range is included in the authorization rule's
-				// one)... just update the flag for the moment.
-				//System.out.println("sourcePortList[0] is empty");
-				flag++;
-			} else if (sourcePortList.length > 1) {
-				// Partial overlap causing the port range to be broke into two ranges. First,
-				// create a new ConfigurationRule, assign one of the two ranges and recursively
-				// call the function...
-				//System.out.println("Source - Partial overlap causing the port range to be broke into two ranges");
-				ConfigurationRule res2 = addHarmonizedRules(res, resCond, sourcePortList[1], loggerInfo, "sourcePort",
-						null);
-				resList.addAll(harmonizeConfigurationRule(res2, connList, map_conn, map_connList));
-
-				// ... then modify the local ConfigurationRule with the other range and
-				// continue.
-				ConfigurationRule res3 = addHarmonizedRules(res, resCond, sourcePortList[0], loggerInfo, "sourcePort",
-						null);
-				resList.addAll(harmonizeConfigurationRule(res3, connList, map_conn, map_connList));
-
-			} else {
-				//System.out.println("Source - Partial overlap, but no need to break the port range into two.");
-				// Partial overlap, but no need to break the port range into two.
-				ConfigurationRule res3 = addHarmonizedRules(res, resCond, sourcePortList[0], loggerInfo, "sourcePort",
-						null);
-				resList.addAll(harmonizeConfigurationRule(res3, connList, map_conn, map_connList));
-			}
-
 			// Repeat the process for the destinationPort range.
 			if (destinationPortList[0].isEmpty()) {
-				//System.out.println("destinationPortList[0] is empty");
+
 				flag++;
 			} else if (destinationPortList.length > 1) {
 				//System.out.println("Destination - Partial overlap causing the port range to be broke into two ranges");
@@ -408,7 +335,7 @@ public class HarmonizationData {
 				resList.addAll(harmonizeConfigurationRule(res3, connList, map_conn, map_connList));
 
 			} else {
-				//System.out.println("Destination - Partial overlap, but no need to break the port range into two.");
+
 				ConfigurationRule res3 = addHarmonizedRules(res, resCond, destinationPortList[0], loggerInfo,
 						"destinationPort", null);
 				KubernetesNetworkFilteringCondition k = (KubernetesNetworkFilteringCondition) res3
@@ -420,12 +347,12 @@ public class HarmonizationData {
 			// it could be that the overlap is partial and the result is a list of protocol
 			// types (max size 2 WITH CURRENT VALUES).
 
-			//System.out.println("-Step-2.2");
+
 			if (protocolList.length == 0) {
 				// If the protocol list is empty, it means that it is not possible to harmonize
 				// the current intent (i.e., protocol type is included in the authorization
 				// rule's one)... just update the flag for the moment.
-				//System.out.println("protocolList is empty");
+
 				flag++;
 			} else if (protocolList.length > 1) {
 
@@ -445,7 +372,7 @@ public class HarmonizationData {
 
 			// Step-2.3: solve possible problems with the source and destination selectors.
 
-			//System.out.println("-Step-2.3");
+
 
 			if (source.isEmpty()) {
 				// This means that it was not possible to harmonized current intent.
@@ -457,7 +384,7 @@ public class HarmonizationData {
 			}
 
 			if (destination.isEmpty()) {
-
+				// This means that it was not possible to harmonized current intent.
 			} else {
 				for (ResourceSelector rs : destination) {
 					ConfigurationRule res1 = addHarmonizedRules(res, resCond, "", loggerInfo, "destinationSelector",
@@ -473,9 +400,9 @@ public class HarmonizationData {
 			// In the end, whatever is the specific case, current request should be
 			// discarded and stop comparing it versus other rules.
 
-			//System.out.println("-Step-3");
+
 			loggerInfo.debug(Main.ANSI_RED + "[harmonization/harmonizeForbiddenConnectionIntent] - complete or partial overlap found, current rule is removed {{}" + Main.ANSI_RESET + "}", HarmonizationUtils.kubernetesNetworkFilteringConditionToString(resCond));
-			//System.out.println(Main.ANSI_RED + "[harmonization/harmonizeForbiddenConnectionIntent] - complete or partial overlap found, current rule is removed {{}" + Main.ANSI_RESET + "}" + HarmonizationUtils.kubernetesNetworkFilteringConditionToString(resCond));
+
 			return resList;
 		}
 
@@ -483,14 +410,14 @@ public class HarmonizationData {
 		// current intent to the list and return it.
 
 		loggerInfo.debug(Main.ANSI_GREEN + "[harmonization/harmonizeForbiddenConnectionIntent] - no overlap was found, current rule is added to HARMONIZED set {{}" + Main.ANSI_RESET + "}", HarmonizationUtils.kubernetesNetworkFilteringConditionToString(resCond));
-		//System.out.println(Main.ANSI_GREEN + "[harmonization/harmonizeForbiddenConnectionIntent] - no overlap was found, current rule is added to HARMONIZED set {{}" + Main.ANSI_RESET + "}" + HarmonizationUtils.kubernetesNetworkFilteringConditionToString(resCond));
+
 
 		resList.add(res);
 		return resList;
 	}
 
 	private ConfigurationRule addHarmonizedRules(ConfigurationRule res, KubernetesNetworkFilteringCondition resCond,
-                                                        String protocolList, Logger loggerInfo, String overlap, ResourceSelector rs) {
+												 String protocolList, Logger loggerInfo, String overlap, ResourceSelector rs) {
 		ConfigurationRule res1 = HarmonizationUtils.deepCopyConfigurationRule(res);
 		res1.setName(res.getName().split("-")[0] + "-HARMONIZED");
 		KubernetesNetworkFilteringCondition resCond1 = (KubernetesNetworkFilteringCondition) res1

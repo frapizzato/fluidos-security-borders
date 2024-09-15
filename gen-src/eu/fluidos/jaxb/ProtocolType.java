@@ -2,7 +2,7 @@
 // Questo file è stato generato dall'Eclipse Implementation of JAXB, v3.0.0 
 // Vedere https://eclipse-ee4j.github.io/jaxb-ri 
 // Qualsiasi modifica a questo file andrà persa durante la ricompilazione dello schema di origine. 
-// Generato il: 2024.09.09 alle 05:30:00 PM CEST 
+// Generato il: 2024.09.16 alle 01:01:12 AM CEST 
 //
 
 
@@ -21,7 +21,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
  *     &lt;enumeration value="TCP"/&gt;
  *     &lt;enumeration value="UDP"/&gt;
- *     &lt;enumeration value="STCP"/&gt;
+ *     &lt;enumeration value="SCTP"/&gt;
  *     &lt;enumeration value="ALL"/&gt;
  *   &lt;/restriction&gt;
  * &lt;/simpleType&gt;
@@ -34,7 +34,7 @@ public enum ProtocolType {
 
     TCP,
     UDP,
-    STCP,
+    SCTP,
     ALL;
 
     public String value() {

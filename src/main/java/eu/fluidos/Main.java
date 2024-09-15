@@ -45,8 +45,8 @@ public class Main
         /* Intents files */
 		//String arg_1 = "./testfile/provider_MSPL_test_dual.xml";
 		//String arg_2 = "./testfile/consumer_MSPL_test_dual.xml";
-		String arg_1 = "./testfile/provider_MSPL_test.xml";
-		String arg_2 = "./testfile/consumer_MSPL_test.xml";
+		String arg_1 = "./testfile/provider_MSPL_test_1.xml";
+		String arg_2 = "./testfile/consumer_MSPL_test_1.xml";
 
     	//HarmonizationController HarmonizationController = new HarmonizationController(HarmonizationService);
 
