@@ -178,8 +178,6 @@ public class HarmonizationUtils {
 			isCIDR_2 = true;
 		}
 
-		System.out.println("Map1:"+map_1);
-		System.out.println("Map2:"+map_2);
 		// If both are CIDRSelectors, then we can compute the difference in this way.
 		if(isCIDR_1 && isCIDR_2){
 			CIDRSelector cidr1 = (CIDRSelector) sel_1;
@@ -237,8 +235,6 @@ public class HarmonizationUtils {
 			return new ArrayList<PodNamespaceSelector>();
 		}
 
-		System.out.println("pns1 namespace:"+ pns1.getNamespace().getFirst().getKey() + " "+ pns1.getNamespace().getFirst().getValue());
-		System.out.println("pns2 namespace:"+ pns2.getNamespace().getFirst().getKey() + " "+ pns2.getNamespace().getFirst().getValue());
 		//Case-2: possibility of having none or partial overlap between pns1 and pns2. Need to move to Pods.
 
 		pns1SelectedPods = selectPods(pns1, clusterMap);
@@ -354,11 +350,13 @@ public class HarmonizationUtils {
 	public static boolean computeOverlapResourceSelector(ResourceSelector sel_1, ResourceSelector sel_2) {
 		Boolean isCIDR_1 = sel_1 instanceof CIDRSelector;
 		Boolean isCIDR_2 = sel_2 instanceof CIDRSelector;
-		System.out.println("In");
+
 		if (isCIDR_1 && isCIDR_2) {
 			CIDRSelector cidr1 = (CIDRSelector) sel_1;
 			CIDRSelector cidr2 = (CIDRSelector) sel_2;
-			return cidr1.getAddressRange().equals(cidr2.getAddressRange());
+			String resCIDRHarmonization = cidrDifference(cidr1.getAddressRange(), cidr2.getAddressRange());
+			return resCIDRHarmonization == null;
+
 		} else if (!isCIDR_1 && !isCIDR_2) {
 			PodNamespaceSelector pns1 = (PodNamespaceSelector) sel_1;
 			PodNamespaceSelector pns2 = (PodNamespaceSelector) sel_2;
@@ -374,11 +372,6 @@ public class HarmonizationUtils {
 			String pns1NamespaceValue = pns1.getNamespace().get(0).getValue();
 			String pns2NamespaceKey = pns2.getNamespace().get(0).getKey();
 			String pns2NamespaceValue = pns2.getNamespace().get(0).getValue();
-
-			/*System.out.println(pns1PodKey + ":" + pns1PodValue);
-			System.out.println(pns1NamespaceKey + ":" + pns1NamespaceValue);
-			System.out.println(pns2PodKey + ":" + pns2PodValue);
-			System.out.println(pns2NamespaceKey + ":" + pns2NamespaceValue);*/
 
 			if(areEqual(pns1NamespaceKey, pns1NamespaceValue, pns2NamespaceKey, pns2NamespaceValue)){
 				return areEqual(pns1PodKey, pns1PodValue, pns2PodKey, pns2PodValue);
