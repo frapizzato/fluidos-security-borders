@@ -103,10 +103,10 @@ public class HarmonizationUtils {
 		} else if(value.equals("ALL")) {
 			// inner set is whole domain, return it minus the second set.
 			if(value2.equals("TCP")){
-				return new String[]{"UDP", "STCP"};
+				return new String[]{"UDP", "SCTP"};
 			} else if(value2.equals("UDP")){
-				return new String[]{"TCP","STCP"};
-			} else if(value2.equals("STCP")){
+				return new String[]{"TCP","SCTP"};
+			} else if(value2.equals("SCTP")){
 				return new String[]{"TCP", "UDP"};
 			}
 		}
@@ -140,7 +140,6 @@ public class HarmonizationUtils {
 			CIDRSelector cidr = (CIDRSelector) cond.getSource();
 			res = res + "Src: [" + cidr.getAddressRange() + "], ";
 		}
-		res = res + "SrcPort: [" + cond.getSourcePort() + "], ";
 		if(cond.getDestination().getClass().equals(PodNamespaceSelector.class)){
 			PodNamespaceSelector pns = (PodNamespaceSelector) cond.getDestination();
 			res = res + "Dst: [" + pns.getPod().stream()
@@ -166,7 +165,6 @@ public class HarmonizationUtils {
 	public static List<ResourceSelector> computeHarmonizedResourceSelector(ResourceSelector sel_1, ResourceSelector sel_2, HashMap<String, HashMap<String, List<Pod>>> map_1, HashMap<String, HashMap<String, List<Pod>>> map_2) {
 		Boolean isCIDR_1 = false, isCIDR_2 = false;
 		List<ResourceSelector> res = new ArrayList<ResourceSelector>();
-
 		if(sel_1.getClass().equals(PodNamespaceSelector.class)){
 			isCIDR_1 = false;
 		} else {
@@ -178,8 +176,6 @@ public class HarmonizationUtils {
 			isCIDR_2 = true;
 		}
 
-		System.out.println("Map1:"+map_1);
-		System.out.println("Map2:"+map_2);
 		// If both are CIDRSelectors, then we can compute the difference in this way.
 		if(isCIDR_1 && isCIDR_2){
 			CIDRSelector cidr1 = (CIDRSelector) sel_1;
@@ -227,18 +223,14 @@ public class HarmonizationUtils {
 	 * @return the list of harmonized PodNamespaceSelectors (selecting the resources that are selected by pns1 and NOT by pns2)
 	 */
 	private static List<PodNamespaceSelector> computeHarmonizedPodNamespaceSelector(PodNamespaceSelector pns1, PodNamespaceSelector pns2, HashMap<String, HashMap<String, List<Pod>>> clusterMap) {
-
 		ArrayList<Pod> pns1SelectedPods = new ArrayList<Pod>();
 		ArrayList<Pod> pns2SelectedPods = new ArrayList<Pod>();
 
 		//Case-1: pns2 selects all pods and namespaces, so pns1 - pns2 = 0
-
 		if(pns2.getNamespace().get(0).getKey().equals("*") && pns2.getPod().get(0).getValue().equals("*")){
 			return new ArrayList<PodNamespaceSelector>();
 		}
 
-		System.out.println("pns1 namespace:"+ pns1.getNamespace().getFirst().getKey() + " "+ pns1.getNamespace().getFirst().getValue());
-		System.out.println("pns2 namespace:"+ pns2.getNamespace().getFirst().getKey() + " "+ pns2.getNamespace().getFirst().getValue());
 		//Case-2: possibility of having none or partial overlap between pns1 and pns2. Need to move to Pods.
 
 		pns1SelectedPods = selectPods(pns1, clusterMap);
@@ -246,7 +238,6 @@ public class HarmonizationUtils {
 		// Repeat everything for pns2...
 
 		pns2SelectedPods = selectPods(pns2, clusterMap);
-
 
 		//Change the list.
 
@@ -360,7 +351,6 @@ public class HarmonizationUtils {
 			CIDRSelector cidr2 = (CIDRSelector) sel_2;
 			String resCIDRHarmonization = cidrDifference(cidr1.getAddressRange(), cidr2.getAddressRange());
 			return resCIDRHarmonization == null;
-
 		} else if (!isCIDR_1 && !isCIDR_2) {
 			PodNamespaceSelector pns1 = (PodNamespaceSelector) sel_1;
 			PodNamespaceSelector pns2 = (PodNamespaceSelector) sel_2;
@@ -396,9 +386,63 @@ public class HarmonizationUtils {
 		return keysEqual && valuesEqual;
 	}
 
+	public static boolean compareOverlapResourceSelector(ResourceSelector rs_1, ResourceSelector rs_2) {
+		boolean found;
+
+		if (rs_1 instanceof PodNamespaceSelector && rs_2 instanceof PodNamespaceSelector) {
+			PodNamespaceSelector pns_1 = (PodNamespaceSelector) rs_1;
+			PodNamespaceSelector pns_2 = (PodNamespaceSelector) rs_2;
+
+
+			if (pns_1.getNamespace().size() == 1 && pns_1.getNamespace().get(0).getKey().equals("*") && pns_1.getNamespace().get(0).getValue().equals("*") &&
+					pns_1.getPod().size() == 1 && pns_1.getPod().get(0).getKey().equals("*") && pns_1.getPod().get(0).getValue().equals("*")|| pns_2.getNamespace().size() == 1 && pns_2.getNamespace().get(0).getKey().equals("*") && pns_2.getNamespace().get(0).getValue().equals("*") &&
+					pns_2.getPod().size() == 1 && pns_2.getPod().get(0).getKey().equals("*") && pns_2.getPod().get(0).getValue().equals("*")) {
+				return true;
+			}
+
+			if (pns_1.getPod().size() != pns_2.getPod().size() || pns_1.getNamespace().size() != pns_2.getNamespace().size()) {
+				return false;
+			}
+
+			for (KeyValue kv_1 : pns_1.getPod()) {
+				found = false;
+				for (KeyValue kv_2 : pns_2.getPod()) {
+					if (kv_1.getKey().equals(kv_2.getKey()) && kv_1.getValue().equals(kv_2.getValue())) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					return false;
+				}
+			}
+
+			for (KeyValue kv_1 : pns_1.getNamespace()) {
+				found = false;
+				for (KeyValue kv_2 : pns_2.getNamespace()) {
+					if (kv_1.getKey().equals(kv_2.getKey()) && kv_1.getValue().equals(kv_2.getValue())) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					return false;
+				}
+			}
+
+			return true;
+		} else if (rs_1 instanceof CIDRSelector && rs_2 instanceof CIDRSelector) {
+			CIDRSelector cidr_1 = (CIDRSelector) rs_1;
+			CIDRSelector cidr_2 = (CIDRSelector) rs_2;
+			return cidr_1.getAddressRange().equals(cidr_2.getAddressRange());
+		} else {
+			return false;
+		}
+	}
+
 	public static boolean checkWildcard(ResourceSelector rs){
 		boolean isCIDR_1 = !rs.getClass().equals(PodNamespaceSelector.class);
-        if(isCIDR_1)
+		if(isCIDR_1)
 			return false;
 		else {
 			PodNamespaceSelector pns = (PodNamespaceSelector) rs;
@@ -473,10 +517,10 @@ public class HarmonizationUtils {
 		int ipNum = 0;
 		String[] octets = ip.split("\\.");
 		for (int i = 0; i < 4; i++) {
-	  		ipNum = ipNum << 8 | Integer.parseInt(octets[i]);
+			ipNum = ipNum << 8 | Integer.parseInt(octets[i]);
 		}
 		return new int[] {ipNum, prefix};
-  	}
+	}
 
 	/**
 	 * Function to compute the difference between two CIDR ranges.
@@ -485,7 +529,7 @@ public class HarmonizationUtils {
 	 * @return is the resulting of first CIDR range MINUS second CIDR range (could be multiple ranges separated by a semicolon). If the difference is empty, then the function returns null.
 	 */
 	private static String cidrDifference(String cidr1, String cidr2) {
-  		String resString = "";
+		String resString = "";
 
 		// Converts the CIDR strings into two arrays of two integers.
 		int[] ip1 = cidrToIp(cidr1);
@@ -506,31 +550,31 @@ public class HarmonizationUtils {
 
 		// If range 1 is completely included in range 2, then the difference is empty.
 		if(Integer.compareUnsigned(net1, bc2) <= 0 && Integer.compareUnsigned(net2, bc1) >= 0) {
-		//if (net1 <= bc2 && net2 >= bc1) {
+			//if (net1 <= bc2 && net2 >= bc1) {
 			return null;
 		}
 
 		// Range 1 is partially (or completely) overlapping with range 2.
 		if(Integer.compareUnsigned(net1, bc2) <= 0 && Integer.compareUnsigned(bc1, net2) >= 0) {
-		//if(net1 <= bc2 && bc1 >= net2) {
+			//if(net1 <= bc2 && bc1 >= net2) {
 			if(Integer.compareUnsigned(net1, net2) >= 0 && Integer.compareUnsigned(bc1, bc2) <= 0) {
-			//if(net1 >= net2 && bc1 <= bc2){
+				//if(net1 >= net2 && bc1 <= bc2){
 				// range 1 is completely included in range 2...
 				return null;
 			} else if(Integer.compareUnsigned(net1, net2) <= 0 && Integer.compareUnsigned(bc1, bc2) <= 0) {
-			//} else if(net1 <= net2 && bc1 <= bc2){
+				//} else if(net1 <= net2 && bc1 <= bc2){
 				// range 1 starts before the range 2 and ends inside the range 2...
 				int diff = net2 - net1;
 				resString += computeTotalSubnetting(net1, net1 + diff);
 				return resString;
 			} else if(Integer.compareUnsigned(net1,net2) >= 0 && Integer.compareUnsigned(bc1, bc2) >= 0) {
-			//} else if(net1 >= net2 && bc1 >= bc2){
+				//} else if(net1 >= net2 && bc1 >= bc2){
 				// range 1 starts inside range 2 and ends after range 2...
 				int diff = bc1 - bc2;
 				resString += computeTotalSubnetting(bc2 + 1, bc2 + diff);
 				return resString;
 			} else if(Integer.compareUnsigned(net1, net2) <= 0 && Integer.compareUnsigned(bc1, bc2) >= 0) {
-			//} else if(net1 <= net2 && bc1 >= bc2){
+				//} else if(net1 <= net2 && bc1 >= bc2){
 				// range 2 is completely included in range 1...
 				int diff_1 = net2 - net1;
 				int diff_2 = bc1 - bc2;
@@ -542,7 +586,7 @@ public class HarmonizationUtils {
 
 		// If none of the previous, the two ranges do not overlap!
 		return cidr1;
-  	}
+	}
 
 	/**
 	 * Function to compute the subnetting of an IP address range.
@@ -629,7 +673,7 @@ public class HarmonizationUtils {
 				found = false;
 				for(KeyValue kv_2: pns_2.getNamespace()){
 					if(kv_1.getKey().equals(kv_2.getKey()) && kv_1.getValue().equals(kv_2.getValue())){
-					//if((kv_1.getKey().equals(kv_2.getKey()) || kv_1.getKey().equals("*"))  && (kv_1.getValue().equals(kv_2.getValue()) || kv_1.getValue().equals("*"))){
+						//if((kv_1.getKey().equals(kv_2.getKey()) || kv_1.getKey().equals("*"))  && (kv_1.getValue().equals(kv_2.getValue()) || kv_1.getValue().equals("*"))){
 						found = true;
 						break;
 					}
@@ -641,59 +685,6 @@ public class HarmonizationUtils {
 
 			return true;
 		} else if(rs_1.getClass().equals(CIDRSelector.class) && rs_2.getClass().equals(CIDRSelector.class)){
-			CIDRSelector cidr_1 = (CIDRSelector) rs_1;
-			CIDRSelector cidr_2 = (CIDRSelector) rs_2;
-			return cidr_1.getAddressRange().equals(cidr_2.getAddressRange());
-		} else {
-			return false;
-		}
-	}
-	public static boolean compareOverlapResourceSelector(ResourceSelector rs_1, ResourceSelector rs_2) {
-		boolean found;
-
-		if (rs_1 instanceof PodNamespaceSelector && rs_2 instanceof PodNamespaceSelector) {
-			PodNamespaceSelector pns_1 = (PodNamespaceSelector) rs_1;
-			PodNamespaceSelector pns_2 = (PodNamespaceSelector) rs_2;
-
-
-			if (pns_1.getNamespace().size() == 1 && pns_1.getNamespace().get(0).getKey().equals("*") && pns_1.getNamespace().get(0).getValue().equals("*") &&
-					pns_1.getPod().size() == 1 && pns_1.getPod().get(0).getKey().equals("*") && pns_1.getPod().get(0).getValue().equals("*")|| pns_2.getNamespace().size() == 1 && pns_2.getNamespace().get(0).getKey().equals("*") && pns_2.getNamespace().get(0).getValue().equals("*") &&
-					pns_2.getPod().size() == 1 && pns_2.getPod().get(0).getKey().equals("*") && pns_2.getPod().get(0).getValue().equals("*")) {
-				return true;
-			}
-
-			if (pns_1.getPod().size() != pns_2.getPod().size() || pns_1.getNamespace().size() != pns_2.getNamespace().size()) {
-				return false;
-			}
-
-			for (KeyValue kv_1 : pns_1.getPod()) {
-				found = false;
-				for (KeyValue kv_2 : pns_2.getPod()) {
-					if (kv_1.getKey().equals(kv_2.getKey()) && kv_1.getValue().equals(kv_2.getValue())) {
-						found = true;
-						break;
-					}
-				}
-				if (!found) {
-					return false;
-				}
-			}
-
-			for (KeyValue kv_1 : pns_1.getNamespace()) {
-				found = false;
-				for (KeyValue kv_2 : pns_2.getNamespace()) {
-					if (kv_1.getKey().equals(kv_2.getKey()) && kv_1.getValue().equals(kv_2.getValue())) {
-						found = true;
-						break;
-					}
-				}
-				if (!found) {
-					return false;
-				}
-			}
-
-			return true;
-		} else if (rs_1 instanceof CIDRSelector && rs_2 instanceof CIDRSelector) {
 			CIDRSelector cidr_1 = (CIDRSelector) rs_1;
 			CIDRSelector cidr_2 = (CIDRSelector) rs_2;
 			return cidr_1.getAddressRange().equals(cidr_2.getAddressRange());

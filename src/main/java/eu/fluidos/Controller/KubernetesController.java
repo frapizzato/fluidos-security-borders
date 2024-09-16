@@ -54,7 +54,6 @@ import eu.fluidos.jaxb.ExternalData;
 import eu.fluidos.jaxb.HSPL;
 import eu.fluidos.jaxb.ITResourceOrchestrationType;
 import eu.fluidos.jaxb.KeyValue;
-import eu.fluidos.jaxb.KubernetesNetworkFilterCondition;
 import eu.fluidos.jaxb.KubernetesNetworkFilteringAction;
 import eu.fluidos.jaxb.KubernetesNetworkFilteringCondition;
 import eu.fluidos.jaxb.PodNamespaceSelector;
@@ -565,6 +564,7 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
                 }
         
                 if (jsonObject.has("protocolType") && !jsonObject.get("protocolType").isJsonNull()){
+                    System.out.println("Protocollo letto:"+ProtocolType.valueOf(jsonObject.get("protocolType").getAsString()));
                     condition.setProtocolType(ProtocolType.valueOf(jsonObject.get("protocolType").getAsString()));
                 }
                 ConfigurationRule rule = new ConfigurationRule();
@@ -646,11 +646,12 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
         AuthorizationIntents authorizationIntents = new AuthorizationIntents();
         List<ConfigurationRule> forbiddenConnectionList = authorizationIntents.getForbiddenConnectionList();
         List<ConfigurationRule> mandatoryConnectionList = authorizationIntents.getMandatoryConnectionList();
-
+        String flavorName = new String();
         for (Watch.Response<JsonObject> item : watch) {
             if (item.type.equals("ADDED") || item.type.equals("MODIFIED")) {
                 JsonObject flavor = item.object;
-
+                JsonObject metadata = flavor.getAsJsonObject("metadata");
+                flavorName = metadata.get("name").getAsString();
                 JsonObject spec = flavor.getAsJsonObject("spec");
                 JsonObject flavorType = spec.getAsJsonObject("flavorType");
                 JsonObject typeData = flavorType.getAsJsonObject("typeData");
@@ -701,7 +702,9 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
             StampaAuthIntents(authorizationIntents);
             if (authorizationIntents != null && authorizationIntents.getForbiddenConnectionList().size() > 0 && authorizationIntents.getMandatoryConnectionList().size() > 0){
                 HarmonizationController harmonizationController = new HarmonizationController();
-                System.out.println("Valore dalla chiamata del verifier:" + harmonizationController.verify(createCluster(client,"consumer"),authorizationIntents));
+                System.out.println("Valore dalla chiamata del verifier:" + harmonizationController.verify(createCluster(client,"consumer"),authorizationIntents)+" per il flavour: " + flavorName);
+                forbiddenConnectionList.clear();
+                mandatoryConnectionList.clear();
             }
         }
     } catch (ApiException e) {

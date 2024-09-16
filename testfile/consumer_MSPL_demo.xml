@@ -36,12 +36,12 @@
                             <value>*</value>
                         </pod>
                         <namespace>
-                            <key>name</key>
-                            <value>handle-payments</value>
+                            <key>*</key>
+                            <value>*</value>
                         </namespace>
                     </destination>
-                    <destinationPort>*</destinationPort>
-                    <protocolType>ALL</protocolType>
+                    <destinationPort>80</destinationPort>
+                    <protocolType>TCP</protocolType>
                 </configurationCondition>
                 <externalData xsi:type="Priority">
                     <value>60000</value>
@@ -76,12 +76,12 @@
                             <value>*</value>
                         </pod>
                         <namespace>
-                            <key>name</key>
-                            <value>handle-payments</value>
+                            <key>*</key>
+                            <value>*</value>
                         </namespace>
                     </destination>
-                    <destinationPort>*</destinationPort>
-                    <protocolType>ALL</protocolType>
+                    <destinationPort>90</destinationPort>
+                    <protocolType>TCP</protocolType>
                 </configurationCondition>
                 <externalData xsi:type="Priority">
                     <value>60000</value>
@@ -90,7 +90,7 @@
                 <isCNF>false</isCNF>
             </configurationRule>
 
-            <!-- from "app:bank_payment" to 0.0.0.0/0, ALL -->
+            <!-- from "app:mobile-products" to 0.0.0.0/0, ALL -->
             <configurationRule>
                 <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
                     <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
@@ -100,8 +100,8 @@
                     <source xsi:type="PodNamespaceSelector">
                         <isHostCluster>false</isHostCluster>
                         <pod>
-                            <key>*</key>
-                            <value>*</value>
+                            <key>app</key>
+                            <value>mobile-products</value>
                         </pod>
                         <namespace>
                             <key>name</key>
@@ -122,6 +122,46 @@
                 <Name>RequestIntent_3</Name>
                 <isCNF>false</isCNF>
             </configurationRule>
+            <!-- from "app:bank_payment" to 0.0.0.0/0, ALL -->
+            <configurationRule>
+                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+                    <KubernetesNetworkFilteringActionType>ALLOW</KubernetesNetworkFilteringActionType>
+                </configurationRuleAction>
+                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+                    <isCNF>false</isCNF>
+                    <source xsi:type="PodNamespaceSelector">
+                        <isHostCluster>false</isHostCluster>
+                        <pod>
+                            <key>app</key>
+                            <value>desktop-products</value>
+                        </pod>
+                        <namespace>
+                            <key>name</key>
+                            <value>products</value>
+                        </namespace>
+                    </source>
+                    <sourcePort>*</sourcePort>
+                    <destination xsi:type="PodNamespaceSelector">
+                        <isHostCluster>true</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>*</key>
+                            <value>*</value>
+                        </namespace>
+                    </destination>
+                    <destinationPort>85</destinationPort>
+                    <protocolType>UDP</protocolType>
+                </configurationCondition>
+                <externalData xsi:type="Priority">
+                    <value>60000</value>
+                </externalData>
+                <Name>RequestIntent_4</Name>
+                <isCNF>false</isCNF>
+            </configurationRule>
         </configuration>
     </ITResource>
 </ITResourceOrchestration>
+
