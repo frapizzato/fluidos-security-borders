@@ -121,7 +121,7 @@ public class HarmonizationUtils {
 	 * @return true if value is overlapping with value2.
 	 */
 	public static boolean computeVerifyProtocolType(String value, String value2) {
-        return value.equals(value2) || value2.equals("ALL");
+		return value.equals(value2) || value.equals("ALL") || value2.equals("ALL") || value.equals("*") || value2.equals("*");
 	}
 
 	/**
@@ -178,8 +178,8 @@ public class HarmonizationUtils {
 			isCIDR_2 = true;
 		}
 
-		//System.out.println("Map1:"+map_1);
-		//System.out.println("Map2:"+map_2);
+		System.out.println("Map1:"+map_1);
+		System.out.println("Map2:"+map_2);
 		// If both are CIDRSelectors, then we can compute the difference in this way.
 		if(isCIDR_1 && isCIDR_2){
 			CIDRSelector cidr1 = (CIDRSelector) sel_1;
@@ -227,7 +227,7 @@ public class HarmonizationUtils {
 	 * @return the list of harmonized PodNamespaceSelectors (selecting the resources that are selected by pns1 and NOT by pns2)
 	 */
 	private static List<PodNamespaceSelector> computeHarmonizedPodNamespaceSelector(PodNamespaceSelector pns1, PodNamespaceSelector pns2, HashMap<String, HashMap<String, List<Pod>>> clusterMap) {
-		
+
 		ArrayList<Pod> pns1SelectedPods = new ArrayList<Pod>();
 		ArrayList<Pod> pns2SelectedPods = new ArrayList<Pod>();
 
@@ -237,8 +237,8 @@ public class HarmonizationUtils {
 			return new ArrayList<PodNamespaceSelector>();
 		}
 
-		//System.out.println("pns1 namespace:"+ pns1.getNamespace().getFirst().getKey() + " "+ pns1.getNamespace().getFirst().getValue());
-		//System.out.println("pns2 namespace:"+ pns2.getNamespace().getFirst().getKey() + " "+ pns2.getNamespace().getFirst().getValue());
+		System.out.println("pns1 namespace:"+ pns1.getNamespace().getFirst().getKey() + " "+ pns1.getNamespace().getFirst().getValue());
+		System.out.println("pns2 namespace:"+ pns2.getNamespace().getFirst().getKey() + " "+ pns2.getNamespace().getFirst().getValue());
 		//Case-2: possibility of having none or partial overlap between pns1 and pns2. Need to move to Pods.
 
 		pns1SelectedPods = selectPods(pns1, clusterMap);
@@ -261,7 +261,7 @@ public class HarmonizationUtils {
 	}
 
 	private static ArrayList<Pod> selectPods(PodNamespaceSelector pns, HashMap<String, HashMap<String, List<Pod>>> clusterMap){
-		
+
 		ArrayList<Pod> pnsSelectedPods = new ArrayList<Pod>();
 
 		if(pns.getNamespace().get(0).getKey().equals("*") && pns.getNamespace().get(0).getValue().equals("*") &&
@@ -358,31 +358,43 @@ public class HarmonizationUtils {
 		if (isCIDR_1 && isCIDR_2) {
 			CIDRSelector cidr1 = (CIDRSelector) sel_1;
 			CIDRSelector cidr2 = (CIDRSelector) sel_2;
-			return cidr1.getAddressRange().equals(cidr2.getAddressRange());
+			String resCIDRHarmonization = cidrDifference(cidr1.getAddressRange(), cidr2.getAddressRange());
+			return resCIDRHarmonization == null;
+
 		} else if (!isCIDR_1 && !isCIDR_2) {
 			PodNamespaceSelector pns1 = (PodNamespaceSelector) sel_1;
 			PodNamespaceSelector pns2 = (PodNamespaceSelector) sel_2;
 
-			if (pns1.isIsHostCluster() != pns2.isIsHostCluster()) {
+			if (pns1.isIsHostCluster() == pns2.isIsHostCluster()) {
 				return false;
 			}
+			String pns1PodKey = pns1.getPod().get(0).getKey();
+			String pns1PodValue = pns1.getPod().get(0).getValue();
+			String pns2PodKey = pns2.getPod().get(0).getKey();
+			String pns2PodValue = pns2.getPod().get(0).getValue();
+			String pns1NamespaceKey = pns1.getNamespace().get(0).getKey();
+			String pns1NamespaceValue = pns1.getNamespace().get(0).getValue();
+			String pns2NamespaceKey = pns2.getNamespace().get(0).getKey();
+			String pns2NamespaceValue = pns2.getNamespace().get(0).getValue();
 
-			if (pns1.getNamespace().get(0).getKey().equals("*") && pns1.getNamespace().get(0).getValue().equals("*") &&
-					pns1.getPod().get(0).getKey().equals("*") && pns1.getPod().get(0).getValue().equals("*")) {
-				return true;
+			if(areEqual(pns1NamespaceKey, pns1NamespaceValue, pns2NamespaceKey, pns2NamespaceValue)){
+				return areEqual(pns1PodKey, pns1PodValue, pns2PodKey, pns2PodValue);
 			}
-
-			if (pns2.getNamespace().get(0).getKey().equals("*") && pns2.getNamespace().get(0).getValue().equals("*") &&
-					pns2.getPod().get(0).getKey().equals("*") && pns2.getPod().get(0).getValue().equals("*")) {
-				return true;
-			}
-
-			return pns1.getNamespace().equals(pns2.getNamespace()) && pns1.getPod().equals(pns2.getPod());
+			else
+				return false;
 		} else {
 			return false;
 		}
 	}
 
+	public static boolean areEqual(String key1, String value1, String key2, String value2) {
+
+		boolean keysEqual = key1.equals(key2) || "*".equals(key1) || "*".equals(key2);
+
+		boolean valuesEqual = value1.equals(value2) || "*".equals(value1) || "*".equals(value2);
+
+		return keysEqual && valuesEqual;
+	}
 
 	public static boolean checkWildcard(ResourceSelector rs){
 		boolean isCIDR_1 = !rs.getClass().equals(PodNamespaceSelector.class);
@@ -448,7 +460,7 @@ public class HarmonizationUtils {
 	 * Function to convert a CIDR string into an array of two integers: the first is the IP address in numeric format, the second is the length of the network prefix.
 	 * @param cidr is the CIDR string to be converted.
 	 * @return an array of two integers: the first is the IP address in numeric format, the second is the length of the network prefix.
-	 * 
+	 *
 	 */
 	private static int[] cidrToIp(String cidr) {
 		// Split the string into two parts, IP address and prefix.
@@ -465,7 +477,7 @@ public class HarmonizationUtils {
 		}
 		return new int[] {ipNum, prefix};
   	}
-  
+
 	/**
 	 * Function to compute the difference between two CIDR ranges.
 	 * @param cidr1 is the first CIDR range.
@@ -480,14 +492,14 @@ public class HarmonizationUtils {
 		int[] ip2 = cidrToIp(cidr2);
 
 		// Compute the subnet mask using right shift.
-		int mask1 = (ip1[1]==32)? 0 : -1 >>> ip1[1]; 
+		int mask1 = (ip1[1]==32)? 0 : -1 >>> ip1[1];
 		int mask2 = (ip2[1]==32)? 0 : -1 >>> ip2[1];
-		
-		
+
+
 		// Compute the network addresses using AND between IP addresses and subnet mask.
 		int net1 = ip1[0] & ~mask1;
 		int net2 = ip2[0] & ~mask2;
-  
+
 		// Compute broadcast addresses (i.e., largest IP address) for both ranges using OR between network addresses and subnet masks negated.
 		int bc1 = ip1[0] | mask1;
 		int bc2 = ip2[0] | mask2;
@@ -496,7 +508,7 @@ public class HarmonizationUtils {
 		if(Integer.compareUnsigned(net1, bc2) <= 0 && Integer.compareUnsigned(net2, bc1) >= 0) {
 		//if (net1 <= bc2 && net2 >= bc1) {
 			return null;
-		} 
+		}
 
 		// Range 1 is partially (or completely) overlapping with range 2.
 		if(Integer.compareUnsigned(net1, bc2) <= 0 && Integer.compareUnsigned(bc1, net2) >= 0) {
@@ -508,7 +520,7 @@ public class HarmonizationUtils {
 			} else if(Integer.compareUnsigned(net1, net2) <= 0 && Integer.compareUnsigned(bc1, bc2) <= 0) {
 			//} else if(net1 <= net2 && bc1 <= bc2){
 				// range 1 starts before the range 2 and ends inside the range 2...
-				int diff = net2 - net1; 
+				int diff = net2 - net1;
 				resString += computeTotalSubnetting(net1, net1 + diff);
 				return resString;
 			} else if(Integer.compareUnsigned(net1,net2) >= 0 && Integer.compareUnsigned(bc1, bc2) >= 0) {
@@ -544,7 +556,7 @@ public class HarmonizationUtils {
 		// Compute the largest power of 2 that is smaller than the number of IPs.
 		int prefix = 1;
 		while(Integer.compareUnsigned(prefix, diff) <= 0 //(prefix <= diff)
-				&& prefix != 0) {  
+				&& prefix != 0) {
 			prefix *= 2;
 		}
 		if(prefix != 0) {
@@ -729,7 +741,7 @@ public class HarmonizationUtils {
 	 */
 	public static ConfigurationRule deepCopyConfigurationAndInvertVCluster(ConfigurationRule cr) {
 		ConfigurationRule cr_inverse = deepCopyConfigurationRule(cr);
-		
+
 		KubernetesNetworkFilteringCondition cr_inverse_cond = (KubernetesNetworkFilteringCondition) cr_inverse.getConfigurationCondition();
 		// Invert the source and destination "isHostCluster" flags.
 

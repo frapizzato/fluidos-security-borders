@@ -235,8 +235,10 @@
       <change beforePath="$PROJECT_DIR$/gen-src/eu/fluidos/jaxb/WSSecurityCondition.java" beforeDir="false" afterPath="$PROJECT_DIR$/gen-src/eu/fluidos/jaxb/WSSecurityCondition.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gen-src/eu/fluidos/jaxb/XMLDataSelectionCondition.java" beforeDir="false" afterPath="$PROJECT_DIR$/gen-src/eu/fluidos/jaxb/XMLDataSelectionCondition.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gen-src/eu/fluidos/jaxb/package-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/gen-src/eu/fluidos/jaxb/package-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/eu/fluidos/Controller/KubernetesController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/eu/fluidos/Controller/KubernetesController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/eu/fluidos/harmonization/HarmonizationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/eu/fluidos/harmonization/HarmonizationController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/eu/fluidos/harmonization/HarmonizationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/eu/fluidos/harmonization/HarmonizationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/eu/fluidos/harmonization/HarmonizationUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/eu/fluidos/harmonization/HarmonizationUtils.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

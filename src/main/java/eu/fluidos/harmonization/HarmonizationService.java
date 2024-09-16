@@ -53,12 +53,12 @@ public static Pod createPod(String value, Namespace namespace) {
         return pod;
     }
 
-	public RequestIntents harmonize(Cluster cluster, Cluster consumer,  RequestIntents requestIntents) {
+	public RequestIntents harmonize(Cluster cluster, RequestIntents requestIntents) {
 		System.out.println("Entra nell' harmonize");
         ITResourceOrchestrationType intents_1 = null;
 		AuthorizationIntents authIntentsProvider;
 		RequestIntents requestIntentsConsumer;
-		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider = new HashMap<>();
+		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider;
 		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer = new HashMap<>();
 
         try {
@@ -74,10 +74,9 @@ public static Pod createPod(String value, Namespace namespace) {
         ITResourceOrchestrationType providerIntents = intents_1;
 		requestIntentsConsumer = requestIntents;
 
-		podsByNamespaceAndLabelsConsumer = clusterService.initializeHashMaps(consumer);
 		podsByNamespaceAndLabelsProvider = clusterService.initializeHashMaps(cluster);
 
-		for (HashMap.Entry<String, HashMap<String, List<Pod>>> namespaceEntry : podsByNamespaceAndLabelsProvider.entrySet()) {
+		/*for (HashMap.Entry<String, HashMap<String, List<Pod>>> namespaceEntry : podsByNamespaceAndLabelsProvider.entrySet()) {
 			System.out.println("Pod Provider");
             String namespace = namespaceEntry.getKey();
             HashMap<String, List<Pod>> labelsMap = namespaceEntry.getValue();
@@ -95,9 +94,9 @@ public static Pod createPod(String value, Namespace namespace) {
             }
             System.out.println("");
             System.out.println("");
-        }
+        }*/
 
-
+		/*
 		for (HashMap.Entry<String, HashMap<String, List<Pod>>> namespaceEntry : podsByNamespaceAndLabelsConsumer.entrySet()) {
 			System.out.println("Pod Consumer");
             String namespace = namespaceEntry.getKey();
@@ -116,7 +115,7 @@ public static Pod createPod(String value, Namespace namespace) {
             }
             System.out.println("");
             System.out.println("");
-        }
+        }*/
         /*
          * First, the intents are extracted from the given data structure into three
          * different lists (for both provider and consumer): - "AuthorizationIntents" -
