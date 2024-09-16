@@ -79,7 +79,7 @@ public class Main
 
 
 			AuthorizationIntents authorizationIntents = null;
-			//boolean verify = HarmonizationController.verify(null);
+			boolean verify = HarmonizationController.verify(null);
 			//boolean verify = HarmonizationController.verify(authorizationIntents);
 			/* VERIFY */
 

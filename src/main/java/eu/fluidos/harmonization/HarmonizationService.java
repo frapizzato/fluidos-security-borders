@@ -22,7 +22,7 @@ public class HarmonizationService{
 	private final HarmonizationData harmonizationData = new HarmonizationData();
 	private final ClusterService clusterService = new ClusterService();
 	private final Logger loggerInfo = LogManager.getLogger("harmonizationManager");
-	String arg_1 = "./testfile/provider_MSPL_test_3.xml";
+	String arg_1 = "./testfile/provider_MSPL_test_4.xml";
 	String arg_2 = "./testfile/consumer_MSPL_test_1.xml";
 
 	public List<ConfigurationRule> harmonize(Cluster cluster, RequestIntents requestIntents) {

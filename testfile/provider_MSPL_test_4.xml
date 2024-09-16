@@ -10,37 +10,6 @@
                 <Name>KubernetesNetworkFiltering</Name>
             </capability>
             <!-- from ANY to I2_<badURLs>, ALL protocols -->
-            <forbiddenConnectionList>
-                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
-                    <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
-                </configurationRuleAction>
-                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
-                    <isCNF>false</isCNF>
-                    <source xsi:type="PodNamespaceSelector">
-                        <isHostCluster>true</isHostCluster>
-                        <pod>
-                            <key>*</key>
-                            <value>*</value>
-                        </pod>
-                        <namespace>
-                            <key>*</key>
-                            <value>*</value>
-                        </namespace>
-                    </source>
-                    <sourcePort>*</sourcePort>
-                    <destination xsi:type="CIDRSelector">
-                        <isHostCluster>false</isHostCluster>
-                        <addressRange>142.250.0.1/15</addressRange>
-                    </destination>
-                    <destinationPort>*</destinationPort>
-                    <protocolType>ALL</protocolType>
-                </configurationCondition>
-                <externalData xsi:type="Priority">
-                    <value>60000</value>
-                </externalData>
-                <Name>AuthorizationDeny_1</Name>
-                <isCNF>false</isCNF>
-            </forbiddenConnectionList>
             <!-- Four different rules to deny any other connections to "name:dafault" with port !80 and protocol !TCP-->
             <!-- from ANY to "name:default", SCTP -->
             <forbiddenConnectionList>
@@ -78,7 +47,7 @@
                 <externalData xsi:type="Priority">
                     <value>60000</value>
                 </externalData>
-                <Name>AuthorizationDeny_2</Name>
+                <Name>AuthorizationDeny_1</Name>
                 <isCNF>false</isCNF>
             </forbiddenConnectionList>
             <!-- from ANY to "name:default":0-79, TCP -->
@@ -117,7 +86,7 @@
                 <externalData xsi:type="Priority">
                     <value>60000</value>
                 </externalData>
-                <Name>AuthorizationDeny_3</Name>
+                <Name>AuthorizationDeny_2</Name>
                 <isCNF>false</isCNF>
             </forbiddenConnectionList>
             <forbiddenConnectionList>
@@ -155,7 +124,76 @@
                 <externalData xsi:type="Priority">
                     <value>60000</value>
                 </externalData>
+                <Name>AuthorizationDeny_3</Name>
+                <isCNF>false</isCNF>
+            </forbiddenConnectionList>
+            <forbiddenConnectionList>
+                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+                    <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
+                </configurationRuleAction>
+                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+                    <isCNF>false</isCNF>
+                    <source xsi:type="PodNamespaceSelector">
+                        <isHostCluster>true</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>*</key>
+                            <value>*</value>
+                        </namespace>
+                    </source>
+                    <sourcePort>*</sourcePort>
+                    <destination xsi:type="PodNamespaceSelector">
+                        <isHostCluster>false</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>name</key>
+                            <value>handle-payments</value>
+                        </namespace>
+                    </destination>
+                    <destinationPort>86-100</destinationPort>
+                    <protocolType>UDP</protocolType>
+                </configurationCondition>
+                <externalData xsi:type="Priority">
+                    <value>60000</value>
+                </externalData>
                 <Name>AuthorizationDeny_4</Name>
+                <isCNF>false</isCNF>
+            </forbiddenConnectionList>
+            <forbiddenConnectionList>
+                <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+                    <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
+                </configurationRuleAction>
+                <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+                    <isCNF>false</isCNF>
+                    <source xsi:type="PodNamespaceSelector">
+                        <isHostCluster>true</isHostCluster>
+                        <pod>
+                            <key>*</key>
+                            <value>*</value>
+                        </pod>
+                        <namespace>
+                            <key>*</key>
+                            <value>*</value>
+                        </namespace>
+                    </source>
+                    <sourcePort>*</sourcePort>
+                    <destination xsi:type="CIDRSelector">
+                        <isHostCluster>false</isHostCluster>
+                        <addressRange>0.0.0.0/20</addressRange>
+                    </destination>
+                    <destinationPort>*</destinationPort>
+                    <protocolType>ALL</protocolType>
+                </configurationCondition>
+                <externalData xsi:type="Priority">
+                    <value>60000</value>
+                </externalData>
+                <Name>AuthorizationDeny_5</Name>
                 <isCNF>false</isCNF>
             </forbiddenConnectionList>
             <!-- MandatoryConnectionList (action = ALLOW) -->
