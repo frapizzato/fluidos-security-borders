@@ -1,42 +1,100 @@
 package eu.fluidos.Controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
 import eu.fluidos.Cluster;
-import eu.fluidos.Crds.TunnelEndpoint;
-import eu.fluidos.Module;
-import eu.fluidos.Namespace;
-import eu.fluidos.Pod;
-import eu.fluidos.harmonization.HarmonizationController;
-import eu.fluidos.jaxb.*;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.apis.CustomObjectsApi;
 import io.kubernetes.client.openapi.apis.NetworkingV1Api;
-import io.kubernetes.client.openapi.models.*;
+import io.kubernetes.client.openapi.models.V1ConfigMap;
+import io.kubernetes.client.openapi.models.V1IPBlock;
+import io.kubernetes.client.openapi.models.V1LabelSelector;
+import io.kubernetes.client.openapi.models.V1Namespace;
+import io.kubernetes.client.openapi.models.V1NamespaceList;
+import io.kubernetes.client.openapi.models.V1NetworkPolicy;
+import io.kubernetes.client.openapi.models.V1NetworkPolicyEgressRule;
+import io.kubernetes.client.openapi.models.V1NetworkPolicyIngressRule;
+import io.kubernetes.client.openapi.models.V1NetworkPolicyPeer;
+import io.kubernetes.client.openapi.models.V1NetworkPolicySpec;
+import io.kubernetes.client.openapi.models.V1ObjectMeta;
+import io.kubernetes.client.openapi.models.V1Pod;
+import io.kubernetes.client.openapi.models.V1PodList;
+import io.kubernetes.client.util.ClientBuilder;
 import io.kubernetes.client.util.Config;
 import io.kubernetes.client.util.Watch;
 import io.kubernetes.client.util.Yaml;
-import org.apache.logging.log4j.core.tools.picocli.CommandLine.ExecutionException;
+import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
+import okhttp3.Request;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.rmi.server.ExportException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import io.kubernetes.client.util.Yaml;
+import eu.fluidos.Module;
+import eu.fluidos.jaxb.AuthorizationIntents;
+import eu.fluidos.jaxb.CIDRSelector;
+import eu.fluidos.jaxb.ConfigurationCondition;
+import eu.fluidos.jaxb.ConfigurationRule;
+import eu.fluidos.jaxb.ExternalData;
+import eu.fluidos.jaxb.HSPL;
+import eu.fluidos.jaxb.ITResourceOrchestrationType;
+import eu.fluidos.jaxb.KeyValue;
+import eu.fluidos.jaxb.KubernetesNetworkFilterCondition;
+import eu.fluidos.jaxb.KubernetesNetworkFilteringAction;
+import eu.fluidos.jaxb.KubernetesNetworkFilteringCondition;
+import eu.fluidos.jaxb.PodNamespaceSelector;
+import eu.fluidos.jaxb.Priority;
+import eu.fluidos.jaxb.ProtocolType;
+import eu.fluidos.jaxb.RequestIntents;
+import eu.fluidos.jaxb.ResourceSelector;
+import eu.fluidos.traslator.Ruleinfo;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.logging.log4j.core.tools.picocli.CommandLine.ExecutionException;
+import org.jose4j.json.internal.json_simple.JSONArray;
+import org.jose4j.json.internal.json_simple.JSONObject;
+import org.jose4j.json.internal.json_simple.parser.JSONParser;
+
+import eu.fluidos.Crds.TunnelEndpoint;
+import eu.fluidos.harmonization.HarmonizationController;
+import eu.fluidos.harmonization.HarmonizationService;
+import eu.fluidos.Namespace;
+import eu.fluidos.Pod;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.protobuf.BoolValue;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
+
+import ch.qos.logback.classic.joran.action.ConfigurationAction;
+import ch.qos.logback.core.Context;
+import eu.fluidos.harmonization.*;;
 
 public class KubernetesController {
 
@@ -273,7 +331,7 @@ public class KubernetesController {
         System.out.println("10 secondi passati, avvio modulo");
         List<RequestIntents> requestIntentsHarmonizedList = new ArrayList<>();
         for (RequestIntents reqIntent : reqIntentsList) {
-            requestIntentsHarmonizedList.add(harmController_new.harmonize(createCluster(client,"provider"), reqIntent));
+            requestIntentsHarmonizedList.add(harmController_new.harmonize(createCluster(client,"provider"),reqIntent));
         }
         try {
             System.out.println("Chiamata al modulo");
@@ -642,7 +700,8 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
             System.out.println("Stampa del flavour:");
             StampaAuthIntents(authorizationIntents);
             if (authorizationIntents != null && authorizationIntents.getForbiddenConnectionList().size() > 0 && authorizationIntents.getMandatoryConnectionList().size() > 0){
-                System.out.println("Valore dalla chiamata del verifier:" + this.harmController.verify(authorizationIntents));
+                HarmonizationController harmonizationController = new HarmonizationController();
+                System.out.println("Valore dalla chiamata del verifier:" + harmonizationController.verify(createCluster(client,"consumer"),authorizationIntents));
             }
         }
     } catch (ApiException e) {
