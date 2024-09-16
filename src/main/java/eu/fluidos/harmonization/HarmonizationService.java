@@ -174,7 +174,7 @@ public static Pod createPod(String value, Namespace namespace) {
 		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider = new HashMap<>();
 		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer;
 		ITResourceOrchestrationType intents_1 = null;
-		String arg_1 = "/app/testfile/provider_MSPL_demo.xml";
+		String arg_1 = "/app/testfile/consumer_MSPL_demo.xml";
 		boolean verify;
 		try {
 			JAXBContext jc = JAXBContext.newInstance("eu.fluidos.jaxb");

@@ -178,8 +178,8 @@ public class HarmonizationUtils {
 			isCIDR_2 = true;
 		}
 
-		System.out.println("Map1:"+map_1);
-		System.out.println("Map2:"+map_2);
+		//System.out.println("Map1:"+map_1);
+		//System.out.println("Map2:"+map_2);
 		// If both are CIDRSelectors, then we can compute the difference in this way.
 		if(isCIDR_1 && isCIDR_2){
 			CIDRSelector cidr1 = (CIDRSelector) sel_1;
@@ -237,8 +237,8 @@ public class HarmonizationUtils {
 			return new ArrayList<PodNamespaceSelector>();
 		}
 
-		System.out.println("pns1 namespace:"+ pns1.getNamespace().getFirst().getKey() + " "+ pns1.getNamespace().getFirst().getValue());
-		System.out.println("pns2 namespace:"+ pns2.getNamespace().getFirst().getKey() + " "+ pns2.getNamespace().getFirst().getValue());
+		//System.out.println("pns1 namespace:"+ pns1.getNamespace().getFirst().getKey() + " "+ pns1.getNamespace().getFirst().getValue());
+		//System.out.println("pns2 namespace:"+ pns2.getNamespace().getFirst().getKey() + " "+ pns2.getNamespace().getFirst().getValue());
 		//Case-2: possibility of having none or partial overlap between pns1 and pns2. Need to move to Pods.
 
 		pns1SelectedPods = selectPods(pns1, clusterMap);

@@ -9,9 +9,7 @@
       <capability>
         <Name>KubernetesNetworkFiltering</Name>
       </capability>
-      <!-- ForbiddenConnectionList (action = DENY) -->
-      <!-- from "name:rome" to "name:default, UDP -->
-      <forbiddenConnectionList>
+     <forbiddenConnectionList>
         <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
           <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
         </configurationRuleAction>
@@ -20,33 +18,73 @@
           <source xsi:type="PodNamespaceSelector">
           	<isHostCluster>true</isHostCluster>
           	<pod>
-          		<key>*</key>
-          		<value>*</value>
+          		<key>app</key>
+          		<value>app-payment-1</value>
           	</pod>
           	<namespace>
           		<key>name</key>
-          		<value>turin</value>
+          		<value>payments</value>
           	</namespace>
           </source>
           <sourcePort>*</sourcePort>
           <destination xsi:type="PodNamespaceSelector">
           	<isHostCluster>false</isHostCluster>
           	<pod>
-          		<key>*</key>
-          		<value>*</value>
+          		<key>app</key>
+          		<value>bank-1</value>
           	</pod>
           	<namespace>
-          		<key>*</key>
-          		<value>*</value>
+          		<key>name</key>
+          		<value>handle-payments</value>
           	</namespace>
           </destination>
           <destinationPort>*</destinationPort>
-          <protocolType>UDP</protocolType>
+          <protocolType>ALL</protocolType>
         </configurationCondition>
         <externalData xsi:type="Priority">
           <value>60000</value>
         </externalData>
         <Name>AuthorizationDeny_1</Name>
+        <isCNF>false</isCNF>
+      </forbiddenConnectionList>
+
+      
+     <forbiddenConnectionList>
+        <configurationRuleAction xsi:type="KubernetesNetworkFilteringAction">
+          <KubernetesNetworkFilteringActionType>DENY</KubernetesNetworkFilteringActionType>
+        </configurationRuleAction>
+        <configurationCondition xsi:type="KubernetesNetworkFilteringCondition">
+          <isCNF>false</isCNF>
+          <source xsi:type="PodNamespaceSelector">
+          	<isHostCluster>true</isHostCluster>
+          	<pod>
+          		<key>app</key>
+          		<value>app-payment-1</value>
+          	</pod>
+          	<namespace>
+          		<key>name</key>
+          		<value>payments</value>
+          	</namespace>
+          </source>
+          <sourcePort>*</sourcePort>
+          <destination xsi:type="PodNamespaceSelector">
+          	<isHostCluster>false</isHostCluster>
+          	<pod>
+          		<key>app</key>
+          		<value>bank-2</value>
+          	</pod>
+          	<namespace>
+          		<key>name</key>
+          		<value>handle-payments</value>
+          	</namespace>
+          </destination>
+          <destinationPort>*</destinationPort>
+          <protocolType>ALL</protocolType>
+        </configurationCondition>
+        <externalData xsi:type="Priority">
+          <value>60000</value>
+        </externalData>
+        <Name>AuthorizationDeny_2</Name>
         <isCNF>false</isCNF>
       </forbiddenConnectionList>
 
@@ -64,8 +102,8 @@
           		<value>*</value>
           	</pod>
           	<namespace>
-          		<key>*</key>
-          		<value>*</value>
+          		<key>name</key>
+          		<value>products</value>
           	</namespace>
           </source>
           <sourcePort>*</sourcePort>
@@ -79,7 +117,7 @@
         <externalData xsi:type="Priority">
           <value>60000</value>
         </externalData>
-        <Name>AuthorizationDeny_2</Name>
+        <Name>AuthorizationDeny_3</Name>
         <isCNF>false</isCNF>
       </forbiddenConnectionList>
       
@@ -99,7 +137,7 @@
           	</pod>
           	<namespace>
           		<key>name</key>
-          		<value>turin</value>
+          		<value>payments</value>
           	</namespace>
           </source>
           <sourcePort>*</sourcePort>
@@ -120,7 +158,7 @@
         <externalData xsi:type="Priority">
           <value>60000</value>
         </externalData>
-        <Name>AuthorizationDeny_3</Name>
+        <Name>AuthorizationDeny_4</Name>
         <isCNF>false</isCNF>
       </forbiddenConnectionList>
       <!-- from ANY to "name:default", UDP -->
@@ -138,7 +176,7 @@
           	</pod>
           	<namespace>
           		<key>name</key>
-          		<value>turin</value>
+          		<value>payments</value>
           	</namespace>
           </source>
           <sourcePort>*</sourcePort>
@@ -159,7 +197,7 @@
         <externalData xsi:type="Priority">
           <value>60000</value>
         </externalData>
-        <Name>AuthorizationDeny_4</Name>
+        <Name>AuthorizationDeny_5</Name>
         <isCNF>false</isCNF>
       </forbiddenConnectionList>
       <!-- from ANY to "name:default":0-79, TCP -->
@@ -177,7 +215,7 @@
           	</pod>
           	<namespace>
           		<key>name</key>
-          		<value>turin</value>
+          		<value>payments</value>
           	</namespace>
           </source>
           <sourcePort>*</sourcePort>
@@ -198,7 +236,7 @@
         <externalData xsi:type="Priority">
           <value>60000</value>
         </externalData>
-        <Name>AuthorizationDeny_5</Name>
+        <Name>AuthorizationDeny_6</Name>
         <isCNF>false</isCNF>
       </forbiddenConnectionList>
       <!-- from ANY to "name:default":81-65535, TCP -->
@@ -216,7 +254,7 @@
           	</pod>
           	<namespace>
           		<key>name</key>
-          		<value>turin</value>
+          		<value>payments</value>
           	</namespace>
           </source>
           <sourcePort>*</sourcePort>
@@ -237,7 +275,7 @@
         <externalData xsi:type="Priority">
           <value>60000</value>
         </externalData>
-        <Name>AuthorizationDeny_6</Name>
+        <Name>AuthorizationDeny_7</Name>
         <isCNF>false</isCNF>
       </forbiddenConnectionList>
 
@@ -269,7 +307,7 @@
           	</pod>
           	<namespace>
           		<key>name</key>
-          		<value>rome</value>
+          		<value>products</value>
           	</namespace>
           </destination>
           <destinationPort>43</destinationPort>

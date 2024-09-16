@@ -473,24 +473,23 @@ public Cluster createCluster (ApiClient client,String whoIs){
         Namespace nm = new Namespace();
         HashMap<String, String> hashMapLabels = new HashMap<>(namespace.getMetadata().getLabels());
         System.out.println("Chiamata per il namespace:"+namespace.getMetadata().getName());
-        nm.setLabels(hashMapLabels);
+        //nm.setLabels(hashMapLabels);
         //setto solo la prima label:
-        //HashMap<String, String> hashMapSingleLabels = new HashMap<>();
-        //Map.Entry<String, String> firstLabel = hashMapLabels.entrySet().iterator().next();
-        //hashMapSingleLabels.put(firstLabel.getKey(), firstLabel.getValue());
-        //nm.setLabels(hashMapSingleLabels);
+        HashMap<String, String> hashMapSingleLabels = new HashMap<>();
+        Map.Entry<String, String> firstLabel = hashMapLabels.entrySet().iterator().next();
+        hashMapSingleLabels.put(firstLabel.getKey(), firstLabel.getValue());
+        nm.setLabels(hashMapSingleLabels);
         NamespaceList.add(nm);
         V1PodList podList = api.listNamespacedPod(namespace.getMetadata().getName(), null, null, null, null, null, null, null, null, null, null);
         for (V1Pod pod : podList.getItems()) {
             Pod pd = new Pod();
             HashMap<String, String> podHashMapLabels = new HashMap<>(pod.getMetadata().getLabels());
             ////setto solo la prima label:
-            pd.setLabels(podHashMapLabels);
-            /*HashMap<String, String> hashMapSinglePodsLabels = new HashMap<>();
+            //pd.setLabels(podHashMapLabels);
+            HashMap<String, String> hashMapSinglePodsLabels = new HashMap<>();
             Map.Entry<String, String> firstLabelPod = podHashMapLabels.entrySet().iterator().next();
             hashMapSinglePodsLabels.put(firstLabelPod.getKey(), firstLabelPod.getValue());
             pd.setLabels(hashMapSinglePodsLabels);
-            */
             pd.setNamespace(nm);
             PodList.add(pd);
             System.out.println("Pod:" + pd.getLabels() + "Namespace" + pd.getNamespace().getLabels());
@@ -514,7 +513,7 @@ private void Epurate1(V1NamespaceList namespaceList){
     consumerNamespaceList = new V1NamespaceList();
 
     for (V1Namespace namespace : namespaceList.getItems()) {
-        if (!namespacesToExclude.contains(namespace.getMetadata().getName()) && !namespace.getMetadata().getName().contains("liqo")) {
+        if (!namespacesToExclude.contains(namespace.getMetadata().getName()) && !namespace.getMetadata().getName().contains("liqo") && !namespace.getMetadata().getName().contains("remote-cluster")) {
             //Questa chiave è contenuta nei pod del cluster locale che vengono offloadati, mentre nel cluster host i pod offloadati hanno altre label, potrei usare un flag che dato in ingresso al modulo permette di settare se il cluster è locale o l' host in modo poi da discriminare queste cose
             /*
             if (this.isLocal){
@@ -528,8 +527,10 @@ private void Epurate1(V1NamespaceList namespaceList){
             
             if (!namespace.getMetadata().equals(null) && !namespace.getMetadata().getLabels().containsKey("liqo.io/remote-cluster-id")){
                 providerNamespaceList.addItemsItem(namespace);
+                System.out.println("Namespace provider aggiunto: "+ namespace.getMetadata().getName());
             }else{
                 consumerNamespaceList.addItemsItem(namespace);
+                System.out.println("Namespace consumer aggiunto: "+ namespace.getMetadata().getName());
             }
             //namespaces.add(namespace.getMetadata().getName());
 }
@@ -699,7 +700,8 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
             System.out.println("Stampa del flavour:");
             StampaAuthIntents(authorizationIntents);
             if (authorizationIntents != null && authorizationIntents.getForbiddenConnectionList().size() > 0 && authorizationIntents.getMandatoryConnectionList().size() > 0){
-                System.out.println("Valore dalla chiamata del verifier:" + this.harmController.verify(authorizationIntents));
+                HarmonizationController harmonizationController = new HarmonizationController(createCluster(client,"consumer"),createCluster(client,"consumer"));
+                System.out.println("Valore dalla chiamata del verifier:" + harmonizationController.verify(authorizationIntents));
             }
         }
     } catch (ApiException e) {
