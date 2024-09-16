@@ -226,10 +226,10 @@ public class Traslator {
         List <String> namespacesListToUse = new ArrayList<>();
         if (rule.isSourceHost()){
             namespacesListToUse.addAll(localNamespaces.keySet());
-            System.out.println("Source da usare locale");
+            //System.out.println("Source da usare locale");
         }else{
             namespacesListToUse.addAll(remoteNamespaces.keySet());
-            System.out.println("Source da usare remota");
+            //System.out.println("Source da usare remota");
         }
         List<KeyValue> sourcePods = rule.getSourcePod();
         for (KeyValue value : rule.getSourceNamespace()){
@@ -377,10 +377,10 @@ public class Traslator {
             List<String> namespacesListToUse = new ArrayList<>();
             if (rule.isDestinationHost()){
                 namespacesListToUse.addAll(localNamespaces.keySet());
-                System.out.println("Destination da usare locale");
+                //System.out.println("Destination da usare locale");
             }else{
                 namespacesListToUse.addAll(remoteNamespaces.keySet());
-                System.out.println("Destination da usare remota");
+                //System.out.println("Destination da usare remota");
             }
             for (Map.Entry<String, String> entry : matchLabelsDestinationNamespace.entrySet()) {
                 String key = entry.getKey();
@@ -399,7 +399,7 @@ public class Traslator {
                         //System.out.print(destinationPeer.getNamespaceSelector().getMatchLabels().get("name"));
                         //System.out.print(egressRule.getTo().getFirst().getNamespaceSelector().getMatchLabels().get("name"));
                         egressRuleList.add(egressRule);
-                        System.out.println(egressRule.getTo().getFirst().getNamespaceSelector().getMatchLabels().get("kubernetes.io/metadata.name"));  
+                        //System.out.println(egressRule.getTo().getFirst().getNamespaceSelector().getMatchLabels().get("kubernetes.io/metadata.name"));  
                     }
                 } else {
                     V1NetworkPolicyEgressRule egressRule = new V1NetworkPolicyEgressRule();

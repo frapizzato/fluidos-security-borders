@@ -386,7 +386,7 @@ public class KubernetesController {
                                 String key = entry.getKey();
                                 List<String> value = entry.getValue();
                                 for (String IpAllowed : value){
-                                    System.out.println("Key: " + key + ", Value: " + IpAllowed);
+                                    //System.out.println("Key: " + key + ", Value: " + IpAllowed);
                                 }
                             }
                         }
@@ -440,9 +440,9 @@ public class KubernetesController {
                     if (networkPropertyType.equals("AuthorizationIntent")){
                         reqIntentsList.add(accessConfigMap(client,"fluidos",networkRequests));
                     }
-                    System.out.println("networkPropertyType: " + networkPropertyType);
-                    System.out.println("networkRequests: " + networkRequests);
-                    System.out.println("buyerClusterID: " + buyerClusterID);
+                    //System.out.println("networkPropertyType: " + networkPropertyType);
+                    //System.out.println("networkRequests: " + networkRequests);
+                    //System.out.println("buyerClusterID: " + buyerClusterID);
                 }
             }
         } catch (ApiException e) {
@@ -471,7 +471,7 @@ public Cluster createCluster (ApiClient client,String whoIs){
     for (V1Namespace namespace : epuratedNamespaceList.getItems()){
         Namespace nm = new Namespace();
         HashMap<String, String> hashMapLabels = new HashMap<>(namespace.getMetadata().getLabels());
-        System.out.println("Chiamata per il namespace:"+namespace.getMetadata().getName());
+        //System.out.println("Chiamata per il namespace:"+namespace.getMetadata().getName());
         //nm.setLabels(hashMapLabels);
         //setto solo la prima label:
         HashMap<String, String> hashMapSingleLabels = new HashMap<>();
@@ -491,7 +491,7 @@ public Cluster createCluster (ApiClient client,String whoIs){
             pd.setLabels(hashMapSinglePodsLabels);
             pd.setNamespace(nm);
             PodList.add(pd);
-            System.out.println("Pod:" + pd.getLabels() + "Namespace" + pd.getNamespace().getLabels());
+            //System.out.println("Pod:" + pd.getLabels() + "Namespace" + pd.getNamespace().getLabels());
         }
     }
 
@@ -526,10 +526,10 @@ private void Epurate1(V1NamespaceList namespaceList){
             
             if (!namespace.getMetadata().equals(null) && !namespace.getMetadata().getLabels().containsKey("liqo.io/remote-cluster-id")){
                 providerNamespaceList.addItemsItem(namespace);
-                System.out.println("Namespace provider aggiunto: "+ namespace.getMetadata().getName());
+                //System.out.println("Namespace provider aggiunto: "+ namespace.getMetadata().getName());
             }else{
                 consumerNamespaceList.addItemsItem(namespace);
-                System.out.println("Namespace consumer aggiunto: "+ namespace.getMetadata().getName());
+                //System.out.println("Namespace consumer aggiunto: "+ namespace.getMetadata().getName());
             }
             //namespaces.add(namespace.getMetadata().getName());
 }
@@ -560,11 +560,11 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
         
                 if (jsonObject.has("destinationPort") && !jsonObject.get("destinationPort").isJsonNull()){
                     condition.setDestinationPort(jsonObject.get("destinationPort").getAsString());
-                    System.out.println("ce l'ha: "+jsonObject.get("destinationPort").getAsString());
+                    //System.out.println("ce l'ha: "+jsonObject.get("destinationPort").getAsString());
                 }
         
                 if (jsonObject.has("protocolType") && !jsonObject.get("protocolType").isJsonNull()){
-                    System.out.println("Protocollo letto:"+ProtocolType.valueOf(jsonObject.get("protocolType").getAsString()));
+                    //System.out.println("Protocollo letto:"+ProtocolType.valueOf(jsonObject.get("protocolType").getAsString()));
                     condition.setProtocolType(ProtocolType.valueOf(jsonObject.get("protocolType").getAsString()));
                 }
                 ConfigurationRule rule = new ConfigurationRule();
@@ -698,8 +698,8 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
                     System.out.println("TypeData not found.");
                 }
             }
-            System.out.println("Stampa del flavour:");
-            StampaAuthIntents(authorizationIntents);
+            //System.out.println("Stampa del flavour:");
+            //StampaAuthIntents(authorizationIntents);
             if (authorizationIntents != null && authorizationIntents.getForbiddenConnectionList().size() > 0 && authorizationIntents.getMandatoryConnectionList().size() > 0){
                 HarmonizationController harmonizationController = new HarmonizationController();
                 System.out.println("Valore dalla chiamata del verifier:" + harmonizationController.verify(createCluster(client,"consumer"),authorizationIntents)+" per il flavour: " + flavorName);
@@ -798,7 +798,7 @@ private ResourceSelector parseResourceSelector(JsonObject resourceSelectors) {
     }
 
     if (resourceSelectors.has("isHotCluster")) {
-        System.out.println("Valore isHostCluster: " + resourceSelectors.get("isHotCluster").getAsBoolean());
+        //System.out.println("Valore isHostCluster: " + resourceSelectors.get("isHotCluster").getAsBoolean());
         selector.setIsHostCluster(resourceSelectors.get("isHotCluster").getAsBoolean());
     }
 
@@ -924,7 +924,7 @@ private ResourceSelector parseResourceSelector(JsonObject resourceSelectors) {
             V1NetworkPolicy networkPolicy = Yaml.loadAs(yamlContent, V1NetworkPolicy.class);
                 try {
                 if (networkPolicy.getMetadata().getNamespace().equals(Namespace)){
-                    System.out.println("ok");
+                    //System.out.println("ok");
                     api.createNamespacedNetworkPolicy(networkPolicy.getMetadata().getNamespace(), networkPolicy, null, null, null);
                     System.out.println("NetworkPolicy: "+networkPolicy.getMetadata().getName()+" applicata per il namespace "+ Namespace);
                 }
