@@ -1,56 +1,119 @@
-#Codice del controller integrato con l' armonizzatore
-La seguente repository contiene il codice del controllore integrato con il codice dell' armonizzatore per il progetto Fluidos
+# Codice del controller integrato con l'armonizzatore - Progetto Fluidos
 
-#Demo
-La demo si trova nella cartella: demo_da_presentare/node_main
-Da qui avviare il setup presente in tools/script/setup.sh e selezionare il campo "1" e la voce "y"
-Successivamente avverrà l' installazione del cluster Consumer e cluster Provider.
-Una vola completata l' installazione bisognerà applicare i flavour che il Provider offre al consumer, per fare ciò però bisogna modificare i falvors contenuti nella cartella flavors/ per adornarli con i dettagli del cluster contenuti in una specifica config-map a cui è possibile accedere usando i seguenti comandi:
+Questa repository contiene il codice del controller integrato con l'armonizzatore per il progetto Fluidos.
 
-export KUBECONFIG=fluidos-provider-1-config
-kubectl get cm fluidos-network-manager-identity -n fluidos -o yaml
+## 🛠 Setup della Demo
 
-copiare quindi i campi :
-domain
-ip
-nodeID
-Con i rispettivi campi di ogni flavor da applicare presenti nella cartella flavors/. Cambiare anche il campo ProviderID con il campo NodeID presente nella config-map.
+La demo è situata nella cartella: `demo_da_presentare/node_main`.
 
-Successivamente spostarsi nella cartella Demo_da_presentare_last/ e applicare il primo file .sh
+1. **Avvio dell'ambiente**:
+   - Naviga nella cartella `tools/script/` e avvia il setup:
+     ```bash
+     cd tools/script/
+     ./setup.sh
+     ```
+   - Seleziona `1` e conferma con `y` per installare il cluster **Consumer** e il cluster **Provider**.
 
-cd Demo_da_presentare_last/
-./prima_parte.sh
+2. **Modifica dei Flavors**:
+   - Dopo l'installazione, è necessario modificare i flavors offerti dal Provider al Consumer.
+     - Per ottenere i dettagli necessari, estrai le informazioni dalla config-map con il seguente comando:
+       ```bash
+       export KUBECONFIG=fluidos-provider-1-config
+       kubectl get cm fluidos-network-manager-identity -n fluidos -o yaml
+       ```
+     - Copia i seguenti campi dalla ConfigMap:
+       - `domain`
+       - `ip`
+       - `nodeID`
 
-A questo punto è possibile vedere il flavour scelto dal verifier (il primo che ritorna "True") accedendo al log del verifier: (il verifier si attiva la prima volta dopo 20 secondi)
-kubectl get pods -n fluidos
-kubectl logs "Nome_pod_consumer" -n fluidos
+     - Modifica i flavors nella cartella `flavors/` inserendo i valori copiati. Inoltre, sostituisci il campo `ProviderID` con il valore di `nodeID` della ConfigMap.
 
-successivamente sarà possibile visionare i peeringcandidates:
-kubectl get peeringcandidates -n fluidos
+## 📝 Esecuzione della Demo
 
-si sceglierà il peeringcandidate associato al flavour che ha ritornato true, popolando correttamente le informazioni del file reservation.yaml (presente in ../../../deployments/node/sample)
-settando come info del seller, quelle del provider descritte nel peeringcandidates e come buyer le informazioni che è possibile ottenere dalla config-map fluidos-network-manager-identity. Nella reservation bisogna anche indicare il nome del peeringcandidates scelto e si applicherà con kubectl apply -f ../../../deployments/node/sample/reservation.yaml il manifesto.
+1. **Esegui il primo script**:
+   - Naviga nella cartella `Demo_da_presentare_last/` e lancia il file `prima_parte.sh`:
+     ```bash
+     cd Demo_da_presentare_last/
+     ./prima_parte.sh
+     ```
 
+2. **Verifica il Flavor selezionato**:
+   - Controlla i pod attivi:
+     ```bash
+     kubectl get pods -n fluidos
+     ```
+   - Visualizza i log del verifier (attivo dopo circa 20 secondi):
+     ```bash
+     kubectl logs "Nome_pod_consumer" -n fluidos
+     ```
 
+3. **Visualizza i Peering Candidates**:
+   - Per ottenere i candidati al peering, esegui:
+     ```bash
+     kubectl get peeringcandidates -n fluidos
+     ```
 
-Successivamente si modifica il file allcoation.yaml indicando il contratto (reperibile con il comando kubectl get contracts -n fluidos) e applicando l' allocation con tale comando:  apply -f ../../../deployments/node/sample/reservation.yaml il manifesto.
+   - Seleziona il peering candidate associato al flavor che ha restituito `True`.
 
-Successivamente si mostra lo stato del peering con lio: liqo status peer
+4. **Configura la Reservation**:
+   - Modifica il file `reservation.yaml` (situato in `../../../deployments/node/sample`) con:
+     - Le informazioni del **Provider** (ottenute dai PeeringCandidates).
+     - Le informazioni del **Consumer** (ottenute dalla ConfigMap `fluidos-network-manager-identity`).
 
-passando al lato del provider con export KUBECONFIG=../fluidos-provider-1-config, bisognerà editare il contratto, inserendo il nome della configmap (esempio-config-map) inserendo il campo networkRequests: esempio-config-map
+   - Applica il file `reservation.yaml`:
+     ```bash
+     kubectl apply -f ../../../deployments/node/sample/reservation.yaml
+     ```
 
-tramite il comando: kubectl edit contracts "nome_contratto" -n fluidos
+5. **Applica l'Allocation**:
+   - Modifica il file `allocation.yaml` per inserire il nome del contratto (recuperabile con il comando seguente):
+     ```bash
+     kubectl get contracts -n fluidos
+     ```
+   - Applica il file:
+     ```bash
+     kubectl apply -f ../../../deployments/node/sample/allocation.yaml
+     ```
 
-successivamente far partire il secondo sh:
-./seconda_parte.sh
+6. **Verifica lo stato del Peering**:
+   - Controlla lo stato del peering con il comando:
+     ```bash
+     liqo status peer
+     ```
 
-che andrà a creare il conroller sul provider , ad offloadare le risorse dal consumer al provider. Il controllore armonizzerà gl' intenti e tradurrà le network policies applicandole al provider stesso.
+## 🔄 Modifiche lato Provider
 
-Per dare una dimostrazione delle network policies da applicare usare il comando
-kubectl exec -it "nome_pod" -n "nome_namespace" -- /bin/sh
+1. **Cambia il contesto KubeConfig**:
+   ```bash
+   export KUBECONFIG=../fluidos-provider-1-config
+   ```
 
-per avviare una shell sul pod dalla quale si vuole mostrare la connettività nella shell digitare:
-wget "indirizzo_ip_pod_da_raggiungere":"port"
+2. **Modifica il Contratto**:
+   - Aggiungi alla sezione `networkRequests` il nome della ConfigMap (esempio: `esempio-config-map`):
+     ```bash
+     kubectl edit contracts "nome_contratto" -n fluidos
+     ```
 
+3. **Esegui il secondo script**:
+   - Lancia il file `seconda_parte.sh` per creare il controller sul Provider e avviare l'offload delle risorse dal Consumer al Provider:
+     ```bash
+     ./seconda_parte.sh
+     ```
 
-Attenzione: il controller è caricato su una repo Docker dell' account di salvaore, quindi se lo si vuole caricare su una repositori diversa, bisogna cambiare la specifica nel file controller.yaml
+## 🖧 Dimostrazione delle Network Policies
+
+1. **Accedi a un Pod**:
+   - Avvia una shell su un pod per verificare la connettività:
+     ```bash
+     kubectl exec -it "nome_pod" -n "nome_namespace" -- /bin/sh
+     ```
+
+2. **Verifica la connessione**:
+   - Usa `wget` per testare la connessione al pod di destinazione:
+     ```bash
+     wget "indirizzo_ip_pod_da_raggiungere":"porta"
+     ```
+
+## ⚠️ Nota importante
+
+Il controller è caricato su una repository Docker dell'account di Salvatore. Se desideri caricarlo su un'altra repository, ricordati di modificare il file `controller.yaml`.
