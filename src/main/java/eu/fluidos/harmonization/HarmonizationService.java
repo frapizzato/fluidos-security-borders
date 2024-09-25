@@ -24,8 +24,8 @@ public class HarmonizationService{
 	private final HarmonizationData harmonizationData = new HarmonizationData();
 	private final ClusterService clusterService = new ClusterService();
     private final Logger loggerInfo = LogManager.getLogger("harmonizationManager");
-	String arg_1 = "/app/testfile/provider_MSPL_demo.xml";
-	String arg_2 = "/app/testfile/consumer_MSPL_demo.xml";
+	String arg_2 = "/app/testfile/provider_MSPL_demo.xml";
+	String arg_1 = "/app/testfile/provider_MSPL_request.xml";
 
 	public static Cluster createProviderCluster() {
         List<Pod> podsProvider = new ArrayList<>();
@@ -53,11 +53,11 @@ public static Pod createPod(String value, Namespace namespace) {
         return pod;
     }
 
-	public RequestIntents harmonize(Cluster cluster, RequestIntents requestIntents) {
+	public RequestIntents harmonize(Cluster cluster, RequestIntents requestIntents, AuthorizationIntents authorizationIntents) {
 		System.out.println("Entra nell' harmonize");
         ITResourceOrchestrationType intents_1 = null;
 		AuthorizationIntents authIntentsProvider;
-		RequestIntents requestIntentsConsumer;
+		RequestIntents requestIntentsConsumer, requestIntentsProvider;
 		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsProvider;
 		HashMap<String, HashMap<String, List<Pod>>> podsByNamespaceAndLabelsConsumer = new HashMap<>();
 
@@ -70,9 +70,9 @@ public static Pod createPod(String value, Namespace namespace) {
             System.out.println(e);
         }
 
-        ITResourceOrchestrationType providerIntents = intents_1;
+		ITResourceOrchestrationType reqProviderIntents = intents_1;
 		requestIntentsConsumer = requestIntents;
-
+		authIntentsProvider = authorizationIntents;
 		podsByNamespaceAndLabelsProvider = clusterService.initializeHashMaps(cluster);
 
 		/*for (HashMap.Entry<String, HashMap<String, List<Pod>>> namespaceEntry : podsByNamespaceAndLabelsProvider.entrySet()) {
@@ -123,10 +123,13 @@ public static Pod createPod(String value, Namespace namespace) {
 
         loggerInfo.debug(
                 "[harmonization] - parse the received ITResourceOrchestration types to extract the CONSUMER/PROVIDER intent sets.");
-        authIntentsProvider = extractAuthorizationIntents(providerIntents);
 
+        assert reqProviderIntents != null;
+        requestIntentsProvider = extractRequestIntents(reqProviderIntents);
 		harmonizationData.printDash();
 		harmonizationData.printRequestIntents(requestIntentsConsumer, "consumer");
+		harmonizationData.printDash();
+		harmonizationData.printRequestIntents(requestIntentsProvider, "provider");
 		harmonizationData.printDash();
 		harmonizationData.printAuth();
 		harmonizationData.printAuthorizationIntents(authIntentsProvider);
@@ -155,8 +158,8 @@ public static Pod createPod(String value, Namespace namespace) {
 		List<ConfigurationRule> harmonizedRequest_Consumer = harmonizationData.solveTypeOneDiscordances(requestIntentsConsumer, authIntentsProvider,
 				podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider);
 		harmonizedRequest_Consumer = harmonizationData.solverTypeTwoDiscordances(harmonizedRequest_Consumer, requestIntentsConsumer, authIntentsProvider, podsByNamespaceAndLabelsProvider, podsByNamespaceAndLabelsConsumer);
-		//List<ConfigurationRule> harmonizedRequest_Provider = harmonizationData.solverTypeThreeDiscordances(harmonizedRequest_Consumer, requestIntentsProvider, podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider);
-
+		List<ConfigurationRule> harmonizedRequest_Provider = harmonizationData.solverTypeThreeDiscordances(harmonizedRequest_Consumer, requestIntentsProvider, podsByNamespaceAndLabelsConsumer, podsByNamespaceAndLabelsProvider);
+	
         /**
          * Finally, write the resulting Intents in the original data structures so that
          * they can be retrieved
