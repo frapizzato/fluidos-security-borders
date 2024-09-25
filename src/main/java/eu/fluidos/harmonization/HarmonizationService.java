@@ -128,8 +128,8 @@ public static Pod createPod(String value, Namespace namespace) {
         requestIntentsProvider = extractRequestIntents(reqProviderIntents);
 		harmonizationData.printDash();
 		harmonizationData.printRequestIntents(requestIntentsConsumer, "consumer");
-		harmonizationData.printDash();
-		harmonizationData.printRequestIntents(requestIntentsProvider, "provider");
+		//harmonizationData.printDash();
+		//harmonizationData.printRequestIntents(requestIntentsProvider, "provider");
 		harmonizationData.printDash();
 		harmonizationData.printAuth();
 		harmonizationData.printAuthorizationIntents(authIntentsProvider);
