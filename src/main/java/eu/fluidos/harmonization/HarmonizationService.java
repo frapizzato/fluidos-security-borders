@@ -68,7 +68,6 @@ public static Pod createPod(String value, Namespace namespace) {
             intents_1 = (ITResourceOrchestrationType) ((JAXBElement<?>) tmp_1).getValue();
         } catch (Exception e) {
             System.out.println(e);
-            System.exit(1);
         }
 
         ITResourceOrchestrationType providerIntents = intents_1;

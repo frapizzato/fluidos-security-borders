@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: esempio-config-map
-  namespace: fluidos
+  namespace: payments
 data:
   name: "example-intent"
   isCNF: "true"

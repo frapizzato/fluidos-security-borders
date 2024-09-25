@@ -31,12 +31,12 @@ public class Main
     	String arg_2 = "./testfile/consumer_MSPL_demo.xml";
 		String arg_1 = "./testfile/My_test2.xml";
 		String arg_docker_1 = "/app/testfile/My_test2.xml";
-    	
+    	/*
     	System.out.println(ANSI_PURPLE + "-".repeat(150)+ ANSI_RESET);
     	System.out.println(ANSI_PURPLE + "[DEMO_INFO]  "+ ANSI_YELLOW + "   Harmonization Module" + ANSI_RESET + " has the scope of detecting and correcting all the discordances between consumer and provider intents.");
     	System.out.println("\t\tThe required inputs are:\n\t\t\t\t(1) Request Intents of the CONSUMER\n\t\t\t\t(2) Authorization intents of the PROVIDER\n\t\t\t\t(3) information about the cluster resources.");
     	System.out.println("\t\tThe output will be the harmonized sets of intents, free of all discordances.");
-    	System.out.println(ANSI_PURPLE + "-".repeat(150)+ ANSI_RESET);
+    	System.out.println(ANSI_PURPLE + "-".repeat(150)+ ANSI_RESET);*/
     	// To convert XML files into Java objects
         try {
         	JAXBContext jc = JAXBContext.newInstance("eu.fluidos.jaxb");

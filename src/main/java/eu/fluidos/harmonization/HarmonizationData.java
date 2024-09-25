@@ -1,6 +1,5 @@
 package eu.fluidos.harmonization;
 
-import eu.fluidos.Main;
 import eu.fluidos.*;
 import eu.fluidos.jaxb.*;
 import org.apache.logging.log4j.LogManager;
@@ -85,6 +84,8 @@ public class HarmonizationData {
 			if(overlap && overlapSrc && overlapDst && overlapDstPort) {
 				System.out.println("Overlap between these two intents: " );
 				printDash();
+				System.out.print(" (*) " + res.getName() + " - ");
+                System.out.print(HarmonizationUtils.kubernetesNetworkFilteringConditionToString(resCond) + "\n");
 				System.out.print(" (*) " + confRule.getName() + " - ");
 				System.out.print(HarmonizationUtils.kubernetesNetworkFilteringConditionToString(tmp) + "\n");
 				return false;

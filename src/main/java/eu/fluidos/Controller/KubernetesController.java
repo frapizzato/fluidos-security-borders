@@ -1,6 +1,7 @@
 package eu.fluidos.Controller;
 
 import eu.fluidos.Cluster;
+import eu.fluidos.Main;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
@@ -38,12 +39,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import io.kubernetes.client.util.Yaml;
 import eu.fluidos.Module;
 import eu.fluidos.jaxb.AuthorizationIntents;
@@ -110,6 +114,9 @@ public class KubernetesController {
     private HarmonizationController harmController;
     private V1NamespaceList providerNamespaceList;
     private V1NamespaceList consumerNamespaceList;
+    private boolean firstCallToModuletimer = true;
+    private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
     List<String> namespacesToExclude = new ArrayList<>(Arrays.asList(
         "calico-apiserver",
         "calico-system",
@@ -171,6 +178,15 @@ public class KubernetesController {
             }
         });
 
+        Thread defaultDenyNetworkPolicyThread = new Thread(() -> {
+            try {
+                applyDefaultDenyNetworkPoliciies(client,api);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("Errore durante la chiamata all'API Kubernetes: " + e.getMessage());
+            }
+        });
+
         Thread podThread = new Thread(() -> {
             try {
                 watchPods(client,api);
@@ -188,15 +204,6 @@ public class KubernetesController {
             }
         });
 
-        Thread contractThread = new Thread(() -> {
-            try {
-                watchContract(client);
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.err.println("Errore durante la chiamata all'API Kubernetes: " + e.getMessage());
-            }
-        });
-
         Thread flavorsThread = new Thread(() -> {
             try {
                 watchFlavors(client);
@@ -205,37 +212,11 @@ public class KubernetesController {
             }
         });
 
+        defaultDenyNetworkPolicyThread.start();
         flavorsThread.start();
-        contractThread.start();
         namespaceThread.start();
         podThread.start();
         tunnelEndpointThread.start();
-
-        /*
-        try {
-            Watch<V1Namespace> watch = Watch.createWatch(
-                client,
-                api.listNamespaceCall(null, null, null, null, null, null, null, null, null, Boolean.TRUE, null),
-                new TypeToken<Watch.Response<V1Namespace>>() {}.getType()
-            );
-    
-            for (Watch.Response<V1Namespace> item : watch) {
-                V1Namespace namespace = item.object;
-    
-                if (item.type.equals("ADDED") && isNamespaceOffloaded(namespace)) {
-                    System.out.println("Nuovo Namespace offloadato: " + namespace.getMetadata().getName());
-                    Module module = new Module(this.intents,client);
-                    CreateNetworkPolicies (client,namespace.getMetadata().getName());
-                    CreateDefaultDenyNetworkPolicies(client,namespace.getMetadata().getName());
-                } else if (item.type.equals("DELETED") && isNamespaceOffloaded(namespace)){
-                    System.out.println("Namespace offloadato cancellato: " + namespace.getMetadata().getName());
-                }
-            }
-        } catch (ApiException e) {
-            e.printStackTrace();
-            System.err.println("Errore durante la chiamata all'API Kubernetes: " + e.getResponseBody());
-        }
-        */
     }
 
         public void watchPods(ApiClient client,CoreV1Api api) throws Exception {
@@ -260,33 +241,28 @@ public class KubernetesController {
 
 
 
-    public void watchNamespaces(ApiClient client,CoreV1Api api) throws Exception {
-        // Watch per gli eventi dei namespace
+    public void applyDefaultDenyNetworkPoliciies(ApiClient client,CoreV1Api api) throws Exception {
         try{
             Watch<V1Namespace> namespaceWatch = Watch.createWatch(
                 client,
                 api.listNamespaceCall(null, null, null, null, null, null, null, null, null, Boolean.TRUE, null),
                 new TypeToken<Watch.Response<V1Namespace>>() {}.getType()
             );
-            boolean firstNamespace = false;
             for (Watch.Response<V1Namespace> item : namespaceWatch) {
                 V1Namespace namespace = item.object;
-                if(firstNamespace == false){
-                    firstNamespace = true;
-                    startModuleTimer(client);
-                }
-                if (item.type.equals("ADDED") && isNamespaceOffloaded(namespace)) {
-                    System.out.println("Nuovo Namespace offloadato: " + namespace.getMetadata().getName());
-                    //Module module = new Module(this.intents, client);
-                    CreateNetworkPolicies(client, namespace.getMetadata().getName());
+
+                if (item.type.equals("ADDED") && !namespacesToExclude.contains(namespace.getMetadata().getName()) && !namespace.getMetadata().getName().contains("liqo")) {
                     CreateDefaultDenyNetworkPolicies(client, namespace.getMetadata().getName());
+                    createAllowKubeDNSNetworkPolicy(client,namespace.getMetadata().getName());
+                    if (isNamespaceOffloaded(namespace)){
+                        createNetworkPolicyForIPRange(client,namespace,namespace.getMetadata().getLabels().get("liqo.io/remote-cluster-id"));
+                    }
                 } else if (item.type.equals("DELETED") && isNamespaceOffloaded(namespace)) {
                     System.out.println("Namespace offloadato cancellato: " + namespace.getMetadata().getName());
-                } else {
-                    if (!namespacesToExclude.contains(namespace.getMetadata().getName())&& !namespace.getMetadata().getName().contains("liqo")){
-                        CreateNetworkPolicies(client, namespace.getMetadata().getName());
-                        CreateDefaultDenyNetworkPolicies(client, namespace.getMetadata().getName());
-                    }
+                } else if (item.type.equals("MODIFIED") && isNamespaceToOffload(namespace)){
+                    String key=allowedIpList.keySet().iterator().next();
+                    createNetworkPolicyForIPRange(client,namespace,key);
+                    System.out.println("Namespace: "+ namespace.getMetadata().getName()+" modificato");
                 }
             }
     }catch(ApiException e){
@@ -297,57 +273,113 @@ public class KubernetesController {
     }
     }
 
-    /*private void startModuleTimer(ApiClient client) {
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        // Timer di 30 secondi
-        scheduler.schedule(() -> {
-            // Azioni da eseguire dopo 30 secondi
-            HarmonizationController harmController_new = new HarmonizationController(createCluster(client));
-            System.out.println("30 secondi passati, avvio modulo");
-            // Chiamata al metodo del modulo
-            List<RequestIntents> requestIntentsHarmonizedList = new ArrayList<>();
-            for (RequestIntents reqIntent : reqIntentsList){
-                requestIntentsHarmonizedList.add(harmController_new.harmonize(reqIntent));
-            }
-            try{
-                System.out.println("Chiamata al modulo");
-                Module module = new Module(requestIntentsHarmonizedList, client);
-                
-            } catch (Exception e) {
-                System.out.println("Errore nella chimata del modulo");
-                e.printStackTrace();
-            }
-  
-        }, 10, TimeUnit.SECONDS);
-    }*/
+    public void watchNamespaces(ApiClient client,CoreV1Api api) throws Exception {
+        try{
+            Watch<V1Namespace> namespaceWatch = Watch.createWatch(
+                client,
+                api.listNamespaceCall(null, null, null, null, null, null, null, null, null, Boolean.TRUE, null),
+                new TypeToken<Watch.Response<V1Namespace>>() {}.getType()
+            );
+            for (Watch.Response<V1Namespace> item : namespaceWatch) {
+                V1Namespace namespace = item.object;
+                if (item.type.equals("ADDED") && isNamespaceOffloaded(namespace)) {
+                    offloadedNamespace.add(namespace.getMetadata().getName());
+                    System.out.println("Nuovo Namespace offloadato: " + namespace.getMetadata().getName());
+                    if (firstCallToModuletimer){
+                        startModuleTimer(client);
+                        firstCallToModuletimer = false;
+                    }
+                        
+                    //CreateNetworkPolicies(client, namespace.getMetadata().getName());
+                } else if (item.type.equals("DELETED") && isNamespaceOffloaded(namespace)) {
+                    System.out.println("Namespace offloadato cancellato: " + namespace.getMetadata().getName());
+                } else if (item.type.equals("MODIFIED") && !namespacesToExclude.contains(namespace.getMetadata().getName()) && !namespace.getMetadata().getName().contains("liqo")){
+                    if (firstCallToModuletimer){
+                            startModuleTimer(client);
+                        firstCallToModuletimer = false;
+                    }
+                    }
+                }
+    }catch(ApiException e){
+        System.err.println("Errore durante la chiamata all'API Kubernetes: " + e.getMessage());
+        System.err.println("Codice di errore: " + e.getCode());
+        System.err.println("Corpo della risposta: " + e.getResponseBody());
+        e.printStackTrace();
+    }
+    }
 
-    private void startModuleTimer(ApiClient client) throws java.util.concurrent.ExecutionException {
+ /*private void startModuleTimer(ApiClient client) throws java.util.concurrent.ExecutionException {
     ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     // Timer di 10 secondi
     ScheduledFuture<?> future = scheduler.schedule(() -> {
         // Azioni da eseguire dopo 10 secondi
         HarmonizationController harmController_new = new HarmonizationController();
         System.out.println("10 secondi passati, avvio modulo");
-        List<RequestIntents> requestIntentsHarmonizedList = new ArrayList<>();
-        for (RequestIntents reqIntent : reqIntentsList) {
-            requestIntentsHarmonizedList.add(harmController_new.harmonize(createCluster(client,"provider"),reqIntent));
-        }
         try {
+        listContract(client);
+            List<RequestIntents> requestIntentsHarmonizedList = new ArrayList<>();
+            for (RequestIntents reqIntent : reqIntentsList) {
+                requestIntentsHarmonizedList.add(harmController_new.harmonize(createCluster(client,"provider"),reqIntent));
+            }
             System.out.println("Chiamata al modulo");
             Module module = new Module(requestIntentsHarmonizedList, client);
+            CoreV1Api api = new CoreV1Api(client);
+            V1NamespaceList namespaceList = api.listNamespace(null,null,null,null,null,null,null,null,null,null);
+            for (V1Namespace namespace: namespaceList.getItems()){
+                CreateNetworkPolicies(client, namespace.getMetadata().getName());
+            }
         } catch (Exception e) {
             System.out.println("Errore nella chimata del modulo");
             e.printStackTrace();
         }
-    }, 10, TimeUnit.SECONDS);
+    }, 20, TimeUnit.SECONDS);
     
     try {
         // Attendi il completamento del timer prima di procedere
+        firstCallToModuletimer=true;
         future.get();  // Questo bloccherà il flusso fino a che il task non è completato
     } catch (InterruptedException | ExecutionException e) {
         e.printStackTrace();
     }
+}*/
+
+private void startModuleTimer(ApiClient client) {
+    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    
+    // Timer di 20 secondi
+    scheduler.schedule(() -> {
+        HarmonizationController harmController_new = new HarmonizationController();
+        System.out.println("20 secondi passati, avvio modulo");
+        try {
+            listContract(client);
+            if (reqIntentsList.size() >0 ){
+                List<RequestIntents> requestIntentsHarmonizedList = new ArrayList<>();
+                for (RequestIntents reqIntent : reqIntentsList) {
+                        requestIntentsHarmonizedList.add(harmController_new.harmonize(createCluster(client, "provider"), reqIntent));
+                }
+                System.out.println("Chiamata al modulo");
+                Module module = new Module(requestIntentsHarmonizedList, client);
+                CoreV1Api api = new CoreV1Api(client);
+                V1NamespaceList namespaceList = api.listNamespace(null, null, null, null, null, null, null, null, null, null);
+                for (V1Namespace namespace : namespaceList.getItems()) {
+                    CreateNetworkPolicies(client, namespace.getMetadata().getName());
+                }
+            } else {
+                System.out.println("reqIntent è vuota");
+            }
+        } catch (Exception e) {
+            System.out.println("Errore nella chiamata del modulo");
+            e.printStackTrace();
+        }
+        firstCallToModuletimer=true;
+    }, 20, TimeUnit.SECONDS);
+
+    // Non c'è bisogno di future.get() - rimuovi il blocco
+    firstCallToModuletimer = true;
+
+
 }
+
 
     public void watchTunnelEndpoint(ApiClient client) throws Exception {
         try {
@@ -375,6 +407,7 @@ public class KubernetesController {
 
         for (Watch.Response<TunnelEndpoint> item : watch) {
             if(item.type.equals("ADDED")){
+                System.out.println("Sono dentro il watch di tunnel endpoint");
                 TunnelEndpoint tunnelEndpoint = item.object;
                 if (tunnelEndpoint != null) {
                     TunnelEndpoint.Status status = tunnelEndpoint.getStatus();
@@ -383,11 +416,7 @@ public class KubernetesController {
                         if (connection != null) {
                             this.allowedIpList.put(tunnelEndpoint.getMetadata().getLabels().get("clusterID"), new ArrayList<>(connection.getPeerConfiguration().getAllowedIPs()));
                             for (Map.Entry<String, List<String>> entry : this.allowedIpList.entrySet()) {
-                                String key = entry.getKey();
-                                List<String> value = entry.getValue();
-                                for (String IpAllowed : value){
-                                    //System.out.println("Key: " + key + ", Value: " + IpAllowed);
-                                }
+                                System.out.println(entry);
                             }
                         }
                     }
@@ -402,47 +431,47 @@ public class KubernetesController {
     }
     }
 
-    public void watchContract(ApiClient client) throws Exception {
+    public void listContract(ApiClient client) throws Exception {
         try {
             CustomObjectsApi customObjectsApi = new CustomObjectsApi(client);
-    
-            Watch<JsonObject> watch = Watch.createWatch(
-                client,
-                customObjectsApi.listNamespacedCustomObjectCall(
-                    "reservation.fluidos.eu",
-                    "v1alpha1",
-                    "fluidos",
-                    "contracts",
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    true,
-                    null),
-                new TypeToken<Watch.Response<JsonObject>>() {}.getType()
+            Object response = customObjectsApi.listNamespacedCustomObject(
+                "reservation.fluidos.eu",
+                "v1alpha1", 
+                "fluidos",
+                "contracts",
+                null,
+                null, 
+                null,                    
+                null,                 
+                null,                     
+                null,                   
+                null,
+                null,
+                null,
+                null                
             );
-    
-            for (Watch.Response<JsonObject> item : watch) {
-                if (item.type.equals("ADDED") || item.type.equals("MODIFIED")) {
-                    JsonObject contract = item.object.getAsJsonObject();
-                    JsonObject spec = contract.getAsJsonObject("spec");
+            Map<String, Object> responseMap = (Map<String, Object>) response;
+            List<Map<String, Object>> items = (List<Map<String, Object>>) responseMap.get("items");
 
-                    String networkPropertyType = spec.has("flavor") && spec.getAsJsonObject("flavor").getAsJsonObject("spec").has("networkPropertyType") ?
-                            spec.getAsJsonObject("flavor").getAsJsonObject("spec").get("networkPropertyType").getAsString() : null;
-                    String networkRequests = spec.has("networkRequests") ? spec.get("networkRequests").getAsString() : null;
-                    String buyerClusterID = spec.has("buyerClusterID") ? spec.get("buyerClusterID").getAsString() : null;
-    
-                    if (networkPropertyType.equals("AuthorizationIntent")){
-                        reqIntentsList.add(accessConfigMap(client,"fluidos",networkRequests));
+            
+            for (Map<String, Object> item : items) {
+                Map<String, Object> spec = (Map<String, Object>) item.get("spec");
+                Map<String, Object> flavor = (Map<String, Object>) spec.get("flavor");
+                Map<String, Object> flavorSpec = (flavor != null) ? (Map<String, Object>) flavor.get("spec") : null;
+                String networkPropertyType = (flavorSpec != null && flavorSpec.containsKey("networkPropertyType")) ?
+                        (String) flavorSpec.get("networkPropertyType") : null;
+
+                String networkRequests = spec.containsKey("networkRequests") ? (String) spec.get("networkRequests") : null;
+                String buyerClusterID = spec.containsKey("buyerClusterID") ? (String) spec.get("buyerClusterID") : null;
+
+                if (networkPropertyType.equals("AuthorizationIntent")){
+                    for (String namespace : offloadedNamespace){
+                        RequestIntents reqIntentToAdd = accessConfigMap(client,namespace,networkRequests);
+                        if (reqIntentToAdd != null){
+                            reqIntentsList.add(reqIntentToAdd);
+                        }
+                       
                     }
-                    //System.out.println("networkPropertyType: " + networkPropertyType);
-                    //System.out.println("networkRequests: " + networkRequests);
-                    //System.out.println("buyerClusterID: " + buyerClusterID);
                 }
             }
         } catch (ApiException e) {
@@ -542,9 +571,9 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
         CoreV1Api api = new CoreV1Api(client);
         V1ConfigMap configMap = api.readNamespacedConfigMap(configMapName, namespace, null);
 
-        if (configMap.getData() != null) {
+        if (configMap != null) {
             String networkIntent = configMap.getData().get("networkIntents");
-
+            System.out.print("ConfigMap trovata per il namespace: "+namespace);
             JsonArray jsonArray = JsonParser.parseString(networkIntent).getAsJsonArray();
             for (JsonElement jsonElement : jsonArray){
                 KubernetesNetworkFilteringCondition condition = new KubernetesNetworkFilteringCondition();
@@ -603,9 +632,12 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
                 requestIntent.getConfigurationRule().add(rule);
             }
             //System.out.println("Stampa della ConfigMap:");
-
+            return requestIntent;
             //StampaAuthIntents(authInt);
             //Adesso l' ho testato così, ossia ho aggiunto la lista delle configurationRule ad una lista preesistente di mandatoryconnection, tuttavia l' obbiettico è inviare la lsita delle configuration RUle all armonizzatore essendo solo quelle ad essere Request Intent
+        } else {
+            System.out.println("Nessuna configMap trovata per il namespace: "+namespace);
+            return null;
         }
 
     } catch (ApiException e) {
@@ -613,8 +645,8 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
         System.err.println("Codice di errore: " + e.getCode());
         System.err.println("Corpo della risposta: " + e.getResponseBody());
         e.printStackTrace();
+        return null;
     }
-    return requestIntent;
 
 }
 
@@ -642,10 +674,9 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
                 null),
             new TypeToken<Watch.Response<JsonObject>>() {}.getType()
         );
-        
-        AuthorizationIntents authorizationIntents = new AuthorizationIntents();
-        List<ConfigurationRule> forbiddenConnectionList = authorizationIntents.getForbiddenConnectionList();
-        List<ConfigurationRule> mandatoryConnectionList = authorizationIntents.getMandatoryConnectionList();
+        AtomicBoolean firstTimeToCallVerifier = new AtomicBoolean(false);
+        AtomicBoolean timerStarted = new AtomicBoolean(false);
+        List <JsonObject> listTypeData = new ArrayList<>();
         String flavorName = new String();
         for (Watch.Response<JsonObject> item : watch) {
             if (item.type.equals("ADDED") || item.type.equals("MODIFIED")) {
@@ -654,59 +685,36 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
                 flavorName = metadata.get("name").getAsString();
                 JsonObject spec = flavor.getAsJsonObject("spec");
                 JsonObject flavorType = spec.getAsJsonObject("flavorType");
+                String myFluidosID = retrieveFluidosId(client);
+                String providerID = spec.get("providerID").getAsString();
                 JsonObject typeData = flavorType.getAsJsonObject("typeData");
 
-                
+                if (providerID.equals(myFluidosID)){
+                    //System.out.println("Sono nel provider in quanto il mio ID: "+ myFluidosID + " è uguale all' ID del provider:" + providerID);
 
-
-                if (typeData != null) {
-                    JsonObject characteristics = typeData.getAsJsonObject("characteristics");
-                    KubernetesNetworkFilteringAction action = new KubernetesNetworkFilteringAction();
-                    Priority prio = new Priority();
-                    boolean isCNF = false;
-                    if (characteristics != null) {
-                        if(characteristics.has("action")){
-                            action.setKubernetesNetworkFilteringActionType(characteristics.get("action").getAsString());
-                        }
-
-                        if (characteristics.has("isCNF")) {
-                            isCNF = characteristics.get("isCNF").getAsBoolean();
-                        }
-
-                        if (characteristics.has("externalData")) {
-                            JsonObject externalDataJson = characteristics.getAsJsonObject("externalData");
-                            prio.setValue(externalDataJson.getAsJsonObject("priority").getAsBigInteger());
-                        }
-                        if (characteristics.has("deniedCommunications") && characteristics.has("mandatoryCommunications")) {
-                            JsonArray deniedCommunications = characteristics.getAsJsonArray("deniedCommunications");
-                            populateAuthorizationIntents(deniedCommunications, forbiddenConnectionList,action,prio,isCNF);
-                            JsonArray mandatoryCommunications = characteristics.getAsJsonArray("mandatoryCommunications");
-                            populateAuthorizationIntents(mandatoryCommunications, mandatoryConnectionList,action,prio,isCNF);
-                        } else if (characteristics.has("mandatoryCommunications")) {
-                            JsonArray mandatoryCommunications = characteristics.getAsJsonArray("mandatoryCommunications");
-                            populateAuthorizationIntents(mandatoryCommunications, mandatoryConnectionList,action,prio,isCNF);
-                        } else if (characteristics.has("deniedCommunications")) {
-                            JsonArray deniedCommunications = characteristics.getAsJsonArray("deniedCommunications");
-                            populateAuthorizationIntents(deniedCommunications, forbiddenConnectionList,action,prio,isCNF);
-                        }else {
-                            System.out.println("Mandatory Communications and Denied communications not found.");
-                        }
-                    } else {
-                        System.out.println("Characteristics not found.");
+                }else {
+                    printDash();
+                    //Faccio uso di un timer per ritardare il primo avvio, in quanto al primo avvio ho 4 flavour, in questo modo non chiamo più volte il verifier
+                    if (timerStarted.compareAndSet(false, true)) {
+                        // Se il timer non è ancora stato avviato, lo avvia
+                        scheduler.schedule(() -> {
+                            firstTimeToCallVerifier.set(true);
+                            System.out.println("firstTimeToCallVerifier è stato settato a true");
+                            System.out.println("Avvio verifier");
+                            printDash();
+                            System.out.println("[VERIFIER] valore riornato: "+callVerifier(listTypeData));
+                        }, 20, TimeUnit.SECONDS);
+                    } 
+                    listTypeData.add(typeData);
                     }
-                } else {
-                    System.out.println("TypeData not found.");
+                    //Se dopo il primo avvio viene aggiunto un flavour, tale flavour viene comparato con tutti i flavour precedenti
+                    if(firstTimeToCallVerifier.get()){
+                        System.out.println("Avvio verifier");
+                        printDash();
+                        System.out.println("[VERIFIER] valore riornato: "+callVerifier(listTypeData));
+                    }
                 }
-            }
-            //System.out.println("Stampa del flavour:");
-            //StampaAuthIntents(authorizationIntents);
-            if (authorizationIntents != null && authorizationIntents.getForbiddenConnectionList().size() > 0 && authorizationIntents.getMandatoryConnectionList().size() > 0){
-                HarmonizationController harmonizationController = new HarmonizationController();
-                System.out.println("Valore dalla chiamata del verifier:" + harmonizationController.verify(createCluster(client,"consumer"),authorizationIntents)+" per il flavour: " + flavorName);
-                forbiddenConnectionList.clear();
-                mandatoryConnectionList.clear();
-            }
-        }
+                }
     } catch (ApiException e) {
         System.err.println("Errore durante la chiamata all'API Kubernetes per cercare i flavor: " + e.getMessage());
         System.err.println("Codice di errore: " + e.getCode());
@@ -715,6 +723,75 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
     }
 }
 
+private boolean callVerifier(List<JsonObject> listTypeData){
+    Boolean value = false;
+    for (JsonObject typeData : listTypeData){
+        AuthorizationIntents authorizationIntents = new AuthorizationIntents();
+        List<ConfigurationRule> forbiddenConnectionList = authorizationIntents.getForbiddenConnectionList();
+        List<ConfigurationRule> mandatoryConnectionList = authorizationIntents.getMandatoryConnectionList();
+        if (typeData != null) {
+            JsonObject characteristics = typeData.getAsJsonObject("characteristics");
+            KubernetesNetworkFilteringAction action = new KubernetesNetworkFilteringAction();
+            Priority prio = new Priority();
+            boolean isCNF = false;
+            if (characteristics != null) {
+                if(characteristics.has("action")){
+                    action.setKubernetesNetworkFilteringActionType(characteristics.get("action").getAsString());
+                }
+
+                if (characteristics.has("isCNF")) {
+                    isCNF = characteristics.get("isCNF").getAsBoolean();
+                }
+
+                if (characteristics.has("externalData")) {
+                    JsonObject externalDataJson = characteristics.getAsJsonObject("externalData");
+                    prio.setValue(externalDataJson.getAsJsonObject("priority").getAsBigInteger());
+                }
+                if (characteristics.has("deniedCommunications") && characteristics.has("mandatoryCommunications")) {
+                    JsonArray deniedCommunications = characteristics.getAsJsonArray("deniedCommunications");
+                    populateAuthorizationIntents(deniedCommunications, forbiddenConnectionList,action,prio,isCNF);
+                    JsonArray mandatoryCommunications = characteristics.getAsJsonArray("mandatoryCommunications");
+                    populateAuthorizationIntents(mandatoryCommunications, mandatoryConnectionList,action,prio,isCNF);
+                } else if (characteristics.has("mandatoryCommunications")) {
+                    JsonArray mandatoryCommunications = characteristics.getAsJsonArray("mandatoryCommunications");
+                    populateAuthorizationIntents(mandatoryCommunications, mandatoryConnectionList,action,prio,isCNF);
+                } else if (characteristics.has("deniedCommunications")) {
+                    JsonArray deniedCommunications = characteristics.getAsJsonArray("deniedCommunications");
+                    populateAuthorizationIntents(deniedCommunications, forbiddenConnectionList,action,prio,isCNF);
+                }else {
+                    System.out.println("Mandatory Communications and Denied communications not found.");
+                }
+            } else {
+                System.out.println("Characteristics not found.");
+            }
+            if (authorizationIntents != null && authorizationIntents.getForbiddenConnectionList().size() > 0 && authorizationIntents.getMandatoryConnectionList().size() > 0){
+                HarmonizationController harmonizationController = new HarmonizationController();
+                value = harmonizationController.verify(createCluster(client,"consumer"),authorizationIntents);
+                //System.out.println("[VERIFIER] Valore dalla chiamata del : " + value +" per il flavour");
+                //printDash();
+                //System.out.println(" ");
+                forbiddenConnectionList.clear();
+                mandatoryConnectionList.clear();
+                if (value){
+                    return value;
+                }
+            }
+        } else {
+            System.out.println("TypeData not found.");
+        }
+    }
+    return value;
+}
+
+private String retrieveFluidosId (ApiClient client) throws ApiException{
+
+    CoreV1Api api = new CoreV1Api(client);
+    V1ConfigMap configMap = api.readNamespacedConfigMap("fluidos-network-manager-identity", "fluidos", null);
+    String nodeID = configMap.getData().get("nodeID");
+    //System.out.println("NodeID: " + nodeID);
+
+    return nodeID;
+}
 private void populateAuthorizationIntents(JsonArray communications, List<ConfigurationRule> connectionList,KubernetesNetworkFilteringAction action,Priority prio,boolean isCNF) {
     for (JsonElement comm : communications) {
         JsonObject communication = comm.getAsJsonObject();
@@ -896,7 +973,7 @@ private ResourceSelector parseResourceSelector(JsonObject resourceSelectors) {
         System.out.println(" ");
     }
 
-    
+    /*
     private boolean isNamespaceOffloaded(V1Namespace namespace) {
         if (namespace.getMetadata().getAnnotations() != null) {
             String remoteClusterId = namespace.getMetadata().getLabels().get("liqo.io/remote-cluster-id");
@@ -913,10 +990,30 @@ private ResourceSelector parseResourceSelector(JsonObject resourceSelectors) {
         }
         return false;
     }
+    */
+
+    private boolean isNamespaceOffloaded(V1Namespace namespace) {
+        if (namespace.getMetadata().getAnnotations() != null) {
+            String remoteClusterId = namespace.getMetadata().getLabels().get("liqo.io/remote-cluster-id");
+            if (remoteClusterId != null && !remoteClusterId.isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isNamespaceToOffload(V1Namespace namespace) {
+        if (namespace.getMetadata().getLabels() != null) {
+            String flag = namespace.getMetadata().getLabels().get("liqo.io/scheduling-enabled");
+            if (flag != null && flag.equals("true")) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private void CreateNetworkPolicies (ApiClient client,String Namespace){
         NetworkingV1Api api = new NetworkingV1Api(client);
-        //List<File> files = getFilesInFolder("C:/Users/salva/Desktop/traslator/fluidos-security-orchestrator/fluidos-security-orchestrator/src/network_policies");
         List<File> files = getFilesInFolder("/app/network_policies/");
         for (File file : files) {
             try {
@@ -924,12 +1021,11 @@ private ResourceSelector parseResourceSelector(JsonObject resourceSelectors) {
             V1NetworkPolicy networkPolicy = Yaml.loadAs(yamlContent, V1NetworkPolicy.class);
                 try {
                 if (networkPolicy.getMetadata().getNamespace().equals(Namespace)){
-                    //System.out.println("ok");
                     api.createNamespacedNetworkPolicy(networkPolicy.getMetadata().getNamespace(), networkPolicy, null, null, null);
                     System.out.println("NetworkPolicy: "+networkPolicy.getMetadata().getName()+" applicata per il namespace "+ Namespace);
                 }
                 } catch (ApiException e){
-                    System.err.println("Errore: "+e.getResponseBody());
+                    //System.err.println("Errore: "+e.getResponseBody());
                 }
             } catch (IOException e) {
                 System.err.println("Errore");
@@ -987,32 +1083,24 @@ public void createNetworkPolicyForIPRange(ApiClient client, V1Namespace namespac
     String offloadedNamespace = namespace.getMetadata().getName();
 
     NetworkingV1Api networkingApi = new NetworkingV1Api(client);
-    V1NetworkPolicy egressPolicy = new V1NetworkPolicy()
+    V1NetworkPolicy combinedPolicy = new V1NetworkPolicy()
             .apiVersion("networking.k8s.io/v1")
             .kind("NetworkPolicy")
             .metadata(new V1ObjectMeta()
-                    .name("allow-comunication-with-local-cluster-egress-" + offloadedNamespace)
+                    .name("allow-comunication-with-offloaded-pods-" + offloadedNamespace)
                     .namespace(offloadedNamespace))
             .spec(new V1NetworkPolicySpec()
-                    .policyTypes(List.of("Egress"))
-                    .podSelector(new V1LabelSelector())
-                    .egress(buildEgressRules(this.allowedIpList.get(clusterId))));
-
-
-    V1NetworkPolicy ingressPolicy = new V1NetworkPolicy()
-            .apiVersion("networking.k8s.io/v1")
-            .kind("NetworkPolicy")
-            .metadata(new V1ObjectMeta()
-                    .name("allow-comunication-with-local-cluster-ingress-" + offloadedNamespace)
-                    .namespace(offloadedNamespace))
-            .spec(new V1NetworkPolicySpec()
-                    .policyTypes(List.of("Ingress"))
-                    .podSelector(new V1LabelSelector())
-                    .ingress(buildIngressRules(this.allowedIpList.get(clusterId))));
+                    .policyTypes(List.of("Ingress", "Egress"))  // Specifica sia Ingress che Egress
+                    .podSelector(new V1LabelSelector())  // Seleziona tutti i pod
+                    .ingress(buildIngressRules(this.allowedIpList.get(clusterId)))  // Regole Ingress
+                    .egress(buildEgressRules(this.allowedIpList.get(clusterId))));  // Regole Egress
+    
+    // Applica la NetworkPolicy combinata
+    
+    
 
     System.out.println ("network policies per abilitare il traffico tra i pod offloadati e quelli in locale applicata per il namespace: "+offloadedNamespace);
-    networkingApi.createNamespacedNetworkPolicy(offloadedNamespace, egressPolicy, null, null, null);
-    networkingApi.createNamespacedNetworkPolicy(offloadedNamespace, ingressPolicy, null, null, null);
+    networkingApi.createNamespacedNetworkPolicy(offloadedNamespace, combinedPolicy, null, null, null);
 }
     private List<V1NetworkPolicyEgressRule> buildEgressRules(List<String> ipAddress) {        
         return ipAddress.stream()
@@ -1064,6 +1152,10 @@ public void createNetworkPolicyForIPRange(ApiClient client, V1Namespace namespac
             System.err.println("Errore durante la creazione della Network Policy: " + e.getResponseBody());
             e.printStackTrace();
         }
+    }
+
+    public void printDash() {
+        System.out.println(Main.ANSI_PURPLE + "-".repeat(100) + Main.ANSI_RESET);
     }
 }
 
