@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-traffic-to-from-172-18-0-4
+  namespace: payments-fluidos-consumer-1-29447c # Sostituisci con il tuo namespace
+spec:
+  podSelector: {}  # Seleziona tutti i pod nel namespace
+  ingress:
+  - from:
+    - ipBlock:
+        cidr: 172.18.0.4/32  # Consente il traffico in ingresso da 172.18.0.4
+  egress:
+  - to:
+    - ipBlock:
+        cidr: 172.18.0.4/32  # Consente il traffico in uscita verso 172.18.0.4
+  policyTypes:
+  - Ingress
+  - Egress

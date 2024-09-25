@@ -1,0 +1,102 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: esempio-config-map
+  namespace: fluidos
+data:
+  name: "example-intent"
+  isCNF: "true"
+  priority: "3000"
+  action: Allow
+  acceptMonitoring: "true"
+  networkIntents: |
+    [
+      {
+        "source": {
+          "resourceSelectors": {
+            "isHotCluster": false,
+            "typeIdentifier": "PodNamespaceSelector",
+            "selector": {
+              "pod": [
+                {
+                  "key": "app",
+                  "value": "order_placement"
+                }
+              ],
+              "namespace": [
+                {
+                  "key": "env",
+                  "value": "production"
+                }
+              ]
+            }
+          }
+        },
+        "destination": {
+          "resourceSelectors": {
+            "isHotCluster": true,
+            "typeIdentifier": "PodNamespaceSelector",
+            "selector": {
+              "pod": [
+                {
+                  "key": "*",
+                  "value": "*"
+                }
+              ],
+              "namespace": [
+                {
+                  "key": "name",
+                  "value": "default"
+                }
+              ]
+            }
+          }
+        },
+        "destinationPort": "*",
+        "protocolType": "TCP"
+      },
+      {
+        "source": {
+          "resourceSelectors": {
+            "isHotCluster": false,
+            "typeIdentifier": "PodNamespaceSelector",
+            "selector": {
+              "pod": [
+                {
+                  "key": "app",
+                  "value": "inventory_management"
+                }
+              ],
+              "namespace": [
+                {
+                  "key": "env",
+                  "value": "staging"
+                }
+              ]
+            }
+          }
+        },
+        "destination": {
+          "resourceSelectors": {
+            "isHotCluster": true,
+            "typeIdentifier": "PodNamespaceSelector",
+            "selector": {
+              "pod": [
+                {
+                  "key": "*",
+                  "value": "*"
+                }
+              ],
+              "namespace": [
+                {
+                  "key": "name",
+                  "value": "test"
+                }
+              ]
+            }
+          }
+        },
+        "destinationPort": "8080",
+        "protocolType": "TCP"
+      }
+    ]
