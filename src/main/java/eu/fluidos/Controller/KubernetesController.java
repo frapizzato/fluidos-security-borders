@@ -464,7 +464,7 @@ private void startModuleTimer(ApiClient client) {
                 String networkRequests = spec.containsKey("networkRequests") ? (String) spec.get("networkRequests") : null;
                 String buyerClusterID = spec.containsKey("buyerClusterID") ? (String) spec.get("buyerClusterID") : null;
 
-                if (networkPropertyType.equals("AuthorizationIntent")){
+                if (networkPropertyType.equals("networkProperty")){
                     for (String namespace : offloadedNamespace){
                         RequestIntents reqIntentToAdd = accessConfigMap(client,namespace,networkRequests);
                         if (reqIntentToAdd != null){
@@ -473,6 +473,16 @@ private void startModuleTimer(ApiClient client) {
                        
                     }
                 }
+                Gson gson = new Gson();
+                String jsonString = gson.toJson(flavorSpec);
+                JsonObject flavorSpecJson = gson.fromJson(jsonString, JsonObject.class);
+                JsonObject flavorType = (flavorSpec != null) ? flavorSpecJson.getAsJsonObject("flavorType") : null;
+                JsonObject typeData = flavorType.getAsJsonObject("typeData");
+                AuthorizationIntents contractAuthIntent=insertAuthorizationIntents(typeData);
+                printDash();
+                System.out.println("Authorization intent ricevuto dal contratto: ");
+                StampaAuthIntents(contractAuthIntent);
+                printDash();
             }
         } catch (ApiException e) {
             System.err.println("Errore durante la chiamata all'API Kubernetes per cercare i contract: " + e.getMessage());
@@ -481,6 +491,47 @@ private void startModuleTimer(ApiClient client) {
             e.printStackTrace();
         }
     }
+
+public AuthorizationIntents insertAuthorizationIntents (JsonObject typeData){
+    AuthorizationIntents authIntent = new AuthorizationIntents();
+    List<ConfigurationRule> forbiddenConnectionList = authIntent.getForbiddenConnectionList();
+    List<ConfigurationRule> mandatoryConnectionList = authIntent.getMandatoryConnectionList();
+    JsonObject characteristics = typeData.getAsJsonObject("characteristics");
+    KubernetesNetworkFilteringAction action = new KubernetesNetworkFilteringAction();
+    Priority prio = new Priority();
+    boolean isCNF = false;
+    if (characteristics != null) {
+        if(characteristics.has("action")){
+            action.setKubernetesNetworkFilteringActionType(characteristics.get("action").getAsString());
+        }
+
+        if (characteristics.has("isCNF")) {
+            isCNF = characteristics.get("isCNF").getAsBoolean();
+        }
+
+        if (characteristics.has("externalData")) {
+            JsonObject externalDataJson = characteristics.getAsJsonObject("externalData");
+            prio.setValue(externalDataJson.getAsJsonObject("priority").getAsBigInteger());
+        }
+        if (characteristics.has("deniedCommunications") && characteristics.has("mandatoryCommunications")) {
+            JsonArray deniedCommunications = characteristics.getAsJsonArray("deniedCommunications");
+            populateAuthorizationIntents(deniedCommunications, forbiddenConnectionList,action,prio,isCNF);
+            JsonArray mandatoryCommunications = characteristics.getAsJsonArray("mandatoryCommunications");
+            populateAuthorizationIntents(mandatoryCommunications, mandatoryConnectionList,action,prio,isCNF);
+        } else if (characteristics.has("mandatoryCommunications")) {
+            JsonArray mandatoryCommunications = characteristics.getAsJsonArray("mandatoryCommunications");
+            populateAuthorizationIntents(mandatoryCommunications, mandatoryConnectionList,action,prio,isCNF);
+        } else if (characteristics.has("deniedCommunications")) {
+            JsonArray deniedCommunications = characteristics.getAsJsonArray("deniedCommunications");
+            populateAuthorizationIntents(deniedCommunications, forbiddenConnectionList,action,prio,isCNF);
+        }else {
+            System.out.println("Mandatory Communications and Denied communications not found.");
+        }
+    } else {
+        System.out.println("Characteristics not found.");
+    }
+    return authIntent;
+}
     
 public Cluster createCluster (ApiClient client,String whoIs){
     CoreV1Api api = new CoreV1Api(client);
