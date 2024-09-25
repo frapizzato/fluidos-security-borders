@@ -24,9 +24,11 @@ kubectl label namespace users name=users
 
 echo "applicazione solver"
 kubectl apply -f ../../../deployments/node/samples/solver-custom.yaml
+echo "Applicazione dei flavors consumer"
+kubectl apply -f ../flavors/
+echo "Applicazione del controller"
+kubectl apply -f ../controller.yaml.yaml
 
-echo "candidati per il peering"
-kubectl get peeringcandidates -A
 
 
 
