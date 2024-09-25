@@ -44,7 +44,7 @@ La demo è situata nella cartella: `demo_da_presentare/node_main`.
      ```
    - Visualizza i log del verifier (attivo dopo circa 20 secondi):
      ```bash
-     kubectl logs "Nome_pod_consumer" -n fluidos
+     kubectl logs "Nome_pod_controller_lato_consumer" -n fluidos
      ```
 
 3. **Visualizza i Peering Candidates**:
@@ -78,7 +78,7 @@ La demo è situata nella cartella: `demo_da_presentare/node_main`.
 6. **Verifica lo stato del Peering**:
    - Controlla lo stato del peering con il comando:
      ```bash
-     liqo status peer
+     liqoctl status peer
      ```
 
 ## 🔄 Modifiche lato Provider
@@ -89,7 +89,7 @@ La demo è situata nella cartella: `demo_da_presentare/node_main`.
    ```
 
 2. **Modifica il Contratto**:
-   - Aggiungi alla sezione `networkRequests` il nome della ConfigMap (esempio: `esempio-config-map`):
+   - Aggiungi alla sezione `networkRequests` il nome della ConfigMap (esempio: `networkRequests: esempio-config-map`) allo stesso livello di `transactionId` :
      ```bash
      kubectl edit contracts "nome_contratto" -n fluidos
      ```

@@ -356,7 +356,7 @@ private void startModuleTimer(ApiClient client) {
             if (reqIntentsList.size() >0 ){
                 List<RequestIntents> requestIntentsHarmonizedList = new ArrayList<>();
                 for (RequestIntents reqIntent : reqIntentsList) {
-                        requestIntentsHarmonizedList.add(harmController_new.harmonize(createCluster(client, "provider"), reqIntent,contractAuthIntents));
+                        requestIntentsHarmonizedList.add(harmController_new.harmonize(createCluster(client, "provider"), reqIntent));
                 }
                 System.out.println("Chiamata al modulo");
                 Module module = new Module(requestIntentsHarmonizedList, client);
@@ -375,7 +375,6 @@ private void startModuleTimer(ApiClient client) {
         firstCallToModuletimer=true;
     }, 20, TimeUnit.SECONDS);
 
-    // Non c'è bisogno di future.get() - rimuovi il blocco
     firstCallToModuletimer = true;
 
 
@@ -465,13 +464,17 @@ private void startModuleTimer(ApiClient client) {
                 String networkRequests = spec.containsKey("networkRequests") ? (String) spec.get("networkRequests") : null;
                 String buyerClusterID = spec.containsKey("buyerClusterID") ? (String) spec.get("buyerClusterID") : null;
 
-                if (networkPropertyType.equals("networkProperty")){
+                if (networkRequests != null){
                     for (String namespace : offloadedNamespace){
-                        RequestIntents reqIntentToAdd = accessConfigMap(client,namespace,networkRequests);
-                        if (reqIntentToAdd != null){
-                            reqIntentsList.add(reqIntentToAdd);
+                        try {
+                            RequestIntents reqIntentToAdd = accessConfigMap(client,namespace,networkRequests);
+                            if (reqIntentToAdd != null){
+                                reqIntentsList.add(reqIntentToAdd);
+                            }    
+                        } catch (Exception e){
+
                         }
-                       
+
                     }
                 }
                 Gson gson = new Gson();
@@ -747,7 +750,6 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
                         // Se il timer non è ancora stato avviato, lo avvia
                         scheduler.schedule(() -> {
                             firstTimeToCallVerifier.set(true);
-                            System.out.println("firstTimeToCallVerifier è stato settato a true");
                             System.out.println("Avvio verifier");
                             printDash();
                             System.out.println("[VERIFIER] valore riornato: "+callVerifier(listTypeData));

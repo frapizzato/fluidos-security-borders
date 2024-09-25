@@ -1,7 +1,6 @@
 export KUBECONFIG=../fluidos-provider-1-config
 echo "Sono nel provider"
 
-
 echo" Creazione namespace e deploying pods"
 kubectl create namespace monitoring
 kubectl create namespace handle-payments

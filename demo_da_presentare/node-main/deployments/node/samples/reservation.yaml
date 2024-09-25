@@ -27,9 +27,9 @@ spec:
   seller:
     domain: fluidos.eu
     ip: 172.18.0.7:30001
-    nodeID: pzxjm7eigw
+    nodeID: 2knlllb3iu
   # Retrieve from configmap
   buyer:
     domain: fluidos.eu
     ip: 172.18.0.6:30000
-    nodeID: 2d6x3l35vx
+    nodeID: fsog9ik36x
