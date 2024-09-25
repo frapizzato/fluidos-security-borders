@@ -116,6 +116,7 @@ public class KubernetesController {
     private V1NamespaceList consumerNamespaceList;
     private boolean firstCallToModuletimer = true;
     private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private AuthorizationIntents contractAuthIntents = new AuthorizationIntents();
 
     List<String> namespacesToExclude = new ArrayList<>(Arrays.asList(
         "calico-apiserver",
@@ -355,7 +356,7 @@ private void startModuleTimer(ApiClient client) {
             if (reqIntentsList.size() >0 ){
                 List<RequestIntents> requestIntentsHarmonizedList = new ArrayList<>();
                 for (RequestIntents reqIntent : reqIntentsList) {
-                        requestIntentsHarmonizedList.add(harmController_new.harmonize(createCluster(client, "provider"), reqIntent));
+                        requestIntentsHarmonizedList.add(harmController_new.harmonize(createCluster(client, "provider"), reqIntent,contractAuthIntents));
                 }
                 System.out.println("Chiamata al modulo");
                 Module module = new Module(requestIntentsHarmonizedList, client);
@@ -478,11 +479,7 @@ private void startModuleTimer(ApiClient client) {
                 JsonObject flavorSpecJson = gson.fromJson(jsonString, JsonObject.class);
                 JsonObject flavorType = (flavorSpec != null) ? flavorSpecJson.getAsJsonObject("flavorType") : null;
                 JsonObject typeData = flavorType.getAsJsonObject("typeData");
-                AuthorizationIntents contractAuthIntent=insertAuthorizationIntents(typeData);
-                printDash();
-                System.out.println("Authorization intent ricevuto dal contratto: ");
-                StampaAuthIntents(contractAuthIntent);
-                printDash();
+                this.contractAuthIntents=insertAuthorizationIntents(typeData);
             }
         } catch (ApiException e) {
             System.err.println("Errore durante la chiamata all'API Kubernetes per cercare i contract: " + e.getMessage());

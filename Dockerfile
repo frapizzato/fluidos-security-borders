@@ -7,6 +7,7 @@ COPY target/fluidos-security-orchestrator-1.0-SNAPSHOT-jar-with-dependencies.jar
 COPY testfile/consumer_MSPL_demo.xml /app/testfile/consumer_MSPL_demo.xml
 COPY testfile/provider_MSPL_demo.xml /app/testfile/provider_MSPL_demo.xml
 COPY testfile/My_test2.xml /app/testfile/My_test2.xml
+COPY testfile/provider_MSPL_request.xml /app/testfile/provider_MSPL_request.xml
 
 # Copia la cartella contenente lo schema XSD nel container
 COPY xsd/ /app/xsd
