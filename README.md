@@ -48,7 +48,7 @@ Dopo l'installazione, procedi con la modifica dei **flavors** offerti dal Provid
   ./prima_parte.sh
   ```
 
-### 2️⃣ Verifica del Flavor Selezionato
+### 2️⃣ Verifica del PeeringCandidate Selezionato
 
 - Controlla i pod attivi:
   ```bash
