@@ -204,13 +204,13 @@ public class KubernetesController {
             }
         });
 
-        Thread flavorsThread = new Thread(() -> {
+        /*Thread flavorsThread = new Thread(() -> {
             try {
                 watchFlavors(client);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        });
+        });*/
 
         Thread peeringCandidatesThread = new Thread(() -> {
             try {
@@ -417,7 +417,7 @@ private void startModuleTimer(ApiClient client) {
 
         for (Watch.Response<TunnelEndpoint> item : watch) {
             if(item.type.equals("ADDED")){
-                System.out.println("Sono dentro il watch di tunnel endpoint");
+                //System.out.println("Sono dentro il watch di tunnel endpoint");
                 TunnelEndpoint tunnelEndpoint = item.object;
                 if (tunnelEndpoint != null) {
                     TunnelEndpoint.Status status = tunnelEndpoint.getStatus();
@@ -426,7 +426,7 @@ private void startModuleTimer(ApiClient client) {
                         if (connection != null) {
                             this.allowedIpList.put(tunnelEndpoint.getMetadata().getLabels().get("clusterID"), new ArrayList<>(connection.getPeerConfiguration().getAllowedIPs()));
                             for (Map.Entry<String, List<String>> entry : this.allowedIpList.entrySet()) {
-                                System.out.println(entry);
+                                //System.out.println(entry);
                             }
                         }
                     }
@@ -639,7 +639,7 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
         if (configMap != null) {
             String networkIntent = configMap.getData().get("networkIntents");
             System.out.println("ConfigMap trovata per il namespace: "+namespace);
-            System.out.println(configMap);
+            //System.out.println(configMap);
             JsonArray jsonArray = JsonParser.parseString(networkIntent).getAsJsonArray();
             for (JsonElement jsonElement : jsonArray){
                 KubernetesNetworkFilteringCondition condition = new KubernetesNetworkFilteringCondition();
@@ -702,15 +702,11 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
             //StampaAuthIntents(authInt);
             //Adesso l' ho testato così, ossia ho aggiunto la lista delle configurationRule ad una lista preesistente di mandatoryconnection, tuttavia l' obbiettico è inviare la lsita delle configuration RUle all armonizzatore essendo solo quelle ad essere Request Intent
         } else {
-            System.out.println("Nessuna configMap trovata per il namespace: "+namespace);
             return null;
         }
 
-    } catch (ApiException e) {
-        System.err.println("Errore durante la chiamata all'API Kubernetes per leggere la ConfigMap: " + e.getMessage());
-        System.err.println("Codice di errore: " + e.getCode());
-        System.err.println("Corpo della risposta: " + e.getResponseBody());
-        e.printStackTrace();
+    } catch (Exception e) {
+        System.out.println("Nessuna configMap trovata per il namespace: "+namespace);
         return null;
     }
 
@@ -795,7 +791,7 @@ public void watchPeeringCandidates(ApiClient client) throws Exception {
         e.printStackTrace();
     }
 }
-
+/*
  public void watchFlavors(ApiClient client) throws Exception {
     try {
         CustomObjectsApi customObjectsApi = new CustomObjectsApi(client);
@@ -868,6 +864,7 @@ public void watchPeeringCandidates(ApiClient client) throws Exception {
         e.printStackTrace();
     }
 }
+*/
 
 AuthorizationIntents accessFlavour (JsonObject typeData){
     AuthorizationIntents authorizationIntents = new AuthorizationIntents();
@@ -897,16 +894,22 @@ AuthorizationIntents accessFlavour (JsonObject typeData){
                 prio.setValue(externalDataJson.getAsJsonObject("priority").getAsBigInteger());
             }
             if (networkAuthorizations.has("deniedCommunications") && networkAuthorizations.has("mandatoryCommunications")) {
-                JsonArray deniedCommunications = networkAuthorizations.getAsJsonArray("deniedCommunications");
-                populateAuthorizationIntents(deniedCommunications, forbiddenConnectionList,action,prio,isCNF);
-                JsonArray mandatoryCommunications = networkAuthorizations.getAsJsonArray("mandatoryCommunications");
-                populateAuthorizationIntents(mandatoryCommunications, mandatoryConnectionList,action,prio,isCNF);
+                if (networkAuthorizations.get("deniedCommunications") != null && networkAuthorizations.get("mandatoryCommunications")!=null){
+                    JsonArray deniedCommunications = networkAuthorizations.getAsJsonArray("deniedCommunications");
+                    populateAuthorizationIntents(deniedCommunications, forbiddenConnectionList,action,prio,isCNF);
+                    JsonArray mandatoryCommunications = networkAuthorizations.getAsJsonArray("mandatoryCommunications");
+                    populateAuthorizationIntents(mandatoryCommunications, mandatoryConnectionList,action,prio,isCNF);   
+                }
             } else if (networkAuthorizations.has("mandatoryCommunications")) {
-                JsonArray mandatoryCommunications = networkAuthorizations.getAsJsonArray("mandatoryCommunications");
-                populateAuthorizationIntents(mandatoryCommunications, mandatoryConnectionList,action,prio,isCNF);
+                if ( networkAuthorizations.get("mandatoryCommunications")!=null){
+                    JsonArray mandatoryCommunications = networkAuthorizations.getAsJsonArray("mandatoryCommunications");
+                    populateAuthorizationIntents(mandatoryCommunications, mandatoryConnectionList,action,prio,isCNF);
+                }
             } else if (networkAuthorizations.has("deniedCommunications")) {
-                JsonArray deniedCommunications = networkAuthorizations.getAsJsonArray("deniedCommunications");
-                populateAuthorizationIntents(deniedCommunications, forbiddenConnectionList,action,prio,isCNF);
+                if ( networkAuthorizations.get("deniedCommunications")!=null){
+                    JsonArray deniedCommunications = networkAuthorizations.getAsJsonArray("deniedCommunications");
+                    populateAuthorizationIntents(deniedCommunications, forbiddenConnectionList,action,prio,isCNF);
+                }
             }else {
                 System.out.println("Mandatory Communications and Denied communications not found.");
             }

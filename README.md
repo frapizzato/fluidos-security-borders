@@ -1,119 +1,164 @@
-# Codice del controller integrato con l'armonizzatore - Progetto Fluidos
 
-Questa repository contiene il codice del controller integrato con l'armonizzatore per il progetto Fluidos.
+# 🌐 Progetto Fluidos: Controller Integrato con l'Armonizzatore
 
-## 🛠 Setup della Demo
+Benvenuto nella repository contenente il codice del **controller integrato con l'armonizzatore** per il progetto **Fluidos**.
+
+## 🚀 Setup della Demo
 
 La demo è situata nella cartella: `demo_da_presentare/node_main`.
 
-1. **Avvio dell'ambiente**:
-   - Naviga nella cartella `tools/script/` e avvia il setup:
-     ```bash
-     cd tools/script/
-     ./setup.sh
-     ```
-   - Seleziona `1` e conferma con `y` per installare il cluster **Consumer** e il cluster **Provider**.
+### 1️⃣ Avvio dell'Ambiente
 
-2. **Modifica dei Flavors**:
-   - Dopo l'installazione, è necessario modificare i flavors offerti dal Provider al Consumer.
-     - Per ottenere i dettagli necessari, estrai le informazioni dalla config-map con il seguente comando:
-       ```bash
-       export KUBECONFIG=fluidos-provider-1-config
-       kubectl get cm fluidos-network-manager-identity -n fluidos -o yaml
-       ```
-     - Copia i seguenti campi dalla ConfigMap:
-       - `domain`
-       - `ip`
-       - `nodeID`
+Per avviare l'ambiente demo:
 
-     - Modifica i flavors nella cartella `flavors/` inserendo i valori copiati. Inoltre, sostituisci il campo `ProviderID` con il valore di `nodeID` della ConfigMap.
+- Vai nella cartella `tools/script/` ed esegui lo script di setup:
+  ```bash
+  cd tools/script/
+  ./setup.sh
+  ```
+- Seleziona `1` e conferma con `y` per installare il cluster **Consumer** e il cluster **Provider**.
+
+### 2️⃣ Modifica dei Flavors e PeeringCandidates
+
+Dopo l'installazione, procedi con la modifica dei **flavors** offerti dal Provider al Consumer:
+
+- Estrai i dati necessari dalla ConfigMap:
+  ```bash
+  export KUBECONFIG=fluidos-provider-1-config
+  kubectl get cm fluidos-network-manager-identity -n fluidos -o yaml
+  ```
+  Copia i seguenti campi:
+  - `domain`
+  - `ip`
+  - `nodeID`
+
+- Modifica i flavors nella cartella `flavors/` inserendo le informazioni copiate. Sostituisci anche il campo `ProviderID` con il valore di `nodeID` estratto dalla ConfigMap.
+
+- Modifica i **PeeringCandidates** nella cartella `../peering_candidates_to_patch` con gli stessi valori ottenuti dal Provider.
+
+---
 
 ## 📝 Esecuzione della Demo
 
-1. **Esegui il primo script**:
-   - Naviga nella cartella `Demo_da_presentare_last/` e lancia il file `prima_parte.sh`:
-     ```bash
-     cd Demo_da_presentare_last/
-     ./prima_parte.sh
-     ```
+### 1️⃣ Esegui il Primo Script
 
-2. **Verifica il Flavor selezionato**:
-   - Controlla i pod attivi:
-     ```bash
-     kubectl get pods -n fluidos
-     ```
-   - Visualizza i log del verifier (attivo dopo circa 20 secondi):
-     ```bash
-     kubectl logs "Nome_pod_controller_lato_consumer" -n fluidos
-     ```
+- Vai nella cartella `Demo_da_presentare_last/` ed esegui lo script:
+  ```bash
+  cd Demo_da_presentare_last/
+  ./prima_parte.sh
+  ```
 
-3. **Visualizza i Peering Candidates**:
-   - Per ottenere i candidati al peering, esegui:
-     ```bash
-     kubectl get peeringcandidates -n fluidos
-     ```
+- Applica i PeeringCandidates modificati:
+  ```bash
+  kubectl apply -f ../peering_candidates_to_patch
+  ```
 
-   - Seleziona il peering candidate associato al flavor che ha restituito `True`.
+### 2️⃣ Verifica del Flavor Selezionato
 
-4. **Configura la Reservation**:
-   - Modifica il file `reservation.yaml` (situato in `../../../deployments/node/sample`) con:
-     - Le informazioni del **Provider** (ottenute dai PeeringCandidates).
-     - Le informazioni del **Consumer** (ottenute dalla ConfigMap `fluidos-network-manager-identity`).
+- Controlla i pod attivi:
+  ```bash
+  kubectl get pods -n fluidos
+  ```
 
-   - Applica il file `reservation.yaml`:
-     ```bash
-     kubectl apply -f ../../../deployments/node/sample/reservation.yaml
-     ```
+- Visualizza i log del controller (attivo dopo circa 20 secondi):
+  ```bash
+  kubectl logs "Nome_pod_controller_lato_consumer" -n fluidos
+  ```
 
-5. **Applica l'Allocation**:
-   - Modifica il file `allocation.yaml` per inserire il nome del contratto (recuperabile con il comando seguente):
-     ```bash
-     kubectl get contracts -n fluidos
-     ```
-   - Applica il file:
-     ```bash
-     kubectl apply -f ../../../deployments/node/sample/allocation.yaml
-     ```
+> **Nota**: Il verifier si avvia dopo 20 secondi.
 
-6. **Verifica lo stato del Peering**:
-   - Controlla lo stato del peering con il comando:
-     ```bash
-     liqoctl status peer
-     ```
+### 3️⃣ Configurazione della Reservation
 
-## 🔄 Modifiche lato Provider
+- Modifica il file `reservation.yaml` (situato in `../../../deployments/node/samples`) con:
+  - Le informazioni del **Provider** (ottenute dai PeeringCandidates).
+  - Le informazioni del **Consumer** (ottenute dalla ConfigMap `fluidos-network-manager-identity`).
 
-1. **Cambia il contesto KubeConfig**:
-   ```bash
-   export KUBECONFIG=../fluidos-provider-1-config
-   ```
+- Applica il file:
+  ```bash
+  kubectl apply -f ../../../deployments/node/samples/reservation.yaml
+  ```
 
-2. **Modifica il Contratto**:
-   - Aggiungi alla sezione `networkRequests` il nome della ConfigMap (esempio: `networkRequests: esempio-config-map`) allo stesso livello di `transactionId` :
-     ```bash
-     kubectl edit contracts "nome_contratto" -n fluidos
-     ```
+### 4️⃣ Applica l'Allocation
 
-3. **Esegui il secondo script**:
-   - Lancia il file `seconda_parte.sh` per creare il controller sul Provider e avviare l'offload delle risorse dal Consumer al Provider:
-     ```bash
-     ./seconda_parte.sh
-     ```
+- Modifica il file `allocation.yaml` per inserire il nome del contratto (recuperabile con il comando seguente):
+  ```bash
+  kubectl get contracts -n fluidos
+  ```
+
+- Applica il file `allocation.yaml`:
+  ```bash
+  kubectl apply -f ../../../deployments/node/samples/allocation.yaml
+  ```
+
+### 5️⃣ Verifica lo Stato del Peering
+
+- Controlla lo stato del peering:
+  ```bash
+  liqoctl status peer
+  ```
+
+---
+
+## 🔄 Modifiche Lato Provider
+
+### 1️⃣ Cambia il Contesto KubeConfig
+
+Passa al contesto del Provider:
+```bash
+export KUBECONFIG=../fluidos-provider-1-config
+```
+
+### 2️⃣ Modifica il Contratto
+
+Aggiungi il nome della ConfigMap nella sezione `networkRequests`, allo stesso livello di `transactionId`:
+```bash
+kubectl edit contracts "nome_contratto" -n fluidos
+```
+
+### 3️⃣ Esegui il Secondo Script
+
+Per creare il controller sul Provider e avviare l'offload delle risorse:
+```bash
+./seconda_parte.sh
+```
+
+---
 
 ## 🖧 Dimostrazione delle Network Policies
 
-1. **Accedi a un Pod**:
-   - Avvia una shell su un pod per verificare la connettività:
-     ```bash
-     kubectl exec -it "nome_pod" -n "nome_namespace" -- /bin/sh
-     ```
+### 1️⃣ Accedi a un Pod
 
-2. **Verifica la connessione**:
-   - Usa `wget` per testare la connessione al pod di destinazione:
-     ```bash
-     wget "indirizzo_ip_pod_da_raggiungere":"porta"
-     ```
+Per verificare la connettività, avvia una shell su un pod:
+```bash
+kubectl exec -it "nome_pod" -n "nome_namespace" -- /bin/sh
+```
 
-## ⚠️ Nota importante
+### 2️⃣ Testa la Connessione
 
-Il controller è caricato su una repository Docker dell'account di Salvatore. Se desideri caricarlo su un'altra repository, ricordati di modificare il file `controller.yaml`.
+Usa `wget` per testare la connessione verso un altro pod:
+```bash
+wget "indirizzo_ip_pod_da_raggiungere":"porta"
+```
+
+---
+
+## ⚠️ Nota Importante
+
+Il controller è caricato su una repository Docker dell'account di **Salvatore**. Se desideri caricarlo su una tua repository, segui questi passi:
+
+1. Compila il progetto nella cartella `translator/fluidos-security-orchestrator/fluidos-security-orchestrator` con il comando:
+   ```bash
+   mvn package
+   ```
+
+2. Esegui il build dell'immagine Docker:
+   ```bash
+   docker build -t nomeutenteDocker/nomeRepoCreata:Tag .
+   ```
+
+3. Esegui il push dell'immagine su Docker Hub:
+   ```bash
+   docker push nomeutenteDocker/nomeRepoCreata:Tag
+   ```
+
+4. Aggiorna il file `controller.yaml` per puntare alla nuova immagine Docker.
