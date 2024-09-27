@@ -53,7 +53,7 @@ public static Pod createPod(String value, Namespace namespace) {
         return pod;
     }
 
-	public RequestIntents harmonize(Cluster cluster, RequestIntents requestIntents) {
+	public RequestIntents harmonize(Cluster cluster, RequestIntents requestIntents, AuthorizationIntents contracAuthorizationIntents) {
 		System.out.println("Entra nell' harmonize");
         ITResourceOrchestrationType intents_1 = null;
 		AuthorizationIntents authIntentsProvider;
@@ -123,7 +123,8 @@ public static Pod createPod(String value, Namespace namespace) {
 
         loggerInfo.debug(
                 "[harmonization] - parse the received ITResourceOrchestration types to extract the CONSUMER/PROVIDER intent sets.");
-        authIntentsProvider = extractAuthorizationIntents(providerIntents);
+        //authIntentsProvider = extractAuthorizationIntents(providerIntents);
+		authIntentsProvider = contracAuthorizationIntents;
 
 		harmonizationData.printDash();
 		harmonizationData.printRequestIntents(requestIntentsConsumer, "consumer");

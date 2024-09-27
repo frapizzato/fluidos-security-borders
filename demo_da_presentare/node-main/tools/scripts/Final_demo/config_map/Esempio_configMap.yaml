@@ -13,42 +13,30 @@ data:
     [
     {
       "source": {
-        "resourceSelectors": {
+        "resourceSelector": {
           "isHotCluster": false,
           "typeIdentifier": "PodNamespaceSelector",
           "selector": {
-            "pod": [
-              {
-                "key": "app",
-                "value": "app-payment-1"
-              }
-            ],
-            "namespace": [
-              {
-                "key": "name",
-                "value": "payments"
-              }
-            ]
+            "pod": {
+              "app": "app-payment-1"
+            },
+            "namespace": {
+              "name": "payments"
+            }
           }
         }
       },
       "destination": {
-        "resourceSelectors": {
+        "resourceSelector": {
           "isHotCluster": true,
           "typeIdentifier": "PodNamespaceSelector",
           "selector": {
-            "pod": [
-              {
-                "key": "*",
-                "value": "*"
-              }
-            ],
-            "namespace": [
-              {
-                "key": "*",
-                "value": "*"
-              }
-            ]
+            "pod": {
+              "*": "*"
+            },
+            "namespace": {
+              "*": "*"
+            }
           }
         }
       },
@@ -57,42 +45,30 @@ data:
     },
     {
       "source": {
-        "resourceSelectors": {
+        "resourceSelector": {
           "isHotCluster": false,
           "typeIdentifier": "PodNamespaceSelector",
           "selector": {
-            "pod": [
-              {
-                "key": "app",
-                "value": "app-payment-2"
-              }
-            ],
-            "namespace": [
-              {
-                "key": "name",
-                "value": "payments"
-              }
-            ]
+            "pod": {
+              "app": "app-payment-2"
+            },
+            "namespace": {
+              "name": "payments"
+            }
           }
         }
       },
       "destination": {
-        "resourceSelectors": {
+        "resourceSelector": {
           "isHotCluster": true,
           "typeIdentifier": "PodNamespaceSelector",
           "selector": {
-            "pod": [
-              {
-                "key": "*",
-                "value": "*"
-              }
-            ],
-            "namespace": [
-              {
-                "key": "*",
-                "value": "*"
-              }
-            ]
+            "pod": {
+              "*": "*"
+            },
+            "namespace": {
+              "*": "*"
+            }
           }
         }
       },
@@ -101,32 +77,24 @@ data:
     },
     {
       "source": {
-        "resourceSelectors": {
+        "resourceSelector": {
           "isHotCluster": false,
           "typeIdentifier": "PodNamespaceSelector",
           "selector": {
-            "pod": [
-              {
-                "key": "app",
-                "value": "mobile-payments"
-              }
-            ],
-            "namespace": [
-              {
-                "key": "name",
-                "value": "products"
-              }
-            ]
+            "pod": {
+              "app": "mobile-payments"
+            },
+            "namespace": {
+              "name": "products"
+            }
           }
         }
       },
       "destination": {
-        "resourceSelectors": {
+        "resourceSelector": {
           "isHotCluster": true,
           "typeIdentifier": "CIDRSelector",
-          "selector": {
-             "CIDRSelector":"142.250.0.0/15"
-          }
+          "selector": "142.250.0.0/15"
         }
       },
       "destinationPort": "*",
@@ -134,42 +102,30 @@ data:
     },
     {
       "source": {
-        "resourceSelectors": {
+        "resourceSelector": {
           "isHotCluster": false,
           "typeIdentifier": "PodNamespaceSelector",
           "selector": {
-            "pod": [
-              {
-                "key": "app",
-                "value": "desktop-products"
-              }
-            ],
-            "namespace": [
-              {
-                "key": "name",
-                "value": "products"
-              }
-            ]
+            "pod": {
+              "app": "desktop-products"
+            },
+            "namespace": {
+              "name": "products"
+            }
           }
         }
       },
       "destination": {
-        "resourceSelectors": {
+        "resourceSelector": {
           "isHotCluster": true,
           "typeIdentifier": "PodNamespaceSelector",
           "selector": {
-            "pod": [
-              {
-                "key": "*",
-                "value": "*"
-              }
-            ],
-            "namespace": [
-              {
-                "key": "*",
-                "value": "*"
-              }
-            ]
+            "pod": {
+              "*": "*"
+            },
+            "namespace": {
+              "*": "*"
+            }
           }
         }
       },

@@ -116,7 +116,6 @@ public class KubernetesController {
     private V1NamespaceList consumerNamespaceList;
     private boolean firstCallToModuletimer = true;
     private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private AuthorizationIntents contractAuthIntents = new AuthorizationIntents();
 
     List<String> namespacesToExclude = new ArrayList<>(Arrays.asList(
         "calico-apiserver",
@@ -213,8 +212,17 @@ public class KubernetesController {
             }
         });
 
+        Thread peeringCandidatesThread = new Thread(() -> {
+            try {
+                watchPeeringCandidates(client);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        peeringCandidatesThread.start();
         defaultDenyNetworkPolicyThread.start();
-        flavorsThread.start();
+        //flavorsThread.start();
         namespaceThread.start();
         podThread.start();
         tunnelEndpointThread.start();
@@ -352,21 +360,23 @@ private void startModuleTimer(ApiClient client) {
         HarmonizationController harmController_new = new HarmonizationController();
         System.out.println("20 secondi passati, avvio modulo");
         try {
-            listContract(client);
-            if (reqIntentsList.size() >0 ){
-                List<RequestIntents> requestIntentsHarmonizedList = new ArrayList<>();
-                for (RequestIntents reqIntent : reqIntentsList) {
-                        requestIntentsHarmonizedList.add(harmController_new.harmonize(createCluster(client, "provider"), reqIntent));
+            AuthorizationIntents contrAuthorizationIntent = listContract(client);
+            if (contrAuthorizationIntent != null) {
+                if (reqIntentsList.size() >0 ){
+                    List<RequestIntents> requestIntentsHarmonizedList = new ArrayList<>();
+                    for (RequestIntents reqIntent : reqIntentsList) {
+                            requestIntentsHarmonizedList.add(harmController_new.harmonize(createCluster(client, "provider"), reqIntent,contrAuthorizationIntent));
+                    }
+                    System.out.println("Chiamata al modulo");
+                    Module module = new Module(requestIntentsHarmonizedList, client);
+                    CoreV1Api api = new CoreV1Api(client);
+                    V1NamespaceList namespaceList = api.listNamespace(null, null, null, null, null, null, null, null, null, null);
+                    for (V1Namespace namespace : namespaceList.getItems()) {
+                        CreateNetworkPolicies(client, namespace.getMetadata().getName());
+                    }
+                } else {
+                    System.out.println("reqIntent è vuota");
                 }
-                System.out.println("Chiamata al modulo");
-                Module module = new Module(requestIntentsHarmonizedList, client);
-                CoreV1Api api = new CoreV1Api(client);
-                V1NamespaceList namespaceList = api.listNamespace(null, null, null, null, null, null, null, null, null, null);
-                for (V1Namespace namespace : namespaceList.getItems()) {
-                    CreateNetworkPolicies(client, namespace.getMetadata().getName());
-                }
-            } else {
-                System.out.println("reqIntent è vuota");
             }
         } catch (Exception e) {
             System.out.println("Errore nella chiamata del modulo");
@@ -431,7 +441,8 @@ private void startModuleTimer(ApiClient client) {
     }
     }
 
-    public void listContract(ApiClient client) throws Exception {
+    public AuthorizationIntents listContract(ApiClient client) throws Exception {
+        AuthorizationIntents contrAuthorizationIntents = new AuthorizationIntents();
         try {
             CustomObjectsApi customObjectsApi = new CustomObjectsApi(client);
             Object response = customObjectsApi.listNamespacedCustomObject(
@@ -452,7 +463,6 @@ private void startModuleTimer(ApiClient client) {
             );
             Map<String, Object> responseMap = (Map<String, Object>) response;
             List<Map<String, Object>> items = (List<Map<String, Object>>) responseMap.get("items");
-
             
             for (Map<String, Object> item : items) {
                 Map<String, Object> spec = (Map<String, Object>) item.get("spec");
@@ -481,15 +491,19 @@ private void startModuleTimer(ApiClient client) {
                 String jsonString = gson.toJson(flavorSpec);
                 JsonObject flavorSpecJson = gson.fromJson(jsonString, JsonObject.class);
                 JsonObject flavorType = (flavorSpec != null) ? flavorSpecJson.getAsJsonObject("flavorType") : null;
-                JsonObject typeData = flavorType.getAsJsonObject("typeData");
-                this.contractAuthIntents=insertAuthorizationIntents(typeData);
+                JsonObject typeData = (flavorType != null) ? flavorType.getAsJsonObject("typeData"):null;
+                contrAuthorizationIntents = accessFlavour(typeData);
+                //System.out.println("Stampa authIntent del provider presi dal contratto: ");
+                //StampaAuthIntents(contractAuthIntents);
             }
+            return contrAuthorizationIntents;
         } catch (ApiException e) {
             System.err.println("Errore durante la chiamata all'API Kubernetes per cercare i contract: " + e.getMessage());
             System.err.println("Codice di errore: " + e.getCode());
             System.err.println("Corpo della risposta: " + e.getResponseBody());
             e.printStackTrace();
         }
+        return contrAuthorizationIntents;
     }
 
 public AuthorizationIntents insertAuthorizationIntents (JsonObject typeData){
@@ -624,7 +638,8 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
 
         if (configMap != null) {
             String networkIntent = configMap.getData().get("networkIntents");
-            System.out.print("ConfigMap trovata per il namespace: "+namespace);
+            System.out.println("ConfigMap trovata per il namespace: "+namespace);
+            System.out.println(configMap);
             JsonArray jsonArray = JsonParser.parseString(networkIntent).getAsJsonArray();
             for (JsonElement jsonElement : jsonArray){
                 KubernetesNetworkFilteringCondition condition = new KubernetesNetworkFilteringCondition();
@@ -632,8 +647,8 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
                 JsonObject source = jsonObject.getAsJsonObject("source");
                 JsonObject destination = jsonObject.getAsJsonObject("destination");
 
-                condition.setSource(parseResourceSelector(source.getAsJsonObject("resourceSelectors")));
-                condition.setDestination(parseResourceSelector(destination.getAsJsonObject("resourceSelectors")));
+                condition.setSource(parseResourceSelector(source.getAsJsonObject("resourceSelector")));
+                condition.setDestination(parseResourceSelector(destination.getAsJsonObject("resourceSelector")));
                 if (source.has("sourcePort") && !source.get("sourcePort").isJsonNull()){
                     condition.setSourcePort(source.get("sourcePort").getAsString());
                 }
@@ -701,6 +716,86 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
 
 }
 
+public void watchPeeringCandidates(ApiClient client) throws Exception {
+    try {
+        CustomObjectsApi customObjectsApi = new CustomObjectsApi(client);
+
+        Watch<JsonObject> watch = Watch.createWatch(
+            client,
+            customObjectsApi.listNamespacedCustomObjectCall(
+                "advertisement.fluidos.eu",
+                "v1alpha1",
+                "fluidos",
+                "peeringcandidates",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                true,
+                null),
+            new TypeToken<Watch.Response<JsonObject>>() {}.getType()
+        );
+
+        AtomicBoolean firstTimeToCallVerifier = new AtomicBoolean(false);
+        AtomicBoolean timerStarted = new AtomicBoolean(false);
+        List <JsonObject> listTypeData = new ArrayList<>();
+        String flavorName = new String();
+        List <AuthorizationIntents> listReturnedAuthorizationIntents = new ArrayList<>();
+        for (Watch.Response<JsonObject> item : watch) {
+            if (item.type.equals("ADDED")) {
+                JsonObject peeringCandidate= item.object;
+                JsonObject spec = peeringCandidate.getAsJsonObject("spec");
+                JsonObject flavor = spec.getAsJsonObject("flavor");
+                JsonObject metadata = flavor.getAsJsonObject("metadata");
+                flavorName = metadata.get("name").getAsString();
+                JsonObject spec1 = flavor.getAsJsonObject("spec");
+                JsonObject flavorType = spec1.getAsJsonObject("flavorType");
+                //String myFluidosID = retrieveFluidosId(client);
+                //String providerID = spec1.get("providerID").getAsString();
+                JsonObject typeData = flavorType.getAsJsonObject("typeData");
+                AuthorizationIntents returnedAuthorizationIntents = accessFlavour(typeData);
+                if (returnedAuthorizationIntents != null){
+                    listReturnedAuthorizationIntents.add(returnedAuthorizationIntents);
+                }
+
+                printDash();
+                //Faccio uso di un timer per ritardare il primo avvio, in quanto al primo avvio ho 4 flavour, in questo modo non chiamo più volte il verifier
+                if (timerStarted.compareAndSet(false, true)) {
+                    // Se il timer non è ancora stato avviato, lo avvia
+                    scheduler.schedule(() -> {
+                        firstTimeToCallVerifier.set(true);
+                        printDash();
+                        if (!listReturnedAuthorizationIntents.isEmpty()){
+                            System.out.println("Avvio verifier");
+                            callVerifier(listReturnedAuthorizationIntents);
+                        }
+                    }, 20, TimeUnit.SECONDS);
+                } 
+                listTypeData.add(typeData);
+                //Se dopo il primo avvio viene aggiunto un flavour, tale flavour viene comparato con tutti i flavour precedenti
+                if(firstTimeToCallVerifier.get()){
+                    printDash();
+                    if (!listReturnedAuthorizationIntents.isEmpty()){
+                        System.out.println("Avvio verifier");
+                        callVerifier(listReturnedAuthorizationIntents);
+                    }
+                    //System.out.println("[VERIFIER] valore riornato: "+callVerifier(listTypeData));
+                }
+                }
+                }
+    } catch (ApiException e) {
+        System.err.println("Errore durante la chiamata all'API Kubernetes per cercare i flavor: " + e.getMessage());
+        System.err.println("Codice di errore: " + e.getCode());
+        System.err.println("Corpo della risposta: " + e.getResponseBody());
+        e.printStackTrace();
+    }
+}
+
  public void watchFlavors(ApiClient client) throws Exception {
     try {
         CustomObjectsApi customObjectsApi = new CustomObjectsApi(client);
@@ -727,7 +822,8 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
         );
         AtomicBoolean firstTimeToCallVerifier = new AtomicBoolean(false);
         AtomicBoolean timerStarted = new AtomicBoolean(false);
-        List <JsonObject> listTypeData = new ArrayList<>();
+        //List <JsonObject> listTypeData = new ArrayList<>();
+        List <AuthorizationIntents> listReturnedAuthorizationIntents = new ArrayList<>();
         String flavorName = new String();
         for (Watch.Response<JsonObject> item : watch) {
             if (item.type.equals("ADDED") || item.type.equals("MODIFIED")) {
@@ -740,28 +836,28 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
                 String providerID = spec.get("providerID").getAsString();
                 JsonObject typeData = flavorType.getAsJsonObject("typeData");
 
-                if (providerID.equals(myFluidosID)){
-                    //System.out.println("Sono nel provider in quanto il mio ID: "+ myFluidosID + " è uguale all' ID del provider:" + providerID);
+                AuthorizationIntents returnedAuthIntents = accessFlavour(typeData);
+                StampaAuthIntents(returnedAuthIntents);
+                listReturnedAuthorizationIntents.add(returnedAuthIntents);
 
-                }else {
-                    printDash();
-                    //Faccio uso di un timer per ritardare il primo avvio, in quanto al primo avvio ho 4 flavour, in questo modo non chiamo più volte il verifier
-                    if (timerStarted.compareAndSet(false, true)) {
-                        // Se il timer non è ancora stato avviato, lo avvia
-                        scheduler.schedule(() -> {
-                            firstTimeToCallVerifier.set(true);
-                            System.out.println("Avvio verifier");
-                            printDash();
-                            System.out.println("[VERIFIER] valore riornato: "+callVerifier(listTypeData));
-                        }, 20, TimeUnit.SECONDS);
-                    } 
-                    listTypeData.add(typeData);
-                    }
-                    //Se dopo il primo avvio viene aggiunto un flavour, tale flavour viene comparato con tutti i flavour precedenti
-                    if(firstTimeToCallVerifier.get()){
-                        System.out.println("Avvio verifier");
+                printDash();
+                //Faccio uso di un timer per ritardare il primo avvio, in quanto al primo avvio ho 4 flavour, in questo modo non chiamo più volte il verifier
+                if (timerStarted.compareAndSet(false, true)) {
+                    // Se il timer non è ancora stato avviato, lo avvia
+                    scheduler.schedule(() -> {
+                        firstTimeToCallVerifier.set(true);
+                        //System.out.println("Avvio verifier");
                         printDash();
-                        System.out.println("[VERIFIER] valore riornato: "+callVerifier(listTypeData));
+                        //System.out.println("[VERIFIER] valore riornato: "+callVerifier(listTypeData));
+                    }, 20, TimeUnit.SECONDS);
+                } 
+                
+
+                //Se dopo il primo avvio viene aggiunto un flavour, tale flavour viene comparato con tutti i flavour precedenti
+                if(firstTimeToCallVerifier.get()){
+                    //System.out.println("Avvio verifier");
+                    printDash();
+                        //System.out.println("[VERIFIER] valore riornato: "+callVerifier(listTypeData));
                     }
                 }
                 }
@@ -773,6 +869,74 @@ public RequestIntents accessConfigMap(ApiClient client, String namespace, String
     }
 }
 
+AuthorizationIntents accessFlavour (JsonObject typeData){
+    AuthorizationIntents authorizationIntents = new AuthorizationIntents();
+    List<ConfigurationRule> forbiddenConnectionList = authorizationIntents.getForbiddenConnectionList();
+    List<ConfigurationRule> mandatoryConnectionList = authorizationIntents.getMandatoryConnectionList();
+    if(typeData != null){
+        if (!typeData.has("properties") || typeData.getAsJsonObject("properties")==null || typeData.getAsJsonObject("properties").isEmpty()  ){
+            return null;
+        }
+        JsonObject properties = typeData.getAsJsonObject("properties");
+        JsonObject networkAuthorizations = properties.getAsJsonObject("networkAuthorizations");
+        KubernetesNetworkFilteringAction action = new KubernetesNetworkFilteringAction();
+        Priority prio = new Priority();
+        boolean isCNF = false;
+        if (networkAuthorizations != null) {
+            //NOTA: Bisogna accertarsi che flavour abbia questi campi in PROPERTIES e non in characteristics
+            if(properties.has("action")){
+                action.setKubernetesNetworkFilteringActionType(properties.get("action").getAsString());
+            }
+
+            if (properties.has("isCNF")) {
+                isCNF = properties.get("isCNF").getAsBoolean();
+            }
+
+            if (properties.has("externalData")) {
+                JsonObject externalDataJson = properties.getAsJsonObject("externalData");
+                prio.setValue(externalDataJson.getAsJsonObject("priority").getAsBigInteger());
+            }
+            if (networkAuthorizations.has("deniedCommunications") && networkAuthorizations.has("mandatoryCommunications")) {
+                JsonArray deniedCommunications = networkAuthorizations.getAsJsonArray("deniedCommunications");
+                populateAuthorizationIntents(deniedCommunications, forbiddenConnectionList,action,prio,isCNF);
+                JsonArray mandatoryCommunications = networkAuthorizations.getAsJsonArray("mandatoryCommunications");
+                populateAuthorizationIntents(mandatoryCommunications, mandatoryConnectionList,action,prio,isCNF);
+            } else if (networkAuthorizations.has("mandatoryCommunications")) {
+                JsonArray mandatoryCommunications = networkAuthorizations.getAsJsonArray("mandatoryCommunications");
+                populateAuthorizationIntents(mandatoryCommunications, mandatoryConnectionList,action,prio,isCNF);
+            } else if (networkAuthorizations.has("deniedCommunications")) {
+                JsonArray deniedCommunications = networkAuthorizations.getAsJsonArray("deniedCommunications");
+                populateAuthorizationIntents(deniedCommunications, forbiddenConnectionList,action,prio,isCNF);
+            }else {
+                System.out.println("Mandatory Communications and Denied communications not found.");
+            }
+        } else {
+            System.out.println("Characteristics not found.");
+        }
+        if (authorizationIntents != null && authorizationIntents.getForbiddenConnectionList().size() > 0 && authorizationIntents.getMandatoryConnectionList().size() > 0){
+            return authorizationIntents;
+        }
+
+    
+}
+    return null;    
+}
+
+private void callVerifier (List<AuthorizationIntents> listReturnedAuthorizationIntents){
+    for (AuthorizationIntents authorizationIntents : listReturnedAuthorizationIntents){
+        if (authorizationIntents != null && authorizationIntents.getForbiddenConnectionList().size() > 0 && authorizationIntents.getMandatoryConnectionList().size() > 0){
+            HarmonizationController harmonizationController = new HarmonizationController();
+            Boolean value = harmonizationController.verify(createCluster(client,"consumer"),authorizationIntents);
+            if (value){
+                return;
+            }
+            printDash();
+            System.out.println(" ");
+        }
+    }
+
+}
+/*
 private boolean callVerifier(List<JsonObject> listTypeData){
     Boolean value = false;
     for (JsonObject typeData : listTypeData){
@@ -831,7 +995,7 @@ private boolean callVerifier(List<JsonObject> listTypeData){
         }
     }
     return value;
-}
+}*/
 
 private String retrieveFluidosId (ApiClient client) throws ApiException{
 
@@ -852,8 +1016,8 @@ private void populateAuthorizationIntents(JsonArray communications, List<Configu
         JsonObject source = communication.getAsJsonObject("source");
         JsonObject destination = communication.getAsJsonObject("destination");
 
-        condition.setSource(parseResourceSelector(source.getAsJsonObject("resourceSelectors")));
-        condition.setDestination(parseResourceSelector(destination.getAsJsonObject("resourceSelectors")));
+        condition.setSource(parseResourceSelector(source.getAsJsonObject("resourceSelector")));
+        condition.setDestination(parseResourceSelector(destination.getAsJsonObject("resourceSelector")));
 
         if (communication.has("sourcePort") && !communication.get("sourcePort").isJsonNull()){
             condition.setSourcePort(communication.get("sourcePort").getAsString());
@@ -880,42 +1044,39 @@ private void populateAuthorizationIntents(JsonArray communications, List<Configu
 
 }
 
-private ResourceSelector parseResourceSelector(JsonObject resourceSelectors) {
+private ResourceSelector parseResourceSelector(JsonObject resourceSelector) {
     ResourceSelector selector = null;
-    String typeIdentifier = resourceSelectors.get("typeIdentifier").getAsString();
+    String typeIdentifier = resourceSelector.get("typeIdentifier").getAsString();
 
     if (typeIdentifier.equals("CIDRSelector")) {
         CIDRSelector cidrSelector = new CIDRSelector();
-        JsonObject selectorObject = resourceSelectors.getAsJsonObject("selector");
-        cidrSelector.setAddressRange(selectorObject.get("CIDRSelector").getAsString());
+        cidrSelector.setAddressRange(resourceSelector.getAsJsonPrimitive("selector").getAsString());
         selector = cidrSelector;
 
     } else if (typeIdentifier.equals("PodNamespaceSelector")) {
         PodNamespaceSelector podNamespaceSelector = new PodNamespaceSelector();
 
-        JsonObject selectorObject = resourceSelectors.getAsJsonObject("selector");
+        JsonObject selectorObject = resourceSelector.getAsJsonObject("selector");
 
         if (selectorObject.has("namespace")) {
-            JsonArray namespaces = selectorObject.getAsJsonArray("namespace");
+            JsonObject namespaces = selectorObject.getAsJsonObject("namespace");
             List<KeyValue> namespaceList = new ArrayList<>();
-            for (JsonElement nsElem : namespaces) {
-                JsonObject ns = nsElem.getAsJsonObject();
+            for (String key : namespaces.keySet()) {
                 KeyValue keyValue = new KeyValue();
-                keyValue.setKey(ns.get("key").getAsString());
-                keyValue.setValue(ns.get("value").getAsString());
+                keyValue.setKey(key);
+                keyValue.setValue(namespaces.get(key).getAsString());
                 namespaceList.add(keyValue);
             }
             podNamespaceSelector.getNamespace().addAll(namespaceList);
         }
 
         if (selectorObject.has("pod")) {
-            JsonArray pods = selectorObject.getAsJsonArray("pod");
+            JsonObject pods = selectorObject.getAsJsonObject("pod");
             List<KeyValue> podList = new ArrayList<>();
-            for (JsonElement podElem : pods) {
-                JsonObject pod = podElem.getAsJsonObject();
+            for (String key : pods.keySet()) {
                 KeyValue keyValue = new KeyValue();
-                keyValue.setKey(pod.get("key").getAsString());
-                keyValue.setValue(pod.get("value").getAsString());
+                keyValue.setKey(key);
+                keyValue.setValue(pods.get(key).getAsString());
                 podList.add(keyValue);
             }
             podNamespaceSelector.getPod().addAll(podList);
@@ -924,9 +1085,9 @@ private ResourceSelector parseResourceSelector(JsonObject resourceSelectors) {
         selector = podNamespaceSelector;
     }
 
-    if (resourceSelectors.has("isHotCluster")) {
-        //System.out.println("Valore isHostCluster: " + resourceSelectors.get("isHotCluster").getAsBoolean());
-        selector.setIsHostCluster(resourceSelectors.get("isHotCluster").getAsBoolean());
+    if (resourceSelector.has("isHotCluster")) {
+        //System.out.println("Valore isHostCluster: " + resourceSelector.get("isHotCluster").getAsBoolean());
+        selector.setIsHostCluster(resourceSelector.get("isHotCluster").getAsBoolean());
     }
 
     return selector;
@@ -934,6 +1095,7 @@ private ResourceSelector parseResourceSelector(JsonObject resourceSelectors) {
     //Stampa di prova, da commentare
     void StampaAuthIntents(AuthorizationIntents authorizationIntents) {
         System.out.println(" ");
+        printDash();
         if (authorizationIntents != null) {
             System.out.println("Mandatory communications: ");
             List<ConfigurationRule> mandatoryConnectionList = authorizationIntents.getMandatoryConnectionList();
@@ -974,8 +1136,11 @@ private ResourceSelector parseResourceSelector(JsonObject resourceSelectors) {
                         }
                         String destPort = cond.getDestinationPort();
                         System.out.println("DestinationPort: "+destPort);
+                        String proto = cond.getProtocolType().getClass().toString();
+                        System.out.println("ProtocolType: "+proto);
                         
                 }
+                System.out.println(" ");
             }
             System.out.println("Denied communications: ");
             List<ConfigurationRule> deniedConnectionList = authorizationIntents.getForbiddenConnectionList();
@@ -1019,6 +1184,7 @@ private ResourceSelector parseResourceSelector(JsonObject resourceSelectors) {
                         
                 }
             }
+            System.out.println(" ");
         }
         System.out.println(" ");
     }

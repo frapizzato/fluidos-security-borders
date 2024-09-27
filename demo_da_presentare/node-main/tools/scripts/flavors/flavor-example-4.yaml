@@ -27,153 +27,132 @@ spec:
         pods: "110"
         storage: "0"
         action: "allow"
-        mandatoryCommunications:
-          - name: "AuthorizationMandatory_1"
-            source:
-              isHotCluster: false
-              resourceSelectors:
-                typeIdentifier: PodNamespaceSelector
-                selector:
-                  pod:
-                    - key: app
-                      value: resource_monitor
-                  namespace:
-                    - key: name
-                      value: monitoring
-            destination:
-              resourceSelectors:
-                isHotCluster: true
-                typeIdentifier: PodNamespaceSelector
-                selector:
-                  pod:
-                    - key: "*"
-                      value: "*"
-                  namespace:
-                    - key: "*"
-                      value: "*"
-            destinationPort: "43"
-            protocolType: "ALL"
-        deniedCommunications:
-          - name: "AuthorizationDeny_1"
-            source:
-              resourceSelectors:
-                isHotCluster: true
-                typeIdentifier: PodNamespaceSelector
-                selector:
-                  pod:
-                    - key: "*"
-                      value: "*"
-                  namespace:
-                    - key: "*"
-                      value: "*"
-            destination:
-              resourceSelectors:
+      properties:
+        networkAuthorizations:
+          mandatoryCommunications:
+            - name: "AuthorizationMandatory_1"
+              source:
                 isHotCluster: false
-                typeIdentifier: CIDRSelector
-                selector:
-                  CIDRSelector: "0.0.0.0/20"
-            destinationPort: "*"
-            protocolType: "ALL"
-          - name: "AuthorizationDeny_2"
-            source:
-              resourceSelectors:
-                isHotCluster: true
-                typeIdentifier: PodNamespaceSelector
-                selector:
-                  pod:
-                    - key: "*"
-                      value: "*"
-                  namespace:
-                    - key: "*"
-                      value: "*"
-            destination:
-              resourceSelectors:
-                isHotCluster: false
-                typeIdentifier: PodNamespaceSelector
-                selector:
-                  pod:
-                    - key: "*"
-                      value: "*"
-                  namespace:
-                    - key: "name"
-                      value: "handle-payments"
-            destinationPort: "*"
-            protocolType: "SCTP"
-          - name: "AuthorizationDeny_3"
-            source:
-              resourceSelectors:
-                isHotCluster: true
-                typeIdentifier: PodNamespaceSelector
-                selector:
-                  pod:
-                    - key: "*"
-                      value: "*"
-                  namespace:
-                    - key: "*"
-                      value: "*"
-            destination:
-              resourceSelectors:
-                isHotCluster: false
-                typeIdentifier: PodNamespaceSelector
-                selector:
-                  pod:
-                    - key: "*"
-                      value: "*"
-                  namespace:
-                    - key: "name"
-                      value: "handle-payments"
-            destinationPort: "0-79"
-            protocolType: "TCP"
-          - name: "AuthorizationDeny_4"
-            source:
-              resourceSelectors:
-                isHotCluster: true
-                typeIdentifier: PodNamespaceSelector
-                selector:
-                  pod:
-                    - key: "*"
-                      value: "*"
-                  namespace:
-                    - key: "*"
-                      value: "*"
-            destination:
-              resourceSelectors:
-                isHotCluster: false
-                typeIdentifier: PodNamespaceSelector
-                selector:
-                  pod:
-                    - key: "*"
-                      value: "*"
-                  namespace:
-                    - key: "name"
-                      value: "handle-payments"
-            destinationPort: "0-79"
-            protocolType: "UDP"
-          - name: "AuthorizationDeny_5"
-            source:
-              resourceSelectors:
-                isHotCluster: true
-                typeIdentifier: PodNamespaceSelector
-                selector:
-                  pod:
-                    - key: "*"
-                      value: "*"
-                  namespace:
-                    - key: "*"
-                      value: "*"
-            destination:
-              resourceSelectors:
-                isHotCluster: false
-                typeIdentifier: PodNamespaceSelector
-                selector:
-                  pod:
-                    - key: "*"
-                      value: "*"
-                  namespace:
-                    - key: "name"
-                      value: "handle-payments"
-            destinationPort: "86-100"
-            protocolType: "UDP"
+                resourceSelector:
+                  typeIdentifier: PodNamespaceSelector
+                  selector:
+                    pod:
+                      app: "resource-monitor"
+                    namespace:
+                      name: "monitoring"
+              destination:
+                resourceSelector:
+                  isHotCluster: true
+                  typeIdentifier: PodNamespaceSelector
+                  selector:
+                    pod:
+                      "*" : "*"
+                    namespace:
+                      "*" : "*"
+              destinationPort: "43"
+              protocolType: "ALL"
+          deniedCommunications:
+            - name: "AuthorizationDeny_1"
+              source:
+                resourceSelector:
+                  isHotCluster: true
+                  typeIdentifier: PodNamespaceSelector
+                  selector:
+                    pod:
+                      "*" : "*"
+                    namespace:
+                      "*" : "*"
+              destination:
+                resourceSelector:
+                  isHotCluster: false
+                  typeIdentifier: CIDRSelector
+                  selector: "0.0.0.0/20"
+              destinationPort: "*"
+              protocolType: "ALL"
+            - name: "AuthorizationDeny_2"
+              source:
+                resourceSelector:
+                  isHotCluster: true
+                  typeIdentifier: PodNamespaceSelector
+                  selector:
+                    pod:
+                      "*" : "*"
+                    namespace:
+                      "*" : "*"
+              destination:
+                resourceSelector:
+                  isHotCluster: false
+                  typeIdentifier: PodNamespaceSelector
+                  selector:
+                    pod:
+                      "*" : "*"
+                    namespace:
+                      name: "handle-payments"
+              destinationPort: "*"
+              protocolType: "SCTP"
+            - name: "AuthorizationDeny_3"
+              source:
+                resourceSelector:
+                  isHotCluster: true
+                  typeIdentifier: PodNamespaceSelector
+                  selector:
+                    pod:
+                      "*" : "*"
+                    namespace:
+                      "*" : "*"
+              destination:
+                resourceSelector:
+                  isHotCluster: false
+                  typeIdentifier: PodNamespaceSelector
+                  selector:
+                    pod:
+                      "*" : "*"
+                    namespace:
+                      name: "handle-payments"
+              destinationPort: "0-79"
+              protocolType: "TCP"
+            - name: "AuthorizationDeny_4"
+              source:
+                resourceSelector:
+                  isHotCluster: true
+                  typeIdentifier: PodNamespaceSelector
+                  selector:
+                    pod:
+                      "*" : "*"
+                    namespace:
+                      "*" : "*"
+              destination:
+                resourceSelector:
+                  isHotCluster: false
+                  typeIdentifier: PodNamespaceSelector
+                  selector:
+                    pod:
+                      "*" : "*"
+                    namespace:
+                      name: "handle-payments"
+              destinationPort: "0-79"
+              protocolType: "UDP"
+            - name: "AuthorizationDeny_5"
+              source:
+                resourceSelector:
+                  isHotCluster: true
+                  typeIdentifier: PodNamespaceSelector
+                  selector:
+                    pod:
+                      "*" : "*"
+                    namespace:
+                      "*" : "*"
+              destination:
+                resourceSelector:
+                  isHotCluster: false
+                  typeIdentifier: PodNamespaceSelector
+                  selector:
+                    pod:
+                      "*" : "*"
+                    namespace:
+                      name: "handle-payments"
+              destinationPort: "86-100"
+              protocolType: "UDP"
       policies:
         partitionability:
           cpuMin: "0"
@@ -184,7 +163,6 @@ spec:
           memoryStep: 100Mi
           podsMin: "0"
           podsStep: "0"
-      properties: {}
     typeIdentifier: K8Slice
   location:
     additionalNotes: None

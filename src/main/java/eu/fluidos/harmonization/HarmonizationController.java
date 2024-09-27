@@ -11,8 +11,8 @@ public class HarmonizationController {
 	public HarmonizationController() {
 	}
 	
-	public  RequestIntents harmonize(Cluster cluster, RequestIntents requestIntents) {
-		return harmonizationService.harmonize(cluster, requestIntents);
+	public  RequestIntents harmonize(Cluster cluster, RequestIntents requestIntents, AuthorizationIntents contracAuthorizationIntents) {
+		return harmonizationService.harmonize(cluster, requestIntents,contracAuthorizationIntents);
 	}
 
 	public boolean verify(Cluster cluster, AuthorizationIntents authIntentsProvider) {
