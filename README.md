@@ -48,11 +48,6 @@ Dopo l'installazione, procedi con la modifica dei **flavors** offerti dal Provid
   ./prima_parte.sh
   ```
 
-- Applica i PeeringCandidates modificati:
-  ```bash
-  kubectl apply -f ../peering_candidates_to_patch
-  ```
-
 ### 2️⃣ Verifica del Flavor Selezionato
 
 - Controlla i pod attivi:
