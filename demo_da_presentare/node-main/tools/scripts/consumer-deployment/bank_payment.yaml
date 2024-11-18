@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bank-payment
+  namespace: rome
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bank-payment
+  template:
+    metadata:
+      labels:
+        app: bank-payment
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "16Mi"
+            cpu: "10m"
+          limits:
+            memory: "32Mi"
+            cpu: "20m"

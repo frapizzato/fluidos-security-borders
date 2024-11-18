@@ -1,0 +1,19 @@
+Dimostrazione dei pod che non comunicano fra loro:
+
+Test 1a network policy
+
+kubectl exec -it order-placement-679cdb4988-88kh2 -n fluidos  -- /bin/sh
+wget 192.168.171.133:80
+
+kubectl exec -it bank-payment-69bb944fbf-v47vk -n fluidos  -- /bin/sh
+wget 192.168.171.133:80
+
+
+kubectl exec -it resource-monitor-64f76959fc-cxpz7 -n monitoring  -- /bin/sh
+wget 192.168.171.133:80
+
+
+Test 2a network policy:
+kubectl exec -it resource-monitor-64f76959fc-cxpz7 -n monitoring  -- /bin/sh
+wget 142.250.180.163:80 (indirizzo di Google)
+

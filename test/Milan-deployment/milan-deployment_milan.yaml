@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: milan-payment
+  namespace: milan
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: milan-payment
+  template:
+    metadata:
+      labels:
+        app: milan-payment
+    spec:
+      containers:
+      - name: busybox
+        image: busybox
+        command: ["/bin/sh", "-c", "while true; do echo hello; sleep 10; done"]
+      - name: milan-payment
+        image: nginx
+        ports:
+        - containerPort: 80

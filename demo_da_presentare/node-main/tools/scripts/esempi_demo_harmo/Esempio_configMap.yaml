@@ -1,0 +1,179 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: esempio-config-map
+  namespace: fluidos
+data:
+  name: "example-intent"
+  isCNF: "true"
+  priority: "3000"
+  action: Allow
+  acceptMonitoring: "true"
+  networkIntents: |
+    [
+    {
+      "source": {
+        "resourceSelectors": {
+          "isHotCluster": false,
+          "typeIdentifier": "PodNamespaceSelector",
+          "selector": {
+            "pod": [
+              {
+                "key": "app",
+                "value": "app-payment-1"
+              }
+            ],
+            "namespace": [
+              {
+                "key": "name",
+                "value": "payments"
+              }
+            ]
+          }
+        }
+      },
+      "destination": {
+        "resourceSelectors": {
+          "isHotCluster": true,
+          "typeIdentifier": "PodNamespaceSelector",
+          "selector": {
+            "pod": [
+              {
+                "key": "*",
+                "value": "*"
+              }
+            ],
+            "namespace": [
+              {
+                "key": "*",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "destinationPort": "80",
+      "protocolType": "TCP"
+    },
+    {
+      "source": {
+        "resourceSelectors": {
+          "isHotCluster": false,
+          "typeIdentifier": "PodNamespaceSelector",
+          "selector": {
+            "pod": [
+              {
+                "key": "app",
+                "value": "app-payment-2"
+              }
+            ],
+            "namespace": [
+              {
+                "key": "name",
+                "value": "payments"
+              }
+            ]
+          }
+        }
+      },
+      "destination": {
+        "resourceSelectors": {
+          "isHotCluster": true,
+          "typeIdentifier": "PodNamespaceSelector",
+          "selector": {
+            "pod": [
+              {
+                "key": "*",
+                "value": "*"
+              }
+            ],
+            "namespace": [
+              {
+                "key": "*",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "destinationPort": "90",
+      "protocolType": "TCP"
+    },
+    {
+      "source": {
+        "resourceSelectors": {
+          "isHotCluster": false,
+          "typeIdentifier": "PodNamespaceSelector",
+          "selector": {
+            "pod": [
+              {
+                "key": "app",
+                "value": "mobile-payments"
+              }
+            ],
+            "namespace": [
+              {
+                "key": "name",
+                "value": "products"
+              }
+            ]
+          }
+        }
+      },
+      "destination": {
+        "resourceSelectors": {
+          "isHotCluster": true,
+          "typeIdentifier": "CIDRSelector",
+          "selector": {
+             "CIDRSelector":"142.250.0.0/15"
+          }
+        }
+      },
+      "destinationPort": "*",
+      "protocolType": "ALL"
+    },
+    {
+      "source": {
+        "resourceSelectors": {
+          "isHotCluster": false,
+          "typeIdentifier": "PodNamespaceSelector",
+          "selector": {
+            "pod": [
+              {
+                "key": "app",
+                "value": "desktop-products"
+              }
+            ],
+            "namespace": [
+              {
+                "key": "name",
+                "value": "products"
+              }
+            ]
+          }
+        }
+      },
+      "destination": {
+        "resourceSelectors": {
+          "isHotCluster": true,
+          "typeIdentifier": "PodNamespaceSelector",
+          "selector": {
+            "pod": [
+              {
+                "key": "*",
+                "value": "*"
+              }
+            ],
+            "namespace": [
+              {
+                "key": "*",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "destinationPort": "85",
+      "protocolType": "UDP"
+    }
+    ]

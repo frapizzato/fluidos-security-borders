@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-catalogue
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-catalogue
+  template:
+    metadata:
+      labels:
+        app: product-catalogue
+    spec:
+      containers:
+      - name: product-catalogue
+        image: nginx
+        ports:
+        - containerPort: 80

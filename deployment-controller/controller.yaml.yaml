@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: controller
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: controller
+  template:
+    metadata:
+      labels:
+        app: controller
+    spec:
+      serviceAccountName: costum-controller
+      containers:
+      - name: controller
+        image: sasa001/sasa001:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080

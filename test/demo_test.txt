@@ -1,0 +1,79 @@
+Namespace creation:
+kubectl create namespace fluidos
+kubectl create namespace monitoring
+kubectl label namespace fluidos name=fluidos
+kubectl label namespace monitoring name=monitoring 
+kubectl label namespace default name=default
+------------------------------------------------------------------------------------------
+Service account creation 
+kubectl create serviceaccount traslator-service-account
+
+We have to apply all the file in the Service Account folder:
+kubectl apply -f secret.yaml
+kubectl apply -f create-networkpolicies-clusterrole.yaml
+kubectl apply -f create-networkpolicies-clusterrolebinding.yaml
+kubectl apply -f list-namespaces-cluster-role.yaml
+kubectl apply -f list-namespaces-cluster-role-binding.yaml
+kubectl apply -f list-pods-cluster-role.yaml
+kubectl apply -f list-pods-cluster-role-binding.yaml
+
+Extraction of the token:
+kubectl get secret traslator-service-account  -o jsonpath='{.data.token}'| base64 --decode 
+------------------------------------------------------------------------------------------
+Deployments creation:
+kubectl apply -f bank-payment-deployment.yaml
+kubectl apply -f order-placement-deployment.yaml
+kubectl apply -f resource-monitor-deployment.yaml
+kubectl apply -f test-authorizationmandatory-deployment.yaml
+kubectl apply -f product-catalogue-deployment.yaml
+
+------------------------------------------------------------------------------------------
+Offloading namespaces:
+liqoctl offload namespace default
+liqoctl offload namespace monitoring
+------------------------------------------------------------------------------------------
+Creation new namespace to offloaded cluster:
+kubectl create namespace milan --kubeconfig "$KUBECONFIG_MILAN"
+kubectl label namespace milan name=milan --kubeconfig "$KUBECONFIG_MILAN"
+----------------------------------------------------------------------------------------
+And apply the milan-payment deployment: 
+kubectl apply -f Milan-deployment/ --kubeconfig "$KUBECONFIG_MILAN"
+------------------------------------------------------------------------------------------
+Labeling namespaces to the new cluster:
+
+kubectl label namespace default-rome-a2d9d2 name=default-rome-a2d9d2 --kubeconfig "$KUBECONFIG_MILAN"
+kubectl label namespace monitoring-rome-a2d9d2 name=monitoring-rome-a2d9d2 --kubeconfig "$KUBECONFIG_MILAN"
+---------------------------------------------------------------------------------------------------
+We have to redo all the steps for the ServiceAccount creation also for the remote cluster
+kubectl create serviceaccount traslator-service-account --kubeconfig "$KUBECONFIG_MILAN"
+
+kubectl apply -f ServiceAccount/ --kubeconfig "$KUBECONFIG_MILAN"
+
+Extraction of the token:
+kubectl get secret traslator-service-account --kubeconfig "$KUBECONFIG_MILAN" -o jsonpath='{.data.token}'| base64 --decode 
+----------------------------------------------------------------------------------------------------
+We have to create the Service Account in the remote cluster milan named: custom-controller
+kubectl create serviceaccount costum-controller --kubeconfig "$KUBECONFIG_MILAN"
+kubectl apply -f ServiceAccount/ --kubeconfig "$KUBECONFIG_MILAN"
+
+
+Extraction of the token:
+kubectl get secret costum-controller --kubeconfig "$KUBECONFIG_MILAN" -o jsonpath='{.data.token}'| base64 --decode
+-----------------------------------------------------------------------------------------------------------------
+Then we have to apply:
+kubectl apply -f allow_all_to_kubedns-rome/
+kubectl apply -f deny-all-default-policies-roma/
+
+kubectl apply -f allow_all_to_kubedns-milan/ --kubeconfig "$KUBECONFIG_MILAN"
+kubectl apply -f deny-all-default-policies-milan/ --kubeconfig "$KUBECONFIG_MILAN"
+----------------------------------------------------------------------------------------------------------------
+To run a pod inside the remote cluster:
+kubectl exec -it PodID -n Namespace --kubeconfig "$KUBECONFIG_MILAN"  -- /bin/sh
+-----------------------------------------------------------------------------------------------------
+To test the behaviour of the controller, start the application, then create a new networkpolicy and put in the right folder where the controller checks it and than offload the new namespace to see that the new networkpolicy refered to that namespace is applied
+
+kubectl create new namespace prova
+liqoctl offload namespace prova
+
+In the folder src/networkpolicies there is a networkpolicy that will be applied by the controller when prova will be offloaded from rome to milan
+---------------------------------------------------------------------------------------------------------------

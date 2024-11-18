@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-placement
+  namespace: fluidos
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-placement
+  template:
+    metadata:
+      labels:
+        app: order-placement
+    spec:
+      containers:
+      - name: busybox
+        image: busybox
+        command: ["/bin/sh", "-c", "while true; do echo hello; sleep 10; done"]
+      - name: order-placement
+        image: nginx
+        ports:
+        - containerPort: 80
