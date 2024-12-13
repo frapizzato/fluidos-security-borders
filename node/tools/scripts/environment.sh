@@ -71,7 +71,13 @@ create_kind_clusters() {
                 # Set the role of the cluster
                 role="consumer"
                 # Create the cluster
-                kind create cluster --name "$name" --config "$SCRIPT_DIR"/../../quickstart/kind/configs/standard.yaml --kubeconfig "$SCRIPT_DIR"/"$name"-config -q
+                if [ "$7" == "true" ]; then
+                    echo "creating cluster with calico"
+                    kind create cluster --name "$name" --config "$SCRIPT_DIR"/../../quickstart/kind/configs/calico.yaml --kubeconfig "$SCRIPT_DIR"/"$name"-config -q
+                else
+                    echo "creating cluster without calico"
+                    kind create cluster --name "$name" --config "$SCRIPT_DIR"/../../quickstart/kind/configs/standard.yaml --kubeconfig "$SCRIPT_DIR"/"$name"-config -q
+                fi
                 # Install macvlan plugin to enable multicast node discovery, if required
                 if [ "$6" == "true" ]; then
                     num_workers=$(kind get nodes --name fluidos-consumer-1 | grep worker -c)

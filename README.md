@@ -1,159 +1,172 @@
+# Protected Borders in FLUIDOS
 
-# 🌐 Progetto Fluidos: Controller Integrato con l'Armonizzatore
+Welcome to the repository containing the code for the **intent-based** solution for **protected-borders** developed by Politechnic of Turin as a contribution of the [FLUIDOS](https://fluidos.eu/) European project.
 
-Benvenuto nella repository contenente il codice del **controller integrato con l'armonizzatore** per il progetto **Fluidos**.
+The material in this demo is organized as follow:
+- the subproject `node` references the repository containing code and information for the FLUIDOS Node
+- the folder `demo` contains scripts and manifest that are used for the demo
+- the folder `code` contains the code implementing the protected border solution
+- some tentative documentation is contained within the folder `docs`. Here you may also find the schema used for the intents and some examples.
 
-## 🚀 Setup della Demo
+Note that the FLUIDOS node has been modified to install Calico CNI. More speficically, the following files have been modified:
+- `node/tools/scripts/setup.sh` to modify kind installation using Calico CNI
+- `node/quickstart/kind/standard.yaml` to disable default CNI and setup Calico Pod's subnet
+- `node/tools/scripts/environment.sh` to modify kind installation including the Calico CNI step
+- `node/quickstart/utils/calico-custom-resources.yaml` to modify Calico installation so that it's comptible with Liqo as detailed in the docs [liqo installation](https://docs.liqo.io/en/latest/installation/install.html#installationcniconfiguration)
 
-La demo è situata nella cartella: `demo_da_presentare/node_main`.
 
-### 1️⃣ Avvio dell'Ambiente
+## Demo Setup
 
-Per avviare l'ambiente demo:
+<!--The demo is located in the folder: `demo_da_presentare/node_main`.-->
 
-- Vai nella cartella `tools/script/` ed esegui lo script di setup:
+### 1️⃣ Starting the Environment
+
+To start the demo environment, we invite to use the testbed environment provided in the [node documentation](./node/docs/installation/installation.md). 
+<!-- To retrieve the submodule correctly, use the git command `git submodule update --init --recursive`. --> Here is a short list of requires steps:
+
+- Navigate to the `node/tools/scripts/` folder and execute the setup script:
   ```bash
-  cd tools/script/
+  cd node/tools/scripts/
   ./setup.sh
   ```
-- Seleziona `1` e conferma con `y` per installare il cluster **Consumer** e il cluster **Provider**.
+- Select `1`, to use the defaul number of clusters, and then confirm with `y`, to work with your local repository, building locally all the components, and installing Calico. While deny with `n` the option for LAN node discovery. This will install the **Consumer** cluster and the **Provider** cluster.
 
-### 2️⃣ Modifica dei Flavors e PeeringCandidates
+### 2️⃣ Editing Flavors and PeeringCandidates
 
-Dopo l'installazione, procedi con la modifica dei **flavors** offerti dal Provider al Consumer:
+After the installation, proceed to modify the **flavors** offered by the Provider to the Consumer:
 
-- Estrai i dati necessari dalla ConfigMap:
+- Extract the necessary data from the ConfigMap:
   ```bash
   export KUBECONFIG=fluidos-provider-1-config
   kubectl get cm fluidos-network-manager-identity -n fluidos -o yaml
   ```
-  Copia i seguenti campi:
+  Copy the following fields:
   - `domain`
   - `ip`
   - `nodeID`
 
-- Modifica i flavors nella cartella `flavors/` inserendo le informazioni copiate. Sostituisci anche il campo `ProviderID` con il valore di `nodeID` estratto dalla ConfigMap.
+- Edit the flavors in the `flavors/` folder by inserting the copied information. Replace the `ProviderID` field with the `nodeID` value extracted from the ConfigMap.
 
-- Modifica i **PeeringCandidates** nella cartella `../peering_candidates_to_patch` con gli stessi valori ottenuti dal Provider.
+- Edit the **PeeringCandidates** in the `../peering_candidates_to_patch` folder with the same values obtained from the Provider.
 
 ---
 
-## 📝 Esecuzione della Demo
+## 🗒 Running the Demo
 
-### 1️⃣ Esegui il Primo Script
+### 1️⃣ Run the First Script
 
-- Vai nella cartella `Demo_da_presentare_last/` ed esegui lo script:
+- Navigate to the `Demo_da_presentare_last/` folder and execute the script:
   ```bash
   cd Demo_da_presentare_last/
   ./prima_parte.sh
   ```
 
-### 2️⃣ Verifica del PeeringCandidate Selezionato
+### 2️⃣ Verify the Selected PeeringCandidate
 
-- Controlla i pod attivi:
+- Check the active pods:
   ```bash
   kubectl get pods -n fluidos
   ```
 
-- Visualizza i log del controller (attivo dopo circa 20 secondi):
+- View the controller logs (active after approximately 20 seconds):
   ```bash
-  kubectl logs "Nome_pod_controller_lato_consumer" -n fluidos
+  kubectl logs "controller_pod_name_on_consumer_side" -n fluidos
   ```
 
-> **Nota**: Il verifier si avvia dopo 20 secondi.
+> **Note**: The verifier starts after 20 seconds.
 
-### 3️⃣ Configurazione della Reservation
+### 3️⃣ Configure the Reservation
 
-- Modifica il file `reservation.yaml` (situato in `../../../deployments/node/samples`) con:
-  - Le informazioni del **Provider** (ottenute dai PeeringCandidates).
-  - Le informazioni del **Consumer** (ottenute dalla ConfigMap `fluidos-network-manager-identity`).
+- Modify the `reservation.yaml` file (located in `../../../deployments/node/samples`) with:
+  - The **Provider** information (obtained from PeeringCandidates).
+  - The **Consumer** information (obtained from the ConfigMap `fluidos-network-manager-identity`).
 
-- Applica il file:
+- Apply the file:
   ```bash
   kubectl apply -f ../../../deployments/node/samples/reservation.yaml
   ```
 
-### 4️⃣ Applica l'Allocation
+### 4️⃣ Apply the Allocation
 
-- Modifica il file `allocation.yaml` per inserire il nome del contratto (recuperabile con il comando seguente):
+- Edit the `allocation.yaml` file to insert the contract name (retrievable with the following command):
   ```bash
   kubectl get contracts -n fluidos
   ```
 
-- Applica il file `allocation.yaml`:
+- Apply the `allocation.yaml` file:
   ```bash
   kubectl apply -f ../../../deployments/node/samples/allocation.yaml
   ```
 
-### 5️⃣ Verifica lo Stato del Peering
+### 5️⃣ Check Peering Status
 
-- Controlla lo stato del peering:
+- Check the peering status:
   ```bash
   liqoctl status peer
   ```
 
 ---
 
-## 🔄 Modifiche Lato Provider
+## 🔄 Changes on the Provider Side
 
-### 1️⃣ Cambia il Contesto KubeConfig
+### 1️⃣ Change the KubeConfig Context
 
-Passa al contesto del Provider:
+Switch to the Provider context:
 ```bash
 export KUBECONFIG=../fluidos-provider-1-config
 ```
 
-### 2️⃣ Modifica il Contratto
+### 2️⃣ Modify the Contract
 
-Aggiungi il nome della ConfigMap nella sezione `networkRequests`, allo stesso livello di `transactionId`:
+Add the ConfigMap name in the `networkRequests` section, at the same level as `transactionId`:
 ```bash
-kubectl edit contracts "nome_contratto" -n fluidos
+kubectl edit contracts "contract_name" -n fluidos
 ```
 
-### 3️⃣ Esegui il Secondo Script
+### 3️⃣ Run the Second Script
 
-Per creare il controller sul Provider e avviare l'offload delle risorse:
+To create the controller on the Provider and start the resource offload:
 ```bash
 ./seconda_parte.sh
 ```
 
 ---
 
-## 🖧 Dimostrazione delle Network Policies
+## 🔧 Demonstration of Network Policies
 
-### 1️⃣ Accedi a un Pod
+### 1️⃣ Access a Pod
 
-Per verificare la connettività, avvia una shell su un pod:
+To verify connectivity, start a shell on a pod:
 ```bash
-kubectl exec -it "nome_pod" -n "nome_namespace" -- /bin/sh
+kubectl exec -it "pod_name" -n "namespace_name" -- /bin/sh
 ```
 
-### 2️⃣ Testa la Connessione
+### 2️⃣ Test the Connection
 
-Usa `wget` per testare la connessione verso un altro pod:
+Use `wget` to test the connection to another pod:
 ```bash
-wget "indirizzo_ip_pod_da_raggiungere":"porta"
+wget "pod_ip_address_to_reach":"port"
 ```
 
 ---
 
-## ⚠️ Nota Importante
+## ⚠️ Important Note
 
-Il controller è caricato su una repository Docker dell'account di **Salvatore**. Se desideri caricarlo su una tua repository, segui questi passi:
+The controller is hosted on a Docker repository under **Salvatore**'s account. If you wish to upload it to your own repository, follow these steps:
 
-1. Compila il progetto nella cartella `translator/fluidos-security-orchestrator/fluidos-security-orchestrator` con il comando:
+1. Compile the project in the folder `translator/fluidos-security-orchestrator/fluidos-security-orchestrator` with the command:
    ```bash
    mvn package
    ```
 
-2. Esegui il build dell'immagine Docker:
+2. Build the Docker image:
    ```bash
-   docker build -t nomeutenteDocker/nomeRepoCreata:Tag .
+   docker build -t yourDockerUsername/yourNewRepoName:Tag .
    ```
 
-3. Esegui il push dell'immagine su Docker Hub:
+3. Push the image to Docker Hub:
    ```bash
-   docker push nomeutenteDocker/nomeRepoCreata:Tag
+   docker push yourDockerUsername/yourNewRepoName:Tag
    ```
 
-4. Aggiorna il file `controller.yaml` per puntare alla nuova immagine Docker.
+4. Update the `controller.yaml` file to point to the new Docker image.
