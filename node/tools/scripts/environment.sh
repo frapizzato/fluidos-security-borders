@@ -85,6 +85,22 @@ create_kind_clusters() {
                         )
                     done
                 fi
+                # Install Calico CNI
+                echo "Calico CNI: $7"
+                if [ "$7" == "true" ]; then
+                    export KUBECONFIG="$SCRIPT_DIR"/"$name"-config
+                    print_title "Installing Calico CNI for $name (kubeconfig $KUBECONFIG)..."
+                    kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.2/manifests/tigera-operator.yaml
+                    if [ $? -ne 0 ]; then
+                        echo "Failed to install Tigera Operator for Calico. Exiting..."
+                        exit 1
+                    fi
+                    kubectl create -f "$SCRIPT_DIR"/../../quickstart/utils/calico-custom-resources.yaml
+                    if [ $? -ne 0 ]; then
+                        echo "Failed to apply custom resources for Calico. Exiting..."
+                        exit 1
+                    fi
+                fi
                 # Get the IP of the control plane of the cluster
                 controlplane_ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$name"-control-plane)                
                 # Write the cluster info to a file
@@ -116,6 +132,22 @@ create_kind_clusters() {
                             docker exec --workdir /tmp "$name"-worker"$([ "$j" = 1 ] && echo "" || echo "$j")" rm -r cni-plugins
                         )
                     done
+                fi
+                # Install Calico CNI
+                echo "Calico CNI: $7"
+                if [ "$7" == "true" ]; then
+                    export KUBECONFIG="$SCRIPT_DIR"/"$name"-config
+                    print_title "Installing Calico CNI for $name (kubeconfig $KUBECONFIG)..."
+                    kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.2/manifests/tigera-operator.yaml
+                    if [ $? -ne 0 ]; then
+                        echo "Failed to install Tigera Operator for Calico. Exiting..."
+                        exit 1
+                    fi
+                    kubectl create -f "$SCRIPT_DIR"/../../quickstart/utils/calico-custom-resources.yaml
+                    if [ $? -ne 0 ]; then
+                        echo "Failed to apply custom resources for Calico. Exiting..."
+                        exit 1
+                    fi
                 fi
                 # Get the IP of the control plane of the cluster
                 controlplane_ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$name"-control-plane)         

@@ -97,6 +97,19 @@ else
     return 1
 fi
 
+# Ask the user if they want to use Calico CNI for supporint protected borders functionality
+read -r -p "Do you want to enable Calico CNI? [y/n] " enable_calico_cni
+
+# Check if the input is y or n
+if [ "$enable_calico_cni" == "y" ]; then
+    enable_calico_cni=true
+elif [ "$enable_calico_cni" == "n" ]; then
+    enable_calico_cni=false
+else
+    echo "Invalid option."
+    return 1
+fi
+
 # Check requirements with function check_tools from requirements.sh
 check_tools
 
@@ -107,7 +120,7 @@ if [ "$environment_type" -eq 1 ]; then
     environment_type="customkind"
     installation_type="kind"
     # Call create_kind clusters with parameters and save return value into clusters variable
-    create_kind_clusters "$consumers_json" "$providers_json" $environment_type 1 1 $enable_local_discovery
+    create_kind_clusters "$consumers_json" "$providers_json" $environment_type 1 1 $enable_local_discovery $enable_calico_cni
 elif [ "$environment_type" -eq 2 ]; then
     environment_type="customkind"
     installation_type="kind"
@@ -122,7 +135,7 @@ elif [ "$environment_type" -eq 2 ]; then
     fi
 
     # Call create_kind clusters with parameters and save return value into clusters variable
-    create_kind_clusters "$consumers_json" "$providers_json" $environment_type "$consumer_clusters" "$provider_clusters" $enable_local_discovery
+    create_kind_clusters "$consumers_json" "$providers_json" $environment_type "$consumer_clusters" "$provider_clusters" $enable_local_discovery $enable_calico_cni
 # elif [ "$environment_type" -eq 3 ]; then
 #     # Ask the user what Kubernetes clusters they want to use between kubeadm and k3s
 #     read -r -p "What type of Kubernetes clusters do you want to use? 
