@@ -6,13 +6,15 @@ The material in this demo is organized as follow:
 - the subproject `node` references the repository containing code and information for the FLUIDOS Node
 - the folder `demo` contains scripts and manifest that are used for the demo
 - the folder `code` contains the code implementing the protected border solution
-- some tentative documentation is contained within the folder `docs`. Here you may also find the schema used for the intents and some examples.
+- some tentative documentation is contained within the folder `docs`. Here you may also find the schema used for the MSPL intents and some examples.
 
-Note that the FLUIDOS node has been modified to install Calico CNI. More speficically, the following files have been modified:
-- `node/tools/scripts/setup.sh` to modify kind installation using Calico CNI
-- `node/quickstart/kind/standard.yaml` to disable default CNI and setup Calico Pod's subnet
-- `node/tools/scripts/environment.sh` to modify kind installation including the Calico CNI step
-- `node/quickstart/utils/calico-custom-resources.yaml` to modify Calico installation so that it's comptible with Liqo as detailed in the docs [liqo installation](https://docs.liqo.io/en/latest/installation/install.html#installationcniconfiguration)
+Note that the protected-border solution necessitate, in order to properly work, an installation of the FLUIDOS Node with a supported CNI. At the moment, considering its maturity and diffusion, the approach is supporting only the **Calico CNI**. 
+
+More speficically, the following files of the official testbed have been modified:
+- `node/tools/scripts/setup.sh` which is a script executed to setup a KinD testbed with the FLUIDOS Node (customized to use Calico CNI)
+- `node/quickstart/kind/standard.yaml` which is the configuration file used to create the testbed using Kind. From this, a new configuration file has been created `node/quickstart/kind/calico.yaml`, in order to disable the default CNI (*kindnet*) and setup the Pod's subnet value required by Calico (as instructed by the official [docs](https://docs.tigera.io/calico/latest/getting-started/kubernetes/kind))
+- `node/tools/scripts/environment.sh` which contains different functions referenced within the main `setup.sh` file. In particular, the creation of the kind clusters has been modified adding a step for the installation of Calico CNI (all the needed CRDs and operator)
+- `node/quickstart/utils/calico-custom-resources.yaml` has been added and customised so that Calico installation it's comptible with Liqo as detailed in the liqo [docs](https://docs.liqo.io/en/latest/installation/install.html#installationcniconfiguration)
 
 
 ## Demo Setup
