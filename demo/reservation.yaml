@@ -17,7 +17,7 @@ spec:
       pods: "110"
   # Retrieve from PeeringCandidate chosen to reserve
   peeringCandidate:
-    name: "peeringcandidate-fluidos.eu-k8slice-demo-3"
+    name: "peeringcandidate-fluidos.eu-k8slice-demo-1"
     namespace: fluidos
   # Set it to reserve
   reserve: true
@@ -26,10 +26,10 @@ spec:
   # Retrieve from PeeringCandidate Flavor Owner field    
   seller:
     domain: fluidos.eu
-    ip: "172.18.0.6:30001"
-    nodeID: "esamauglzj"
+    ip: "172.18.0.3:30001"
+    nodeID: "rd7bevbhj8"
   # Retrieve from configmap
   buyer:
     domain: fluidos.eu
-    ip: 172.18.0.3:30000
-    nodeID: wawrirkhtr
+    ip: ""
+    nodeID: ""

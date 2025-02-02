@@ -31,107 +31,103 @@ To start the demo environment, we invite to use the testbed environment provided
   cd node/tools/scripts/
   ./setup.sh
   ```
-- Select `1`, to use the defaul number of clusters, and then confirm with `y`, to work with your local repository, building locally all the components, and installing Calico. While deny with `n` the option for LAN node discovery. This will install the **Consumer** cluster and the **Provider** cluster.
+- Select `1`, to use the defaul number of clusters, and then confirm with `y` whenever requested, to work with your local repository, building locally all the components, using LAN auto-discovery, and installing Calico. This will setup two clusters, the **Consumer** and the **Provider**.
 
-### 2️⃣ Editing Flavors and PeeringCandidates
+### 2️⃣ Editing Flavors
 
-After the installation, proceed to modify the **flavors** offered by the Provider to the Consumer:
+After the installation, proceed to modify the **flavors** offered by the Provider to the Consumer. Beware that this step is explained here but it is automated through the bash script `./demo/1_provider_setup.sh`.
 
-- Extract the necessary data from the ConfigMap:
+For demo purpose, four different Flavors have already been prepared starting from the ones automatically created in the testbed scenario. These offer four different sets of network authorization intents. However, in order to use them, they need to be modified with the information specific of the testbed.
+
+- Extract the necessary data from the ConfigMap (in the Provider cluster)
   ```bash
   export KUBECONFIG=fluidos-provider-1-config
   kubectl get cm fluidos-network-manager-identity -n fluidos -o yaml
   ```
-  Copy the following fields:
+
+- Copy, from the output of the previous command, the following fields:
   - `domain`
   - `ip`
   - `nodeID`
 
-- Edit the flavors in the `flavors/` folder by inserting the copied information. Replace the `ProviderID` field with the `nodeID` value extracted from the ConfigMap.
+- Edit the flavors in the `demo/flavors/` folder by inserting the copied information. Replace the `ProviderID` field with the `nodeID` value extracted from the ConfigMap.
 
-- Edit the **PeeringCandidates** in the `../peering_candidates_to_patch` folder with the same values obtained from the Provider.
+[- Edit the **PeeringCandidates** in the `../peering_candidates_to_patch` folder with the same values obtained from the Provider.]: #
 
 ---
 
-## 🗒 Running the Demo
+## Running the Demo
 
-### 1️⃣ Run the First Script
+### 1️⃣ Run the script for creating initial situation
 
-- Navigate to the `Demo_da_presentare_last/` folder and execute the script:
+- Navigate to the `demo/` folder and execute the first script **on the Consumer cluster**:
   ```bash
-  cd Demo_da_presentare_last/
-  ./prima_parte.sh
+  cd demo/
+  ./0_consumer_setup.sh
+  ```
+- Then, execute the second script but **on the Provider cluster**:
+  ```bash
+  ./1_provider_setup.sh
+  ```
+- After this command, some new namespaces and pods should have been created (both in the Provider and Consumer clusters), as well as the service account that will be used by the protected-border controller. Finally, the *protected-border controller* is deployed on both clusters.
+
+- In the Provider, the script is also updating the Flavors.
+
+- Finally, the demo starts with the creation of a Solver CR **on the Consumer cluster**:
+  ```bash
+  kubectl apply -f ./solver-custom.yaml
   ```
 
 ### 2️⃣ Verify the Selected PeeringCandidate
 
-- Check the active pods:
+- After the previous command, REAR should have processed the request and the Provider's Flavor should have been received by the Consumer in the form of PeeringCandidate. Once thi happen, the *protected-border controller* starts a Verification phase to check the compatibility of the received Flavor with respect to the requested one. To see the result, check the logs of the controller.
+
+- Check the active pods **on the Consumer cluster**:
   ```bash
   kubectl get pods -n fluidos
   ```
 
-- View the controller logs (active after approximately 20 seconds):
+- View the logs of the *protected-border controller*:
   ```bash
-  kubectl logs "controller_pod_name_on_consumer_side" -n fluidos
+  kubectl logs "<controller_pod_name_on_consumer_side>" -n fluidos
   ```
 
-> **Note**: The verifier starts after 20 seconds.
+> **Note**: The verification process starts after 20 seconds.
 
-### 3️⃣ Configure the Reservation
+### 3️⃣ Configure the Reservation and Allocation
 
-- Modify the `reservation.yaml` file (located in `../../../deployments/node/samples`) with:
+- Given the result of the verification, one of the received PeeringCandidate need to be selected to proceed with the reservation and acquisition process. This process is achieved by simply executing **on the Consumer cluster** the following script:
+  ```bash
+  ./3_reservation_and_allocation.sh <peeringCandidate-name>
+  ```
+
+- The scripts executes different action, first it modifies the `reservation.yaml` file with:
   - The **Provider** information (obtained from PeeringCandidates).
   - The **Consumer** information (obtained from the ConfigMap `fluidos-network-manager-identity`).
 
-- Apply the file:
+- Then, it creates the Reservation and Allocation resources.
+
+### 4️⃣ Patch the Contract
+
+- To pass the Consumer's Request intents to the Provider, we decided to use a Kubernetes ConfigMap that is automatically reflected on both clusters thanks to Liqo. The required steps are described below, however they are all automatized in this demo through the script executed **on the Provider cluster**:
   ```bash
-  kubectl apply -f ../../../deployments/node/samples/reservation.yaml
+  ./4_patch_contract.sh
   ```
 
-### 4️⃣ Apply the Allocation
+- Retrieve the name of the associated contract, and then patch it writing the name of the shared ConfigMap.
 
-- Edit the `allocation.yaml` file to insert the contract name (retrievable with the following command):
+- Create the ConfigMap and fill it with the Consumer's Request intents.
+
+### 5️⃣ Offload of resources and harmonization phase
+
+- Finally, the Consumer should offload its resources on the acquired resources and the *protected-border controller* on the Provider will automatically inject the proper Network Policies (considering the offloaded resources, the Requested intents in the ConfigMap, and the Authorization intents of the selected Flavor).
+
+- Again, this step in the demo is automatized through the final script file executed **on the Consumer cluster**:
   ```bash
-  kubectl get contracts -n fluidos
+  ./5_harmonize.sh
   ```
 
-- Apply the `allocation.yaml` file:
-  ```bash
-  kubectl apply -f ../../../deployments/node/samples/allocation.yaml
-  ```
-
-### 5️⃣ Check Peering Status
-
-- Check the peering status:
-  ```bash
-  liqoctl status peer
-  ```
-
----
-
-## 🔄 Changes on the Provider Side
-
-### 1️⃣ Change the KubeConfig Context
-
-Switch to the Provider context:
-```bash
-export KUBECONFIG=../fluidos-provider-1-config
-```
-
-### 2️⃣ Modify the Contract
-
-Add the ConfigMap name in the `networkRequests` section, at the same level as `transactionId`:
-```bash
-kubectl edit contracts "contract_name" -n fluidos
-```
-
-### 3️⃣ Run the Second Script
-
-To create the controller on the Provider and start the resource offload:
-```bash
-./seconda_parte.sh
-```
-
+- To check the working of the *protected-border controller*, you can have a watch at its log (on the Provider cluster) and check the creation of the network policies.
 ---
 
 ## 🔧 Demonstration of Network Policies
@@ -150,25 +146,3 @@ Use `wget` to test the connection to another pod:
 wget "pod_ip_address_to_reach":"port"
 ```
 
----
-
-## ⚠️ Important Note
-
-The controller is hosted on a Docker repository under **Salvatore**'s account. If you wish to upload it to your own repository, follow these steps:
-
-1. Compile the project in the folder `translator/fluidos-security-orchestrator/fluidos-security-orchestrator` with the command:
-   ```bash
-   mvn package
-   ```
-
-2. Build the Docker image:
-   ```bash
-   docker build -t yourDockerUsername/yourNewRepoName:Tag .
-   ```
-
-3. Push the image to Docker Hub:
-   ```bash
-   docker push yourDockerUsername/yourNewRepoName:Tag
-   ```
-
-4. Update the `controller.yaml` file to point to the new Docker image.

@@ -14,5 +14,5 @@ echo "[+] Creating Service Accont for the custom controller"
 kubectl create serviceaccount custom-controller -n fluidos
 echo "[+] Creating all the needed roles/clusterRoles and bindings"
 kubectl apply -f ./serviceAccounts
-# echo "[+] Deploying the custom controller"
-# kubectl apply -f ./custom-controller.yaml --> in this case this must be done later since PeeringCandidates must be modified (MANUAL step) before its execution!
+echo "[+] Deploying the custom controller"
+kubectl apply -f ./custom-controller.yaml 

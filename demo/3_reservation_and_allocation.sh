@@ -34,6 +34,16 @@ echo ""
 echo "[+] Check reservation status."
 kubectl get reservation -n fluidos 
 
+
+reservation_name=$(kubectl get reservation -n fluidos | grep sample | awk '{print $1}')
+contract_name=$(kubectl get reservation $reservation_name -n fluidos -o jsonpath='{.status.contract.name}')
+
+path_allocation="./allocation.yaml"
+if [ -f "$path_reservation" ]; then
+    echo "[+] Processing $path_reservation"
+    yq eval ".spec.contract.name = \"$contract_name\"" -i "$path_allocation"
+fi
+
 echo ""
 echo "[+] Applying the allocation."
 kubectl apply -f ./allocation.yaml
